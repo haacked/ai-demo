@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+#/ Usage: script/bootstrap [-d|--domain <domain>] [--no-install]
+#/ Description: Bootstraps the development environment
+#/ Options:
+#/   -d, --domain <domain>  The ngrok domain to use for your local development environment.
+#/   --no-install          Do not install dependencies, just bail if they aren't present. Useful for CI environments.
+{ set +x; } 2>/dev/null
+source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
+root_dir=$(cd $source_dir && cd ../ && pwd)
+cd $root_dir
+source script/helpers/_utils.sh
+
+install=false
+ngrok_domain="abbot-$USER-dev"
+
+while (( "$#" )); do
+  key="$1"
+  shift
+  case "$key" in
+    -d|--domain)
+      ngrok_domain="${1:-}"
+    ;;
+    --no-install)
+      install=false
+    ;;
+    -\?|-h|--help)
+      grep '^#/' <"$0" | cut -c4-
+      exit
+    ;;
+  esac
+done
+
+echo "Bootstrapping AIDemo..."
+
+if $install && ! type brew >/dev/null 2>&1; then
+  fatal "Can't auto-install dependencies. You don't have homebrew installed. Please install it and try again."
+fi
+
+if ! type jq >/dev/null 2>&1; then
+  if $install; then
+    echo "Installing jq..."
+    brew install jq
+  else
+    fatal "jq is required to run this script. Please install it and try again."
+  fi
+fi
+
+echo "Checking for docker..."
+if ! type docker >/dev/null 2>&1; then
+  fatal "docker is required. Please install it and try again."
+fi
+
+dotnet_sdk_channel=$(cat global.json | jq -r '.sdk.channel')
+
+echo "Checking for .NET SDK $dotnet_sdk_channel..."
+
+has_dotnet=false
+
+install_dotnet() {
+  fatal ".NET SDK $dotnet_sdk_channel is required. Please install it and try again."
+
+  # TODO: Auto-install .NET
+  # It's not trivial though. The path in which it's located matters, etc.
+}
+
+escaped_channel=$(echo $dotnet_sdk_channel | sed 's/\./\\./g')
+sdk_regex="^$escaped_channel\.[0-9]+$"
+
+# Just in case the user hasn't installed .NET
+if ! type dotnet >/dev/null; then
+  install_dotnet
+else
+  matching_version=$(dotnet --list-sdks | cut -d ' ' -f 1 | grep -E $sdk_regex)
+  if [ -z "$matching_version" ]; then
+    install_dotnet
+  else
+    echo "Found suitable .NET SDK version $matching_version."
+  fi
+fi
+
+dotnet tool restore
+
+# Now set up configuration
+if [ ! -d "$HOME/.aidemo" ]; then
+  mkdir $HOME/.aidemo
+fi
+
+if [ ! -d "$HOME/.aidemo/database" ]; then
+  echo "Creating Postgres databsae directory: $HOME/.aidemo/database"
+  mkdir $HOME/.aidemo/database
+fi
+
+echo "Configuring ngrok for domain $ngrok_domain..."
+cat <<EOF > $HOME/.aidemo/ngrok.tunnel.yml
+version: 2
+tunnels:
+  default:
+    addr: https://host.docker.internal:7047
+    proto: http
+    subdomain: $ngrok_domain
+    host_header: localhost:7047
+  in:
+    addr: https://host.docker.internal:7047
+    proto: http
+    subdomain: ${ngrok_domain}-in
+  run:
+    addr: https://host.docker.internal:7047
+    proto: http
+    subdomain: ${ngrok_domain}-run
+EOF
+
+if [ -f "$HOME/.aidemo/ngrok.config.yml" ]; then
+  echo "Found existing ngrok configuration. Skipping..."
+else
+  echo "I need your ngrok auth token."
+  echo "Go to https://dashboard.ngrok.com/get-started/your-authtoken and copy it."
+  read -s -r -p "Then paste it right here (it won't be echoed): " ngrok_auth_token
+  echo
+  cat <<EOF > $HOME/.aidemo/ngrok.config.yml
+version: 2
+authtoken: $ngrok_auth_token
+EOF
+fi
+
+# Start background services
+script/start-services

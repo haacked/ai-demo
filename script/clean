@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#/ Usage: script/clean
+#/ Description: Cleans the repository of all files that are not tracked by git, except a few common settings-related files.
+{ set +x; } 2>/dev/null
+source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
+root_dir=$(cd $source_dir && cd ../ && pwd)
+cd $root_dir
+source script/helpers/_utils.sh
+
+while (( "$#" )); do
+  key="$1"
+  shift
+  case "$key" in
+    -\?|-h|--help)
+      grep '^#/' <"$0" | cut -c4-
+      exit
+    ;;
+  esac
+done
+
+EXCEPTIONS=(
+    "-e" ".vs/"
+    "-e" ".vscode/"
+    "-e" ".idea/"
+    "-e" "*.DotSettings.user"
+)
+
+git clean -xdn "${EXCEPTIONS[@]}"
+echo ""
+echo "I'm going to remove all these files and folders, are you sure?"
+echo ""
+read -n1 -r -p 'Type y to continue, any other key to quit:' toContinue
+
+if [[ x"$toContinue" == x"y" ]]; then
+    echo ""
+    git clean -xdf "${EXCEPTIONS[@]}"
+fi
+echo ""

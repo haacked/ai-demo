@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="AIDemoWeb is a demonstration of using OpenAI.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="~/dist/css/main.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="~/dist/js/main.js" asp-append-version="true"></script>
+    <title>@ViewData["Title"] - AIDemoWeb</title>
+</head>
+<body class="font-sans">
+    <main class="bg-gray-50 min-w-0 flex flex-col h-screen w-full">
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2023 - A Serious Business, Inc.
+            </div>
+        </footer>
+    </main>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,43 @@
+<Project>
+    <PropertyGroup>
+        <LangVersion>11.0</LangVersion>
+        <Company>A Serious Business, Inc.</Company>
+        <Copyright>Copyright © 2023</Copyright>
+        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+        <RootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</RootDir>
+        <CIBuild Condition=" '$(NBGV_CloudBuildNumber)' != '' or '$(GITHUB_SHA)' != '' ">true</CIBuild>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode Condition=" '$(RestoreLockedMode)' == '' and '$(CIBuild)' == 'true' ">true</RestoreLockedMode>
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <AbbotMSBuildExtensions>$([System.IO.Path]::Combine($(RootDir), 'msbuild'))</AbbotMSBuildExtensions>
+        <DefaultTargetFramework>net7.0</DefaultTargetFramework>
+        <RollForward>Major</RollForward>
+        <RepoBuildPath>$(RootDir)build\</RepoBuildPath>
+        <RepoBinPath>$(RepoBuildPath)bin\</RepoBinPath>
+        <RepoObjPath>$(RepoBuildPath)obj\</RepoObjPath>
+        <BaseIntermediateOutputPath>$(RepoObjPath)$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+        <BaseOutputPath Condition=" '$(BaseOutputPath)' == '' ">$(RepoBinPath)$(MSBuildProjectName)\</BaseOutputPath>
+        <PackageOutputPath>$(RepoBuildPath)nuget\$(Configuration)\</PackageOutputPath>
+        <RuntimeIdentifiers>win10-x86;linux-x64</RuntimeIdentifiers>
+        <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
+    </PropertyGroup>
+
+    <Target Name="CleanBuildArtifacts" AfterTargets="AfterClean">
+        <RemoveDir Directories="$(OutputPath);$(PackageOutputPath)" />
+    </Target>
+
+    <Target Name="ReportVersions" AfterTargets="AfterBuild">
+        <Message Importance="High" Text="$(AssemblyName) -> $(NuGetPackageVersion)" />
+    </Target>
+
+    <!-- Global Warning Suppressions -->
+    <PropertyGroup>
+        <!--
+        Validate arguments of public methods:
+
+        This is just a demo site. We'll rely on nullability constraints.
+        -->
+        <NoWarn>CA1062;$(NoWarn)</NoWarn>
+    </PropertyGroup>
+</Project>

@@ -1,0 +1,16 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "strict": false,
+        "esModuleInterop": true,
+        "module": "es6",
+        "target": "es2021",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "noEmitOnError": true,
+        "strictNullChecks": false,
+        "jsx": "react-jsx"
+    }
+}

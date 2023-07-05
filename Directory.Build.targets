@@ -1,0 +1,6 @@
+<Project>
+    <Target Name="__Debug">
+        <Message Text="RootDir = $(RootDir)" Importance="high" />
+        <Message Text="AIDemoMSBuildExtensions = $(AIDemoMSBuildExtensions)" Importance="high" />
+    </Target>
+</Project>

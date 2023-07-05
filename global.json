@@ -1,0 +1,10 @@
+{
+    "sdk": {
+      "channel": "7.0",
+      "version": "7.0.103",
+      "allowPrerelease": true,
+      "installUrl": "https://dotnet.microsoft.com/en-us/download/dotnet/7.0",
+      "rollForward": "latestFeature"
+    }
+  }
+  

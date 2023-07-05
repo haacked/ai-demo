@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+#/ Usage: script/build [<configuration>]
+#/ Description: Builds Abbot
+#/ Arguments:
+#/   <configuration> - The configuration to build. Defaults to Debug.
+{ set +x; } 2>/dev/null
+source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
+root_dir=$(cd $source_dir && cd ../ && pwd)
+cd $root_dir
+source script/helpers/_utils.sh
+
+configuration=
+while (( "$#" )); do
+  key="$1"
+  shift
+  case "$key" in
+    -\?|-h|--help)
+      grep '^#/' <"$0" | cut -c4-
+      exit
+    ;;
+    *)
+      if [[ ! $configuration ]]; then
+        configuration=$key
+      fi
+  esac
+done
+
+if [ -z $configuration ]; then
+    configuration=Debug
+fi
+
+if ! type npm >/dev/null 2>&1; then
+  fatal "npm is required to run this script. Have you run 'script/bootstrap'?"
+fi
+
+if ! type dotnet >/dev/null 2>&1; then
+  fatal "dotnet is required to run this script. Have you run 'script/bootstrap'?"
+fi
+
+echo "Building OpenAIDemo.sln for $configuration"
+dotnet restore OpenAIDemo.sln
+dotnet build OpenAIDemo.sln --no-restore -c $configuration --nologo
+
+cd "$root_dir/src/AIDemoWeb" > /dev/null
+npm install
+npm rebuild node-sass
+if [[ x"$configuration" == x"Release" ]]; then
+    npm run release
+else
+    npm run debug
+fi

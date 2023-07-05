@@ -1,0 +1,44 @@
+{
+  "name": "ai-demo-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Demo of AI",
+  "main": "webpack.dev.js",
+  "scripts": {
+    "watch_debug": "webpack --mode=development --watch --progress --config webpack.dev.js",
+    "watch_release": "webpack --mode=production --watch --progress --config webpack.prod.js --env prod",
+    "debug": "webpack --mode=development --config webpack.dev.js",
+    "release": "webpack --mode=production --config webpack.prod.js --env prod",
+    "lint": "eslint --max-warnings 0 --format compact ./assets",
+    "lint:fix": "eslint --fix --max-warnings 0 --format compact ./assets"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.6",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
+    "@babel/preset-env": "^7.22.6",
+    "aspnet-client-validation": "^0.8.11",
+    "assert": "^2.0.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "css-loader": "^6.8.1",
+    "eslint": "^8.44.0",
+    "mini-css-extract-plugin": "^2.7.6",
+    "postcss-loader": "^7.3.3",
+    "process": "^0.11.10",
+    "tailwindcss": "^3.3.2",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.1.6",
+    "util": "^0.12.5",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-middleware": "^6.1.1",
+    "webpack-hot-middleware": "^2.25.4",
+    "webpack-merge": "^5.9.0"
+  },
+  "dependencies": {
+    "@types/webpack-env": "^1.18.1",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "autoprefixer": "^10.4.14",
+    "babel-loader": "^9.1.2"
+  }
+}
