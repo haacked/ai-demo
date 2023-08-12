@@ -1,4 +1,5 @@
 using Haack.AIDemoWeb.Startup;
+using Haack.AIDemoWeb.Startup.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
 builder.Services.AddDatabase(builder.Configuration);
+builder.Services.RegisterOpenAI(builder.Configuration);
 
 var app = builder.Build();
 

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <RootNamespace>Haack.AIDemoWeb</RootNamespace>
@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
+    <UserSecretsId>679f516b-fc62-4c81-be3e-2cb639960e16</UserSecretsId>
   </PropertyGroup>
 
   <Target Name="RunWebpack" AfterTargets="ComputeFilesToPublish">
@@ -17,7 +18,7 @@
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
       <DistFiles Include="wwwroot\dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>%(DistFiles.Identity)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>
@@ -41,5 +42,6 @@
     <Content Update="**\package-lock.json" CopyToPublishDirectory="Never" CopyToOutputDirectory="Never" />
     <Content Update="**\packages.lock.json" CopyToPublishDirectory="Never" CopyToOutputDirectory="Never" />
   </ItemGroup>
+
 
 </Project>

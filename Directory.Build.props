@@ -39,5 +39,11 @@
         This is just a demo site. We'll rely on nullability constraints.
         -->
         <NoWarn>CA1062;$(NoWarn)</NoWarn>
+
+        <!--
+        ConfigureAwait only has effects on code running in the context of a SynchronizationContext
+        which ASP.NET Core doesn't have.
+        -->
+        <NoWarn>CA2007;$(NoWarn)</NoWarn>
     </PropertyGroup>
 </Project>
