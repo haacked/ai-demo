@@ -167,27 +167,10 @@
             @apply col-start-2 flex gap-2;
         }
     }
+
+    /* Used for making buttons look like links */
+    .link {
+        @apply text-indigo-600 hover:text-gray-600;
+    }
 } /* end @layer components */
 
-
-pre, code {
-    @apply font-mono rounded px-1 text-sm bg-indigo-50 text-indigo-600;
-}
-
-.dropdown {
-    @apply relative
-}
-
-/* Used for making buttons look like links */
-.link {
-    @apply text-indigo-600 hover:text-gray-600;
-}
-
-table {
-    /* activates the set of figures where numbers are all of the same size */
-    font-variant-numeric: tabular-nums;
-}
-
-.is-hidden {
-    display: none !important;
-}
