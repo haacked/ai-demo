@@ -10,10 +10,14 @@
     <UserSecretsId>679f516b-fc62-4c81-be3e-2cb639960e16</UserSecretsId>
   </PropertyGroup>
 
-  <Target Name="RunWebpack" AfterTargets="ComputeFilesToPublish">
+  <Target Name="RunWebpack" AfterTargets="AfterBuild">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <Exec Command="npm install" />
-    <Exec Command="npm run-script release" />
+    <Exec Condition="$(Configuration) == 'Debug'" Command="npm run-script debug" />
+  </Target>
+
+  <Target Name="PublishForRelease" AfterTargets="ComputeFilesToPublish">
+    <Exec Condition="$(Configuration) == 'Release'" Command="npm install" />
+    <Exec Condition="$(Configuration) == 'Release'" Command="npm run-script release" />
 
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
