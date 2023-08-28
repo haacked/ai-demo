@@ -2,7 +2,7 @@ using Haack.AIDemoWeb.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Serious.Abbot.Entities;
+namespace AIDemoWeb.Entities;
 
 // ReSharper disable once UnusedType.Global
 /// <summary>
@@ -20,7 +20,8 @@ public class AIDemoContextFactory : IDesignTimeDbContextFactory<AIDemoContext>
         var configuration = builder.Build();
         var optionsBuilder = new DbContextOptionsBuilder<AIDemoContext>()
             .UseNpgsql(configuration.GetConnectionString(AIDemoContext.ConnectionStringName),
-                options => {
+                options =>
+                {
                     options.MigrationsAssembly("AIDemoWeb");
                 });
         return new AIDemoContext(optionsBuilder.Options);

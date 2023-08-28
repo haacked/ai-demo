@@ -31,6 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "procs", "procs", "{40ECE3A6
 		script\procs\js-build = script\procs\js-build
 		script\procs\service = script\procs\service
 		script\procs\web = script\procs\web
+		script\procs\ngrok = script\procs\ngrok
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{8BFD7B1C-87A2-44FC-B09C-277F7B49EE8B}"

@@ -1,14 +1,14 @@
 using Haack.AIDemoWeb.Entities;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Serious;
 
 namespace Haack.AIDemoWeb.Startup;
 
 public static class ServiceExtensions
 {
-    public static void AddDatabase(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString(AIDemoContext.ConnectionStringName)
             ?? throw new InvalidOperationException(
@@ -38,5 +38,30 @@ public static class ServiceExtensions
         options.ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
 
         options.UseNpgsql(connectionString, o => o.MigrationsAssembly("AIDemoWeb"));
+    }
+
+    public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddAuthentication(o =>
+            {
+                o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie(o =>
+            {
+                // set the path for the authentication challenge
+                o.LoginPath = "/Login";
+                // set the path for the sign out
+                o.LogoutPath = "/Logout";
+            })
+            .AddGitHub(o =>
+            {
+                o.ClientId = configuration["GitHub:ClientId"].Require();
+                o.ClientSecret = configuration["GitHub:ClientSecret"].Require();
+                o.CallbackPath = "/signin-github";
+
+                // Grants access to read a user's profile data.
+                // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
+                o.Scope.Add("read:user");
+            });
     }
 }

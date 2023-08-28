@@ -11,7 +11,7 @@ cd $root_dir
 source script/helpers/_utils.sh
 
 install=false
-ngrok_domain="abbot-$USER-dev"
+ngrok_domain="aidemo-$USER-dev"
 
 while (( "$#" )); do
   key="$1"

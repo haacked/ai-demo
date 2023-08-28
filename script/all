@@ -6,6 +6,8 @@
 #/   -w|--watch             Launch the .NET apps under 'dotnet-watch'
 #/   -e|--except <service>  Don't launch the specified service
 #/   -l|--list              List all services
+#/
+#/ Edit the ../Profile file to add/remove services
 { set +x; } 2>/dev/null
 source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
 root_dir=$(cd $source_dir && cd ../ && pwd)

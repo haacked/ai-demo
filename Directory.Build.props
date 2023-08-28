@@ -10,7 +10,6 @@
         <RestoreLockedMode Condition=" '$(RestoreLockedMode)' == '' and '$(CIBuild)' == 'true' ">true</RestoreLockedMode>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <AbbotMSBuildExtensions>$([System.IO.Path]::Combine($(RootDir), 'msbuild'))</AbbotMSBuildExtensions>
         <DefaultTargetFramework>net7.0</DefaultTargetFramework>
         <RollForward>Major</RollForward>
         <RepoBuildPath>$(RootDir)build\</RepoBuildPath>

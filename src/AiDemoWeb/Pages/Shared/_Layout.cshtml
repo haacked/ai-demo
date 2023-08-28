@@ -13,11 +13,16 @@
 </head>
 <body class="font-sans">
     <main class="bg-gray-50 min-w-0 flex flex-col h-screen w-full">
-        <div class="container">
-            <main role="main" class="pb-3">
-                @RenderBody()
-            </main>
+
+        <div class="pr-4 pt-2 ml-auto">
+            @if (ViewContext.HttpContext.User.Identity is {IsAuthenticated: true }) {
+                <span>Hello, @ViewContext.HttpContext.User.Identity.Name</span>
+            }
         </div>
+
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
 
         <footer class="m-4 border-top footer text-muted">
             <div class="container">

@@ -2,6 +2,12 @@
   "version": 2,
   "dependencies": {
     "net7.0": {
+      "AspNet.Security.OAuth.GitHub": {
+        "type": "Direct",
+        "requested": "[7.0.4, )",
+        "resolved": "7.0.4",
+        "contentHash": "a8gsHU07focF61bCVCEPZgkq55yUJU7LTLCfFjfSmJlcOfVFQt/n1A4WaKOPt4Ee3VKSxzE4bEFP5aOMNNL1pQ=="
+      },
       "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation": {
         "type": "Direct",
         "requested": "[7.0.10, )",
@@ -59,6 +65,12 @@
           "Microsoft.EntityFrameworkCore.Relational": "[7.0.5, 8.0.0)",
           "Npgsql": "7.0.4"
         }
+      },
+      "Octokit": {
+        "type": "Direct",
+        "requested": "[7.1.0, )",
+        "resolved": "7.1.0",
+        "contentHash": "v2qhKBe1Zlssa4XOmpOXNDFBrOAMw2tBmr8L8YMSrEi+PlF/L/PboZcXHSkZuhIxIeOGxEFiwkuJLkvG4aHNHQ=="
       },
       "OpenAI": {
         "type": "Direct",

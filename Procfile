@@ -1,2 +1,3 @@
 web: script/procs/web
-abbot-web-js: script/procs/js-build src/product/AIDemoWeb
+aidemo-web-js: script/procs/js-build src/AIDemoWeb
+ngrok: script/procs/ngrok

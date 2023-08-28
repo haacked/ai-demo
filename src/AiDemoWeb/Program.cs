@@ -1,5 +1,7 @@
 using Haack.AIDemoWeb.Startup;
 using Haack.AIDemoWeb.Startup.Config;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,7 @@ builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.RegisterOpenAI(builder.Configuration);
+builder.Services.AddAuthentication(builder.Configuration);
 
 var app = builder.Build();
 
@@ -24,8 +27,19 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapRazorPages();
+app.MapRazorPages().RequireAuthorization();
+
+app.MapGet("/logout", async ctx =>
+{
+    await ctx.SignOutAsync(
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        new AuthenticationProperties
+        {
+            RedirectUri = "/"
+        });
+});
 
 app.Run();

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #/ Usage: script/build [<configuration>]
-#/ Description: Builds Abbot
+#/ Description: Builds AIDemoWeb
 #/ Arguments:
 #/   <configuration> - The configuration to build. Defaults to Debug.
 { set +x; } 2>/dev/null
