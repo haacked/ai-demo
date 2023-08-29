@@ -1,66 +1,49 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Haack.AIDemoWeb.Startup.Config;
+using Azure.AI.OpenAI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Options;
-using OpenAI_API;
-using OpenAI_API.Chat;
+using Serious;
 
 namespace AIDemoWeb.Demos.Pages;
 
 public class AskPageModel : PageModel
 {
-    readonly OpenAIOptions _options;
+    readonly OpenAIClientAccessor _client;
 
-    public AskPageModel(IOptions<OpenAIOptions> options)
+    public AskPageModel(OpenAIClientAccessor clientAccessor)
     {
-        _options = options.Value;
+        _client = clientAccessor;
     }
 
     [BindProperty]
     [Required]
     public string? Question { get; init; }
 
+    [BindProperty]
+    public string SystemPrompt { get; init; } =
+        "Hello, you are a friendly chat bot who is part of a demo I'm giving and wants to represent me and Chat GPT well.";
+
     public string Answer { get; private set; } = string.Empty;
 
-    [BindProperty]
-    [Required]
-    public string? OpenAIModel { get; init; }
-
-    public IReadOnlyList<SelectListItem> Models { get; private set; } = Array.Empty<SelectListItem>();
-
-    public async Task OnGetAsync()
+    public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
     {
-        await InitializePageAsync();
-    }
-
-    public async Task<IActionResult> OnPostAsync()
-    {
-        var client = await InitializePageAsync();
-
         if (!ModelState.IsValid)
         {
             return Page();
         }
-        var chat = client.Chat.CreateConversation(new ChatRequest
+
+        var options = new ChatCompletionsOptions
         {
-            Model = OpenAIModel
-        });
-        chat.AppendSystemMessage("Hello, you are a friendly chat bot who is part of a demo I'm giving and wants to represent me and Chat GPT well.");
-        chat.AppendUserInput(Question);
-        Answer = await chat.GetResponseFromChatbotAsync();
+            Messages =
+            {
+                new ChatMessage(ChatRole.System,  SystemPrompt),
+                new ChatMessage(ChatRole.User, Question),
+            }
+        };
+        var response = await _client.GetChatCompletionsAsync(options, cancellationToken);
+
+        Answer = string.Join("\n", response.Value.Choices.Select(c => c.Message.Content));
 
         return Page();
-    }
-
-    async Task<OpenAIAPI> InitializePageAsync()
-    {
-        var client = new OpenAIAPI(new APIAuthentication(_options.ApiKey, _options.OrganizationId));
-        var models = await client.Models.GetModelsAsync();
-        Models = models
-            .Select(m => new SelectListItem(m.ModelID, m.ModelID))
-            .ToList();
-        return client;
     }
 }

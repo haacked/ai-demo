@@ -1,3 +1,5 @@
+using Serious;
+
 namespace Haack.AIDemoWeb.Startup.Config;
 
 /// <summary>
@@ -19,6 +21,11 @@ public class OpenAIOptions
     /// The Open AI Organization Id.
     /// </summary>
     public string? OrganizationId { get; init; }
+
+    /// <summary>
+    /// The model to use. Defaults to "gpt-3.5-turbo".
+    /// </summary>
+    public string Model { get; init; } = "gpt-3.5-turbo";
 }
 
 /// <summary>
@@ -34,5 +41,6 @@ public static class OpenAIOptionsExtensions
     public static void RegisterOpenAI(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<OpenAIOptions>(configuration.GetSection(OpenAIOptions.OpenAI));
+        services.AddSingleton<OpenAIClientAccessor>();
     }
 }

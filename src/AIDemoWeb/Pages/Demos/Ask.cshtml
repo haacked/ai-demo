@@ -9,13 +9,14 @@
     <p class="mt-2">This is a demonstration of using OpenAI to generate text.</p>
 
     <form method="post">
-        <div class="p-2">
-            <label asp-for="OpenAIModel">
-                Select a model.
-            </label>
-            <select asp-for="OpenAIModel" asp-items="Model.Models" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
-            <span asp-validation-for="OpenAIModel"></span>
-        </div>
+        <details class="p-2">
+            <label asp-for="SystemPrompt" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">System Prompt</label>
+            <textarea asp-for="SystemPrompt"
+                rows="4"
+                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 focus:cursor-auto dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your question here…"></textarea>
+            <span asp-validation-for="SystemPrompt"></span>
+        </details>
+
         <div class="p-2">
             <label asp-for="Question" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your question</label>
             <textarea asp-for="Question"
@@ -30,7 +31,7 @@
                     @Model.Answer
                 </article>
             }
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="mt-2 btn btn-primary">Submit</button>
         </div>
     </form>
 </section>
