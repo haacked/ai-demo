@@ -6,8 +6,4 @@ namespace AIDemoWeb.Pages;
 [AllowAnonymous]
 public class HomePageModel : PageModel
 {
-    public void OnGet()
-    {
-
-    }
 }
