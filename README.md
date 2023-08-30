@@ -20,6 +20,10 @@ And set up the following environment variables:
 OpenAI_OrganizationId={Your org id}
 ```
 
+This also requires setting up a GitHub OAuth App for authentication.
+
+And to enable others to participate, I'm using ngrok: https://devoted-upright-bluejay.ngrok-free.app/
+
 ## Notes
 
 This project is set up using Central NuGet Package Management.
