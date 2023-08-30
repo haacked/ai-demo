@@ -2,6 +2,7 @@ using Haack.AIDemoWeb.Startup;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using OpenAIDemo.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddRazorPages()
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.RegisterOpenAI(builder.Configuration);
 builder.Services.AddAuthentication(builder.Configuration);
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -41,5 +44,7 @@ app.MapGet("/logout", async ctx =>
             RedirectUri = "/"
         });
 });
+
+app.MapHub<ChatHub>("/hub");
 
 app.Run();
