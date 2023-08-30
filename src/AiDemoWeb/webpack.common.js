@@ -1,12 +1,14 @@
 const path = require('path')
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const webpack = require('webpack')
 
 module.exports = {
     target: 'web',
     entry: {
         main: './assets/index',
+        react: './assets/react/index'
     },
     output: {
        publicPath: "/dist/js/",
@@ -15,7 +17,7 @@ module.exports = {
     },
     devtool: 'source-map',
     resolve: {
-        extensions: ['.js', '.ts'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
         fallback: {
             util: require.resolve("util/"),
             assert: require.resolve("assert/"),
@@ -26,7 +28,13 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: 'ts-loader',
+                use: {
+                    loader: 'ts-loader',
+                    options: {
+                        // Disable type checker - we will use it in fork plugin in parallel without blocking the rest of the WebPack build.
+                        transpileOnly: true,
+                    }
+                },
                 exclude: /node_modules/
             },
             {
