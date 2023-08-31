@@ -14,6 +14,7 @@ builder.Services.RegisterOpenAI(builder.Configuration);
 builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddMigrationServices();
 builder.Services.AddSignalR();
+builder.Services.AddMassTransitConfig();
 
 var app = builder.Build();
 

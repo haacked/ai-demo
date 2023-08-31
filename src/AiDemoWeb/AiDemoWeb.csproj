@@ -32,6 +32,7 @@
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.GitHub" />
     <PackageReference Include="Azure.AI.OpenAI" />
+    <PackageReference Include="MassTransit" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
