@@ -1,4 +1,5 @@
 using Haack.AIDemoWeb.Entities;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
@@ -88,5 +89,22 @@ public static class ServiceExtensions
                     }
                 };
             });
+    }
+
+    /// <summary>
+    /// Configure Mass Transit.
+    /// </summary>
+    /// <param name="services"></param>
+    public static void AddMassTransitConfig(this IServiceCollection services)
+    {
+        services.AddMassTransit(configurator =>
+        {
+            configurator.AddConsumers(typeof(ServiceExtensions).Assembly);
+            configurator.SetKebabCaseEndpointNameFormatter();
+
+            configurator.UsingInMemory((context, cfg) => {
+                cfg.ConfigureEndpoints(context);
+            });
+        });
     }
 }
