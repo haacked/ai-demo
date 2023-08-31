@@ -1,4 +1,4 @@
-import {ChatMessage} from "../hooks/useChat";
+import {ChatMessage} from "../models/ChatMessage";
 
 export interface ChatLogProps {
     messages: ChatMessage[];
@@ -6,7 +6,7 @@ export interface ChatLogProps {
 
 export default function ChatLog({messages}: ChatLogProps) {
     const messageElements = messages.map((message) => (
-        <div key={message.id}>
+        <div key={message.timestamp.toISOString()}>
             <span className="font-bold">{message.author}</span>: <span>{message.text}</span>
         </div>
     ));

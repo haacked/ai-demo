@@ -15,8 +15,8 @@ class Connector {
             });
         };
     }
-    public newMessage = (messages: string) => {
-        this.connection.send("newMessage", "foo", messages).then(x => console.log("sent"));
+    public newMessage = (username: string, messages: string) => {
+        this.connection.send("newMessage", username, messages).then(_ => console.log("sent"));
     }
     public static getInstance(): Connector {
         if (!Connector.instance)

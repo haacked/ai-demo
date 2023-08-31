@@ -1,16 +1,12 @@
 import * as React from "react";
-import * as signalR from "@microsoft/signalr";
 import {createContext, useContext, useMemo, useState} from "react";
+import {ChatMessage} from "../models/ChatMessage";
 
 export interface ChatContextState {
     messages: ChatMessage[],
-    setMessages: (messages: ChatMessage[]) => void,
+    appendMessage: (message: ChatMessage) => void,
 }
 
-export interface ChatMessage {
-    readonly text: string,
-    readonly author: string,
-}
 
 export const ChatContext = createContext(null as ChatContextState | null);
 
@@ -22,11 +18,15 @@ export default function useChat() {
 
 export function ChatContextProvider(props: {children: React.ReactNode}) {
     const [messages, setMessages] = useState([] as ChatMessage[]);
-    const [connection, setConnection] = useState(null as signalR.HubConnection | null);
+
+    function appendNewMessage(message: ChatMessage) {
+        messages.push(message);
+        setMessages([...messages]);
+    }
 
     const value = useMemo(() => ({
         messages,
-        setMessages,
+        appendMessage: appendNewMessage,
     }), [messages]);
 
     return (

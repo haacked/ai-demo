@@ -1,28 +1,28 @@
 import ChatLog from "./ChatLog";
-import ChatInput from "./ChatInput";
-import useChat, {ChatContext, ChatContextProvider, ChatMessage} from "../hooks/useChat";
-import {useEffect, useState} from "react";
-import * as signalR from "@microsoft/signalr";
+import useChat from "../hooks/useChat";
+import {useEffect} from "react";
+import useIdentity from "../hooks/useIdentity";
 import Connector from "../models/Connector";
+import ChatInput from "./ChatInput";
 
 export default function ChatApp() {
-    const {messages, setMessages} = useChat()
+    const {messages, appendMessage} = useChat()
+    const {username} = useIdentity();
     const {newMessage, events} = Connector();
 
-    const username = 'unknown';
-
     useEffect(() => {
-        events((userName, message) => {
+        events((author, message) => {
             const newMessage = {
+                timestamp: new Date(),
                 text: message,
-                author: userName,
+                author: author,
             };
-            setMessages([...messages, newMessage]);
+            appendMessage(newMessage);
         });
     }, []);
 
     async function onNewMessage(message: string) {
-        newMessage(message);
+        newMessage(username, message);
     }
 
     return (
