@@ -21,6 +21,6 @@ public class ChatHub : Hub
     public async Task NewMessage(string username, string message)
     {
         await Clients.All.SendAsync("messageReceived", username, message);
-        await _publishEndpoint.Publish(new ChatMessage { Author = username, Message = message });
+        await _publishEndpoint.Publish(new ChatMessageReceived { Author = username, Message = message });
     }
 }
