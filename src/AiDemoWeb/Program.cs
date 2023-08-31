@@ -12,7 +12,7 @@ builder.Services.AddRazorPages()
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.RegisterOpenAI(builder.Configuration);
 builder.Services.AddAuthentication(builder.Configuration);
-
+builder.Services.AddMigrationServices();
 builder.Services.AddSignalR();
 
 var app = builder.Build();
