@@ -22,7 +22,6 @@ public class AIDemoContext : DbContext
 
         modelBuilder.HasPostgresExtension("citext");
 
-
         // User names must be unique.
         modelBuilder.Entity<User>()
             .HasIndex(i => new { i.Name })

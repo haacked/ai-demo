@@ -1,0 +1,22 @@
+@page
+@model AIDemoWeb.Demos.Pages.UsersPageModel
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+
+<section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
+    <h1 class="text-lg font-semibold leading-tight">Users</h1>
+    @if (Model.Users.Any()) {
+        foreach (var user in Model.Users) {
+            <div class="p-2">
+                <h2>@user.Name</h2>
+            </div>
+        }
+    } else {
+        <div class="m-4 p-4">
+            No users in the database.
+        </div>
+    }
+</section>

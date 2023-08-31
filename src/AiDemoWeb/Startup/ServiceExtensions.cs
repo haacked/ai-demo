@@ -1,5 +1,6 @@
 using Haack.AIDemoWeb.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Serious;
@@ -62,6 +63,30 @@ public static class ServiceExtensions
                 // Grants access to read a user's profile data.
                 // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
                 o.Scope.Add("read:user");
+
+                o.Events = new OAuthEvents
+                {
+                    OnCreatingTicket = async context =>
+                    {
+                        var serviceProvider = context.HttpContext.RequestServices;
+                        if (context.Identity is { Name: { } username })
+                        {
+                            var dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<AIDemoContext>>();
+                            await using var dbContext = await dbContextFactory.CreateDbContextAsync();
+                            var user = await dbContext.Users
+                                .FirstOrDefaultAsync(u => u.Name == username);
+                            if (user is null)
+                            {
+                                await dbContext.Users.AddAsync(new User
+                                {
+                                    Name = username,
+                                });
+                                await dbContext.SaveChangesAsync();
+                            }
+
+                        }
+                    }
+                };
             });
     }
 }

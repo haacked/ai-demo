@@ -28,4 +28,4 @@ And to enable others to participate, I'm using ngrok: https://devoted-upright-bl
 
 This project is set up using Central NuGet Package Management.
 
-I also ran `dotnet user-secrets init --project src/AIDemoWeb/AiDemoWeb.csproj` from the repository root to initialize the user secrets.
+I also ran `dotnet user-secrets init --project src/AIDemoWeb/AIDemoWeb.csproj` from the repository root to initialize the user secrets.
