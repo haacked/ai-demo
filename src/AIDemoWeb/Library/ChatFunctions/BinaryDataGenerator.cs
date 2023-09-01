@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+#pragma warning disable CA1308
 
 namespace Serious.ChatFunctions;
 
@@ -24,7 +25,6 @@ public static class BinaryDataGenerator
 
             if (propertyType.IsEnum)
             {
-                propertyData["Type"] = "string";
                 propertyData["Enum"] = Enum.GetNames(propertyType);
             }
 

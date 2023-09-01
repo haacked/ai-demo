@@ -11,14 +11,30 @@ namespace Serious.ChatFunctions;
 /// <typeparam name="TResult">The result type.</typeparam>
 public abstract class ChatFunction<TArguments, TResult> : IChatFunction where TArguments : class
 {
-    public abstract FunctionDefinition Definition { get; }
+    protected abstract string Name { get; }
+
+    protected abstract string Description { get; }
+
+    public FunctionDefinition Definition => new()
+    {
+        Name = Name,
+        Description = Description,
+        Parameters = BinaryDataGenerator.GenerateBinaryData(typeof(TArguments)),
+    };
 
     async Task<string?> IChatFunction.InvokeAsync(string unvalidatedArguments, CancellationToken cancellationToken)
     {
         var arguments = JsonSerializer.Deserialize<TArguments>(unvalidatedArguments, new JsonSerializerOptions
         {
             Converters = { new JsonStringEnumConverter() }
-        }).Require();
+        });
+
+        if (arguments is null)
+        {
+            throw new InvalidOperationException(
+                $"Could not deserialize arguments: `{unvalidatedArguments}` into {typeof(TArguments).Name}.");
+        }
+
         // Actually call the weather service API.
         var result = await InvokeAsync(arguments, cancellationToken);
 

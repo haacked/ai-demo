@@ -1,10 +1,8 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Web;
-using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
 
@@ -19,12 +17,19 @@ public class WeatherChatFunction : ChatFunction<WeatherArguments, WeatherResult>
 {
     readonly string _apiKey;
 
+    protected override string Name => "get_current_weather";
+
+    protected override string Description => "Get the current weather in a given location";
+
+
     public WeatherChatFunction(IOptions<WeatherOptions> weatherOptions)
     {
         _apiKey = weatherOptions.Value.ApiKey.Require();
     }
 
-    protected override async Task<WeatherResult?> InvokeAsync(WeatherArguments arguments, CancellationToken cancellationToken)
+    protected override async Task<WeatherResult?> InvokeAsync(
+        WeatherArguments arguments,
+        CancellationToken cancellationToken)
     {
         var units = arguments.Unit switch
         {
@@ -42,36 +47,6 @@ public class WeatherChatFunction : ChatFunction<WeatherArguments, WeatherResult>
             ? new WeatherResult(response.Main.Temperature, arguments.Unit)
             : null;
     }
-
-    public override FunctionDefinition Definition { get; } = new()
-    {
-        Name = "get_current_weather",
-        Description = "Get the current weather in a given location",
-        Parameters = BinaryData.FromObjectAsJson(
-            new
-            {
-                Type = "object",
-                Properties = new
-                {
-                    Location = new
-                    {
-                        Type = "string",
-                        Description = "The city and state, e.g. San Francisco, CA",
-                    },
-                    Unit = new
-                    {
-                        Type = "string",
-                        Enum = new[] { "celsius", "fahrenheit" },
-                    }
-                },
-                Required = new[] { "location" },
-            },
-            new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Converters = { new JsonStringEnumConverter() }
-            }),
-    };
 }
 
 public record WeatherResult(double Temperature, Unit Unit);
