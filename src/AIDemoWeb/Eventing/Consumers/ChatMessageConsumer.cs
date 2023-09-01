@@ -1,4 +1,3 @@
-using System.Text.Json;
 using AIDemoWeb.Entities.Eventing.Messages;
 using Azure.AI.OpenAI;
 using MassTransit;
@@ -13,16 +12,16 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
 {
     readonly IHubContext<ChatHub> _hubContext;
     readonly OpenAIClientAccessor _client;
-    readonly WeatherFunction _weatherFunction;
+    readonly FunctionDispatcher _dispatcher;
 
     // We'll only maintain the last 20 messages in memory.
     static readonly LimitedQueue<ChatMessage> Messages = new(20);
 
-    public ChatMessageConsumer(IHubContext<ChatHub> hubContext, OpenAIClientAccessor client, WeatherFunction weatherFunction)
+    public ChatMessageConsumer(IHubContext<ChatHub> hubContext, OpenAIClientAccessor client, FunctionDispatcher dispatcher)
     {
         _hubContext = hubContext;
         _client = client;
-        _weatherFunction = weatherFunction;
+        _dispatcher = dispatcher;
     }
 
     public async Task Consume(ConsumeContext<ChatMessageReceived> context)
@@ -49,31 +48,19 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
             var responseChoice = response.Value.Choices[0];
             if (responseChoice.FinishReason == CompletionsFinishReason.FunctionCall)
             {
-                if (responseChoice.Message.FunctionCall.Name == "get_current_weather")
+                var result = await _dispatcher.DispatchAsync(
+                    responseChoice.Message.FunctionCall,
+                    context.CancellationToken);
+
+                if (result is not null)
                 {
-                    // Validate and process the JSON arguments for the function call
-                    string unvalidatedArguments = responseChoice.Message.FunctionCall.Arguments;
-                    var arguments = JsonSerializer.Deserialize<WeatherArguments>(unvalidatedArguments).Require();
+                    // We got a result, which we can send back to GPT so it can summarize it for the user.
+                    options.Messages.Add(result);
+                    Messages.Enqueue(result);
 
-                    // Actually call the weather service API.
-                    var result = await _weatherFunction.GetWeatherAsync(arguments, context.CancellationToken);
-
-                    // Serialize the result data from the function into a new chat message with the 'Function' role,
-                    // then add it to the messages after the first User message and initial response FunctionCall
-                    var content = JsonSerializer.Serialize(
-                        result,
-                        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-                    var functionResponseMessage = new ChatMessage(ChatRole.Function, content)
-                    {
-                        Name = "get_current_weather"
-                    };
-                    options.Messages.Add(functionResponseMessage);
-                    Messages.Enqueue(functionResponseMessage);
-                    // Now make a new request using all three messages in conversationMessages
+                    response = await _client.GetChatCompletionsAsync(options, context.CancellationToken);
+                    responseChoice = response.Value.Choices[0];
                 }
-
-                response = await _client.GetChatCompletionsAsync(options, context.CancellationToken);
-                responseChoice = response.Value.Choices[0];
             }
             var answer = responseChoice.Message.Content;
             await _hubContext.Clients.All.SendAsync("messageReceived", "The Bot", answer,

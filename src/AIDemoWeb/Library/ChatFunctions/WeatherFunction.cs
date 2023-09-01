@@ -1,4 +1,10 @@
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Web;
+using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
 
@@ -6,42 +12,94 @@ using Microsoft.Extensions.Options;
 
 namespace Serious.ChatFunctions;
 
-public class WeatherFunction
+/// <summary>
+/// Extends Chat GPT with a function that returns the current weather in a given location.
+/// </summary>
+public class WeatherChatFunction : ChatFunction<WeatherArguments, WeatherResult>
 {
     readonly string _apiKey;
 
-    public WeatherFunction(IOptions<WeatherOptions> weatherOptions)
+    public WeatherChatFunction(IOptions<WeatherOptions> weatherOptions)
     {
         _apiKey = weatherOptions.Value.ApiKey.Require();
     }
 
-    public async Task<WeatherResult?> GetWeatherAsync(WeatherArguments weatherArguments, CancellationToken cancellationToken)
+    protected override async Task<WeatherResult?> InvokeAsync(WeatherArguments arguments, CancellationToken cancellationToken)
     {
-        var units = weatherArguments.Unit switch
+        var units = arguments.Unit switch
         {
-            "fahrenheit" => "imperial",
-            "celsius" => "metric",
+            Unit.Fahrenheit => "imperial",
+            Unit.Celsius => "metric",
             _ => "standard"
         };
-        var weatherEndpoint = $"https://api.openweathermap.org/data/2.5/weather?appid={_apiKey}&q={weatherArguments.Location}&units={units}";
+        var apiKey = HttpUtility.UrlEncode(_apiKey);
+        var location = HttpUtility.UrlEncode(arguments.Location);
+        var weatherEndpoint = $"https://api.openweathermap.org/data/2.5/weather?appid={apiKey}&q={location}&units={units}";
         var httpClient = new HttpClient();
         var response = await httpClient.GetFromJsonAsync<WeatherResponse>(new Uri(weatherEndpoint), cancellationToken);
+
         return response is not null
-            ? new WeatherResult(response.Main.Temperature, units)
+            ? new WeatherResult(response.Main.Temperature, arguments.Unit)
             : null;
     }
+
+    public override FunctionDefinition Definition { get; } = new()
+    {
+        Name = "get_current_weather",
+        Description = "Get the current weather in a given location",
+        Parameters = BinaryData.FromObjectAsJson(
+            new
+            {
+                Type = "object",
+                Properties = new
+                {
+                    Location = new
+                    {
+                        Type = "string",
+                        Description = "The city and state, e.g. San Francisco, CA",
+                    },
+                    Unit = new
+                    {
+                        Type = "string",
+                        Enum = new[] { "celsius", "fahrenheit" },
+                    }
+                },
+                Required = new[] { "location" },
+            },
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters = { new JsonStringEnumConverter() }
+            }),
+    };
 }
 
-public record WeatherResult(double Temperature, string Unit);
+public record WeatherResult(double Temperature, Unit Unit);
 
+public enum Unit
+{
+    [EnumMember(Value = "celsius")]
+    Celsius,
+
+    [EnumMember(Value = "fahrenheit")]
+    Fahrenheit,
+}
+
+/// <summary>
+/// The arguments to the weather service.
+/// </summary>
+/// <param name="Location">The city and state, e.g. San Francisco, CA</param>
+/// <param name="Unit">Either "celsius" or "fahrenheit"</param>
 public record WeatherArguments(
+    [property: Required]
     [property: JsonPropertyName("location")]
+    [property: Description("The city and state, e.g. San Francisco, CA")]
     string Location,
 
     [property: JsonPropertyName("unit")]
-    string? Unit = "fahrenheit");
+    Unit Unit = Unit.Fahrenheit);
 
-public record Coord(
+public record Coordinates(
     [property: JsonPropertyName("lon")]
     double Longitude,
 
@@ -118,7 +176,7 @@ public record Sys(
 public record WeatherResponse(
 
     [property: JsonPropertyName("coord")]
-    Coord Coordinates,
+    Coordinates Coordinates,
 
     [property: JsonPropertyName("weather")]
     List<Weather> Weather,
