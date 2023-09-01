@@ -24,7 +24,6 @@ public class FunctionDispatcher
     /// </summary>
     /// <param name="functionCall">A <see cref="FunctionCall"/> as returned by Chat GPT.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
-    /// <returns></returns>
     public async Task<ChatMessage?> DispatchAsync(FunctionCall functionCall, CancellationToken cancellationToken)
     {
         if (!_functions.TryGetValue(functionCall.Name, out var function))
@@ -44,6 +43,11 @@ public class FunctionDispatcher
             Name = functionCall.Name,
         };
     }
+
+    /// <summary>
+    /// Returns a list of function definitions.
+    /// </summary>
+    public IList<FunctionDefinition> GetFunctionDefinitions() => _functions.Values.Select(f => f.Definition).ToList();
 }
 
 public static class FunctionDispatcherServiceExtensions
@@ -57,7 +61,7 @@ public static class FunctionDispatcherServiceExtensions
         this IServiceCollection services,
         params Assembly[] assemblies)
     {
-        services.AddSingleton<FunctionDispatcher>();
-        services.RegisterAllTypes<IChatFunction>(ServiceLifetime.Singleton, publicOnly: true, assemblies);
+        services.AddScoped<FunctionDispatcher>();
+        services.RegisterAllTypes<IChatFunction>(ServiceLifetime.Scoped, publicOnly: true, assemblies);
     }
 }
