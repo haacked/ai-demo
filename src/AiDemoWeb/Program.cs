@@ -3,6 +3,7 @@ using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using OpenAIDemo.Hubs;
+using Serious.ChatFunctions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,8 @@ builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddMigrationServices();
 builder.Services.AddSignalR();
 builder.Services.AddMassTransitConfig();
+builder.Services.AddTransient<WeatherFunction>();
+builder.Services.Configure<WeatherOptions>(builder.Configuration.GetSection(WeatherOptions.Weather));
 
 var app = builder.Build();
 
