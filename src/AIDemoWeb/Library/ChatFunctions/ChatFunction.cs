@@ -22,7 +22,10 @@ public abstract class ChatFunction<TArguments, TResult> : IChatFunction where TA
         Parameters = BinaryDataGenerator.GenerateBinaryData(typeof(TArguments)),
     };
 
-    async Task<string?> IChatFunction.InvokeAsync(string unvalidatedArguments, CancellationToken cancellationToken)
+    async Task<string?> IChatFunction.InvokeAsync(
+        string unvalidatedArguments,
+        string source,
+        CancellationToken cancellationToken)
     {
         var arguments = JsonSerializer.Deserialize<TArguments>(unvalidatedArguments, new JsonSerializerOptions
         {
@@ -36,7 +39,7 @@ public abstract class ChatFunction<TArguments, TResult> : IChatFunction where TA
         }
 
         // Actually call the weather service API.
-        var result = await InvokeAsync(arguments, cancellationToken);
+        var result = await InvokeAsync(arguments, source, cancellationToken);
 
         // Serialize the result data from the function into a new chat message with the 'Function' role,
         // then add it to the messages after the first User message and initial response FunctionCall
@@ -45,5 +48,8 @@ public abstract class ChatFunction<TArguments, TResult> : IChatFunction where TA
             new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
     }
 
-    protected abstract Task<TResult?> InvokeAsync(TArguments arguments, CancellationToken cancellationToken);
+    protected abstract Task<TResult?> InvokeAsync(
+        TArguments arguments,
+        string source,
+        CancellationToken cancellationToken);
 }

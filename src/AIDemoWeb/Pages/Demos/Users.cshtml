@@ -12,6 +12,11 @@
         foreach (var user in Model.Users) {
             <div class="p-2">
                 <h2>@user.Name</h2>
+                <ul class="list-disc">
+                @foreach (var fact in user.Facts) {
+                    <li>@fact.Content</li>
+                }
+                </ul>
             </div>
         }
     } else {

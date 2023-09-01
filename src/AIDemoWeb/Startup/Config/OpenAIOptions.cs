@@ -26,6 +26,11 @@ public class OpenAIOptions
     /// The model to use. Defaults to "gpt-3.5-turbo".
     /// </summary>
     public string Model { get; init; } = "gpt-3.5-turbo";
+
+    /// <summary>
+    /// The model to use for embeddings.
+    /// </summary>
+    public string EmbeddingModel { get; init; } = "text-embedding-ada-002";
 }
 
 /// <summary>
