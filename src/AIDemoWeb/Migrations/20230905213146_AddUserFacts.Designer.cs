@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Haack.AIDemoWeb.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Haack.AIDemoWeb.Migrations
 {
     [DbContext(typeof(AIDemoContext))]
-    partial class AIDemoContextModelSnapshot : ModelSnapshot
+    [Migration("20230905213146_AddUserFacts")]
+    partial class AddUserFacts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
