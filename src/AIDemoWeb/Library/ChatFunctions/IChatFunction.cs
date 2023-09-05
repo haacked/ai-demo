@@ -4,6 +4,8 @@ namespace Serious.ChatFunctions;
 
 public interface IChatFunction
 {
+    int Order => 0;
+
     /// <summary>
     /// Describes the chat function.
     /// </summary>

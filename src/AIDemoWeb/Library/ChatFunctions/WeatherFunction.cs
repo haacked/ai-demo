@@ -21,6 +21,7 @@ public class WeatherChatFunction : ChatFunction<WeatherArguments, WeatherResult>
 
     protected override string Description => "Get the current weather in a given location.";
 
+    public int Order => 1; // Comes after the UserFactFunction
 
     public WeatherChatFunction(IOptions<WeatherOptions> weatherOptions)
     {

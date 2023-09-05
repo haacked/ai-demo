@@ -57,7 +57,11 @@ public class FunctionDispatcher
     /// <summary>
     /// Returns a list of function definitions.
     /// </summary>
-    public IList<FunctionDefinition> GetFunctionDefinitions() => _functions.Values.Select(f => f.Definition).ToList();
+    public IList<FunctionDefinition> GetFunctionDefinitions() => _functions
+        .Values
+        .OrderBy(f => f.Order)
+        .Select(f => f.Definition)
+        .ToList();
 }
 
 public static class FunctionDispatcherServiceExtensions
