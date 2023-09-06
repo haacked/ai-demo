@@ -10,12 +10,12 @@ namespace Serious.ChatFunctions;
 /// <summary>
 /// Extends Chat GPT with a function that stores facts about a user.
 /// </summary>
-public class UserFactFunction : ChatFunction<UserFactArguments, object>
+public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
 {
     readonly AIDemoContext _db;
     readonly OpenAIClientAccessor _client;
 
-    public UserFactFunction(AIDemoContext db, OpenAIClientAccessor client)
+    public StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client)
     {
         _db = db;
         _client = client;
