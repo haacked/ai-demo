@@ -45,5 +45,26 @@ public class OpenAIClientAccessor
             embeddingsOptions,
             cancellationToken);
 
+
+    /// <summary>
+    /// Return the computed embeddings for a given prompt.
+    /// </summary>
+    /// <param name="prompt">The prompt for this embeddings request.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    public async Task<List<float>> GetEmbeddingsAsync(string prompt, CancellationToken cancellationToken)
+    {
+        var response = await GetEmbeddingsAsync(new EmbeddingsOptions(prompt), cancellationToken);
+        if (response.HasValue)
+        {
+            var embedding = response.Value.Data;
+            if (embedding is { Count: > 0 })
+            {
+                return embedding[0].Embedding.ToList();
+            }
+        }
+
+        return new List<float>();
+    }
+
     public OpenAIClient Client { get; }
 }
