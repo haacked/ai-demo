@@ -22,7 +22,27 @@ OpenAI_OrganizationId={Your org id}
 
 This also requires setting up a GitHub OAuth App for authentication.
 
-And to enable others to participate, I'm using ngrok: https://devoted-upright-bluejay.ngrok-free.app/
+And to enable others to participate, I'm using ngrok: http://bit.ly/haack-ai (redirects to https://devoted-upright-bluejay.ngrok-free.app/) to expose my local web server to the internet.
+
+## Running
+
+To run the app, you'll need to run the following command:
+
+```bash
+script/all -D
+overmind connect
+```
+
+The -D runs it daemonized. `overmind connect` lets you connect to all the running services in Overmind tabs.
+
+If you want to run it from the IDE, you'll need to run the following command to exclude starting the web server:
+
+```bash
+script/all -D -e web
+overmind connect
+```
+
+Then run the web server from the IDE.
 
 ## Notes
 
