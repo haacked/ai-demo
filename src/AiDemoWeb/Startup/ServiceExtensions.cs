@@ -1,9 +1,11 @@
 using Haack.AIDemoWeb.Entities;
+using Haack.AIDemoWeb.Library.Clients;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Refit;
 using Serious;
 
 namespace Haack.AIDemoWeb.Startup;
@@ -106,5 +108,21 @@ public static class ServiceExtensions
                 cfg.ConfigureEndpoints(context);
             });
         });
+    }
+
+    public static void AddClients(this IServiceCollection services)
+    {
+        services.AddTransient<LoggingHttpMessageHandler>();
+        services.AddRefitClient<IOpenAIClient>(IOpenAIClient.BaseAddress);
+    }
+
+    static IHttpClientBuilder AddRefitClient<T>(this IServiceCollection services, Uri baseAddress) where T : class
+    {
+        return services.AddRefitClient<T>(new RefitSettings())
+            .ConfigureHttpClient(c => c.BaseAddress = baseAddress)
+#if DEBUG
+            .AddHttpMessageHandler<LoggingHttpMessageHandler>()
+#endif
+            ;
     }
 }

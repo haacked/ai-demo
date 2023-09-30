@@ -19,8 +19,9 @@ public class WeatherChatFunction : ChatFunction<WeatherArguments, WeatherResult>
 
     protected override string Name => "get_current_weather";
 
-    protected override string Description => "Get the current weather in a given location";
+    protected override string Description => "Get the current weather in a given location.";
 
+    public int Order => 1; // Comes after the UserFactFunction
 
     public WeatherChatFunction(IOptions<WeatherOptions> weatherOptions)
     {
@@ -29,6 +30,7 @@ public class WeatherChatFunction : ChatFunction<WeatherArguments, WeatherResult>
 
     protected override async Task<WeatherResult?> InvokeAsync(
         WeatherArguments arguments,
+        string source,
         CancellationToken cancellationToken)
     {
         var units = arguments.Unit switch

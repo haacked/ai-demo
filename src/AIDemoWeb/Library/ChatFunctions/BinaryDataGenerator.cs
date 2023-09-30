@@ -20,18 +20,18 @@ public static class BinaryDataGenerator
 
             var propertyData = new Dictionary<string, object>
             {
-                { "Type", propertyType.Name }
+                { "type", GetGptType(propertyType) }
             };
 
             if (propertyType.IsEnum)
             {
-                propertyData["Enum"] = Enum.GetNames(propertyType);
+                propertyData["enum"] = Enum.GetNames(propertyType);
             }
 
             var propertyDescription = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description;
             if (!string.IsNullOrEmpty(propertyDescription))
             {
-                propertyData["Description"] = propertyDescription;
+                propertyData["description"] = propertyDescription;
             }
 
             properties[propertyName] = propertyData;
@@ -44,9 +44,9 @@ public static class BinaryDataGenerator
 
         var result = new Dictionary<string, object>
         {
-            { "Type", "object" },
-            { "Properties", properties },
-            { "Required", requiredProperties }
+            { "type", "object" },
+            { "properties", properties },
+            { "required", requiredProperties }
         };
 
         return BinaryData.FromObjectAsJson(result, new JsonSerializerOptions
@@ -66,4 +66,10 @@ public static class BinaryDataGenerator
 
         return propertyInfo.PropertyType;
     }
+
+    static string GetGptType(Type propertyType)
+    {
+        return propertyType == typeof(int) || propertyType == typeof(double) ? "int" : "string";
+    }
 }
+

@@ -20,6 +20,6 @@ public class UsersPageModel : PageModel
 
     public async Task OnGetAsync()
     {
-        Users = await _db.Users.ToListAsync();
+        Users = await _db.Users.Include(u => u.Facts).ToListAsync();
     }
 }

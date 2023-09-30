@@ -28,7 +28,7 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
     {
         var message = context.Message;
 
-        Messages.Enqueue(new ChatMessage(ChatRole.User, message.Message));
+        Messages.Enqueue(new ChatMessage(ChatRole.User, $"{message.Author}:{message.Message}"));
 
         if (message.Message.StartsWith("Hey bot", StringComparison.OrdinalIgnoreCase))
         {
@@ -36,9 +36,9 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
             {
                 Messages =
                 {
-                    new ChatMessage(ChatRole.System, "You are observing a conversation in a chat room. If you can be of assistance, please do chime in."),
+                    new ChatMessage(ChatRole.System, "You are observing a conversation in a chat room with multiple participants. Each message starts with the participant's name which must not be altered. If you can be of assistance, please do chime in, otherwise stay quiet and let them speak."),
                 },
-                Functions = FunctionDefinitions.EnumerateFunctionDefinitions().ToList(),
+                Functions = _dispatcher.GetFunctionDefinitions(),
             };
             foreach (var chatMessage in Messages)
             {
@@ -50,6 +50,7 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
             {
                 var result = await _dispatcher.DispatchAsync(
                     responseChoice.Message.FunctionCall,
+                    message.Message,
                     context.CancellationToken);
 
                 if (result is not null)

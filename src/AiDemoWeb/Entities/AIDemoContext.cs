@@ -1,3 +1,4 @@
+using Haack.AIDemoWeb.Migrations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Haack.AIDemoWeb.Entities;
@@ -11,7 +12,9 @@ public class AIDemoContext : DbContext
     {
     }
 
-    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<User> Users { get; init; } = null!;
+
+    public DbSet<UserFact> UserFacts { get; init; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -25,6 +28,10 @@ public class AIDemoContext : DbContext
         // User names must be unique.
         modelBuilder.Entity<User>()
             .HasIndex(i => new { i.Name })
+            .IsUnique();
+
+        modelBuilder.Entity<UserFact>()
+            .HasIndex(i => new { i.UserId, i.Content })
             .IsUnique();
     }
 }

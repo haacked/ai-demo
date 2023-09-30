@@ -8,6 +8,7 @@ export default function ChatInput({onMessagesSubmit}: ChatInputProps) {
         const form = e.currentTarget as HTMLFormElement;
         const formData = new FormData(form);
         onMessagesSubmit(formData.get('message') as string);
+        form.reset();
     }
 
     return (

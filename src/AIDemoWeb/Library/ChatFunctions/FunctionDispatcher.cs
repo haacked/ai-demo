@@ -23,16 +23,25 @@ public class FunctionDispatcher
     /// message can be passed back to GPT to be summarized and returned to the user.
     /// </summary>
     /// <param name="functionCall">A <see cref="FunctionCall"/> as returned by Chat GPT.</param>
+    /// <param name="source">The source message that caused the function to be invoked.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
-    /// <returns></returns>
-    public async Task<ChatMessage?> DispatchAsync(FunctionCall functionCall, CancellationToken cancellationToken)
+    public async Task<ChatMessage?> DispatchAsync(
+        FunctionCall functionCall,
+        string source,
+        CancellationToken cancellationToken)
     {
         if (!_functions.TryGetValue(functionCall.Name, out var function))
         {
             return null;
         }
 
-        var result = await function.InvokeAsync(functionCall.Arguments, cancellationToken);
+        var result = await function.InvokeAsync(functionCall.Arguments, source, cancellationToken);
+
+        if (result is null)
+        {
+            return null;
+        }
+
         // Serialize the result data from the function into a new chat message with the 'Function' role,
         // then add it to the messages after the first User message and initial response FunctionCall
         var content = JsonSerializer.Serialize(
@@ -44,6 +53,15 @@ public class FunctionDispatcher
             Name = functionCall.Name,
         };
     }
+
+    /// <summary>
+    /// Returns a list of function definitions.
+    /// </summary>
+    public IList<FunctionDefinition> GetFunctionDefinitions() => _functions
+        .Values
+        .OrderBy(f => f.Order)
+        .Select(f => f.Definition)
+        .ToList();
 }
 
 public static class FunctionDispatcherServiceExtensions
@@ -57,7 +75,7 @@ public static class FunctionDispatcherServiceExtensions
         this IServiceCollection services,
         params Assembly[] assemblies)
     {
-        services.AddSingleton<FunctionDispatcher>();
-        services.RegisterAllTypes<IChatFunction>(ServiceLifetime.Singleton, publicOnly: true, assemblies);
+        services.AddScoped<FunctionDispatcher>();
+        services.RegisterAllTypes<IChatFunction>(ServiceLifetime.Scoped, publicOnly: true, assemblies);
     }
 }

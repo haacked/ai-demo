@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Haack.AIDemoWeb.Entities;
 
@@ -7,6 +8,18 @@ namespace Haack.AIDemoWeb.Entities;
 /// </summary>
 public class User
 {
+    public User()
+    {
+        Facts = new EntityList<UserFact>();
+    }
+
+    // Special constructor called by EF Core.
+    // ReSharper disable once UnusedMember.Local
+    public User(DbContext db)
+    {
+        Facts = new EntityList<UserFact>(db, this, nameof(Facts));
+    }
+
     /// <summary>
     /// The primary key for the user.
     /// </summary>
@@ -21,4 +34,9 @@ public class User
     /// </remarks>
     [Column(TypeName = "citext")]
     public required string Name { get; set; }
+
+    /// <summary>
+    /// Facts about the user.
+    /// </summary>
+    public EntityList<UserFact> Facts { get; }
 }

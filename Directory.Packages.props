@@ -13,5 +13,7 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
     <PackageVersion Include="OctoKit" Version="7.1.0" />
     <PackageVersion Include="OpenAI" Version="1.7.2" />
+    <PackageVersion Include="refit" Version="7.0.0" />
+    <PackageVersion Include="Refit.HttpClientFactory" Version="7.0.0" />
   </ItemGroup>
 </Project>
