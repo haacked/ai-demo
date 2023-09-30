@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
+builder.Services.AddClients();
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.RegisterOpenAI(builder.Configuration);
 builder.Services.AddAuthentication(builder.Configuration);

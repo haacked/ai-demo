@@ -1,0 +1,14 @@
+﻿@page
+@model AIDemoWeb.Demos.Pages.ModelsPageModel
+@{
+    ViewData["Title"] = "List of Models";
+}
+
+<section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
+    <h1 class="text-lg font-semibold leading-tight">Available Models</h1>
+    <ul class="list-disc ml-4">
+        @foreach (var modelEntity in Model.Models.OrderBy(m => m.Id)) {
+            <li>@modelEntity.Id</li>
+        }
+    </ul>
+</section>

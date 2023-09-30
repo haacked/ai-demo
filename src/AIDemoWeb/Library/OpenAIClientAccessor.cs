@@ -1,5 +1,6 @@
 using Azure;
 using Azure.AI.OpenAI;
+using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
 
@@ -10,10 +11,12 @@ namespace Serious;
 /// </summary>
 public class OpenAIClientAccessor
 {
+    readonly IOpenAIClient _openAIClient;
     readonly OpenAIOptions _options;
 
-    public OpenAIClientAccessor(IOptions<OpenAIOptions> options)
+    public OpenAIClientAccessor(IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
     {
+        _openAIClient = openAIClient;
         _options = options.Value;
 
         Client = new OpenAIClient(_options.ApiKey);
@@ -66,5 +69,12 @@ public class OpenAIClientAccessor
         return new List<float>();
     }
 
+    public async Task<List<OpenAIEntity>> GetModelsAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await _openAIClient.GetModelsAsync(_options.ApiKey.Require(), cancellationToken);
+        return result.Data;
+    }
+
     public OpenAIClient Client { get; }
 }
+
