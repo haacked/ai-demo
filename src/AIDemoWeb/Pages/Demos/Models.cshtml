@@ -5,7 +5,13 @@
 }
 
 <section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
-    <h1 class="text-lg font-semibold leading-tight">Available Models</h1>
+    <h1 class="text-lg font-semibold leading-tight">Models in use</h1>
+    <div>
+        This demo uses <strong>@Model.CompletionsModel</strong> for chat completions and <strong>@Model.EmbeddingsModel</strong> for embeddings.
+    </div>
+
+
+    <h1 class="text-lg font-semibold leading-tight mt-2">Available Models</h1>
     <ul class="list-disc ml-4">
         @foreach (var modelEntity in Model.Models.OrderBy(m => m.Id)) {
             <li>@modelEntity.Id</li>
