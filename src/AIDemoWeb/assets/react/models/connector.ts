@@ -7,7 +7,11 @@ import * as signalR from "@microsoft/signalr";
  */
 class Connector {
     private connection: signalR.HubConnection;
-    public events: (onMessageReceived: (username: string, message: string) => void) => void;
+
+    public events: (
+        onMessageReceived: (username: string, message: string) => void,
+        onThoughtReceived: (message: string) => void,
+    ) => void;
     static instance: Connector;
     constructor() {
         this.connection = new signalR.HubConnectionBuilder()
@@ -15,14 +19,21 @@ class Connector {
             .withAutomaticReconnect()
             .build();
         this.connection.start().catch(err => document.write(err));
-        this.events = (onMessageReceived) => {
+        this.events = (onMessageReceived, onThoughtReceived) => {
             this.connection.on("messageReceived", (username, message) => {
                 onMessageReceived(username, message);
+            });
+            this.connection.on("thoughtReceived", (message) => {
+                onThoughtReceived(message);
             });
         };
     }
     public newMessage = (username: string, messages: string) => {
-        this.connection.send("newMessage", username, messages).then(_ => console.log("sent"));
+        this.connection.send("newMessage", username, messages).then(_ => console.debug("message sent"));
+    }
+
+    public newThought = (messages: string) => {
+        this.connection.send("newThought", messages).then(_ => console.debug("thought sent"));
     }
     public static getInstance(): Connector {
         if (!Connector.instance)

@@ -11,15 +11,24 @@ export default function ChatApp() {
     const {newMessage, events} = Connector();
 
     useEffect(() => {
-        // Handles appending new messages received from SignalR to the chat log.
-        events((author, message) => {
-            const newMessage = {
-                timestamp: new Date(),
-                text: message,
-                author: author,
-            };
-            appendMessage(newMessage);
-        });
+        // Handles appending new messages received from SignalR to the chat log
+        // as well as new thoughts from the AI.
+        events(
+            // Handles a new incoming message.
+            (author, message) => {
+                const newMessage = {
+                    timestamp: new Date(),
+                    text: message,
+                    author: author,
+                };
+                appendMessage(newMessage);
+            },
+
+            // Handles a new incoming thought.
+            (thought) => {
+                console.log(`%c ${thought}`, 'color: navy; font-size: 24px;');
+            }
+        );
     }, []);
 
     async function onNewMessage(message: string) {

@@ -70,5 +70,9 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
                 answer,
                 context.CancellationToken);
         }
+        else
+        {
+            await _hubContext.Clients.All.SendAsync("thoughtReceived", "The message didn't address me (by starting with \"Hey bot\") so I'll ignore it.", context.CancellationToken);
+        }
     }
 }
