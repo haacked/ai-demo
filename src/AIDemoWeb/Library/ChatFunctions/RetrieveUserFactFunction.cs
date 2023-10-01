@@ -3,7 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using OpenAIDemo.Hubs;
 
 namespace Serious.ChatFunctions;
 
@@ -14,11 +16,13 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
 {
     readonly AIDemoContext _db;
     readonly OpenAIClientAccessor _client;
+    readonly IHubContext<ChatHub> _hubContext;
 
-    public RetrieveUserFactFunction(AIDemoContext db, OpenAIClientAccessor client)
+    public RetrieveUserFactFunction(AIDemoContext db, OpenAIClientAccessor client, IHubContext<ChatHub> hubContext)
     {
         _db = db;
         _client = client;
+        _hubContext = hubContext;
     }
 
     protected override string Name => "retrieve_user_fact";
@@ -42,22 +46,35 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
         }
 
         // Grab the item with the highest cosine similarity.
-        var answer = user.Facts
+        var facts = user.Facts
             .Select(fact => new
             {
                 Fact = fact,
                 Similarity = fact.Embeddings.CosineSimilarity(embeddings)
             })
-            .Where(candidate => candidate.Similarity > 0)
-            .MaxBy(candidate => candidate.Similarity);
+            .Where(candidate => candidate.Similarity > 0.8)
+            .OrderByDescending(candidate => candidate.Similarity)
+            .ToList();
 
-        return answer is not null
-            ? new UserFactResult(answer.Fact.Content, arguments.Justification, answer.Fact.Source)
-            : new UserFactResult("I do not know", "", "");
+        if (facts.Count > 0)
+        {
+            var factSummary = string.Join("\n", facts.Select(f => $"Similarity: {f.Similarity}\tFact: {f.Fact.Content} Justification: {f.Fact.Justification} Source: {f.Fact.Source}"));
+
+            await SendThought($"I have {facts.Count.ToQuantity("answer")} to that question\n\n{factSummary}");
+            var answer = string.Join("\n", facts.Select(a => a.Fact.Content));
+            return new UserFactResult(answer);
+        }
+        else
+        {
+            return new UserFactResult("I do not know");
+        }
+
+        async Task SendThought(string thought)
+            => await _hubContext.Clients.All.SendAsync("thoughtReceived", thought, cancellationToken);
     }
 }
 
-public record UserFactResult(string Fact, string Justification, string Source);
+public record UserFactResult(string Fact);
 
 /// <summary>
 /// The arguments to the weather service.
