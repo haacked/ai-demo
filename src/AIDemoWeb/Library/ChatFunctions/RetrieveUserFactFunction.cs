@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
 using Microsoft.EntityFrameworkCore;
@@ -42,18 +41,23 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
             return null;
         }
 
-        var cosineSimilarities = user.Facts
-            .Select(f => f.Embeddings.CosineSimilarity(embeddings))
-            .Where(similarity => similarity > 0)
-            .OrderDescending()
-            .ToList();
+        // Grab the item with the highest cosine similarity.
+        var answer = user.Facts
+            .Select(fact => new
+            {
+                Fact = fact,
+                Similarity = fact.Embeddings.CosineSimilarity(embeddings)
+            })
+            .Where(candidate => candidate.Similarity > 0)
+            .MaxBy(candidate => candidate.Similarity);
 
-
-
-
-        return null; // No need to respond.
+        return answer is not null
+            ? new UserFactResult(answer.Fact.Content, arguments.Justification, answer.Fact.Source)
+            : new UserFactResult("I do not know", "", "");
     }
 }
+
+public record UserFactResult(string Fact, string Justification, string Source);
 
 /// <summary>
 /// The arguments to the weather service.
