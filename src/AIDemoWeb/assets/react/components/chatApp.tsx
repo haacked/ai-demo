@@ -11,6 +11,7 @@ export default function ChatApp() {
     const {newMessage, events} = Connector();
 
     useEffect(() => {
+        // Handles appending new messages received from SignalR to the chat log.
         events((author, message) => {
             const newMessage = {
                 timestamp: new Date(),

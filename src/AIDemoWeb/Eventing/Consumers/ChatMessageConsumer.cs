@@ -64,7 +64,10 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
                 }
             }
             var answer = responseChoice.Message.Content;
-            await _hubContext.Clients.All.SendAsync("messageReceived", "The Bot", answer,
+            await _hubContext.Clients.All.SendAsync(
+                "messageReceived",
+                "The Bot",
+                answer,
                 context.CancellationToken);
         }
     }

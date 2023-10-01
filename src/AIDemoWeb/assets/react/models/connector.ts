@@ -1,4 +1,10 @@
 import * as signalR from "@microsoft/signalr";
+
+/*
+ * Sets up a singleton connection to the SignalR hub. In particular, it sets up a listener for the
+ * "messageReceived" event and the "aiContextReceived" event. The former is used to update the chat log
+ * and the latter is used to add more details to the chat log about what the AI is doing.
+ */
 class Connector {
     private connection: signalR.HubConnection;
     public events: (onMessageReceived: (username: string, message: string) => void) => void;
