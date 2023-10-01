@@ -41,6 +41,11 @@ public abstract class ChatFunction<TArguments, TResult> : IChatFunction where TA
         // Actually call the weather service API.
         var result = await InvokeAsync(arguments, source, cancellationToken);
 
+        if (result is null)
+        {
+            return null;
+        }
+
         // Serialize the result data from the function into a new chat message with the 'Function' role,
         // then add it to the messages after the first User message and initial response FunctionCall
         return JsonSerializer.Serialize(

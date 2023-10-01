@@ -85,19 +85,15 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
                 }
                 else
                 {
-                    await SendThought("Got no result. \ud83d\ude14");
+                    // If we're just storing data, there's nothing to respond with.
+                    await SendResponseAsync(context, "Ok, got it.");
+                    return;
                 }
 
                 chainedFunctions++;
             }
 
-            var answer = responseChoice.Message.Content;
-            await _hubContext.Clients.All.SendAsync(
-                "messageReceived",
-                "The Bot",
-                answer,
-                context.CancellationToken);
-            Messages.Enqueue(new ChatMessage(ChatRole.Assistant, answer));
+            await SendResponseAsync(context, responseChoice.Message.Content);
         }
         else
         {
@@ -115,5 +111,15 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
                 functionCall.Name,
                 functionCall.Arguments,
                 context.CancellationToken);
+    }
+
+    async Task SendResponseAsync(ConsumeContext<ChatMessageReceived> context, string response)
+    {
+        await _hubContext.Clients.All.SendAsync(
+            "messageReceived",
+            "The Bot",
+            response,
+            context.CancellationToken);
+        Messages.Enqueue(new ChatMessage(ChatRole.Assistant, response));
     }
 }
