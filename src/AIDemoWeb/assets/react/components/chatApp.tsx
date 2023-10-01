@@ -26,8 +26,13 @@ export default function ChatApp() {
 
             // Handles a new incoming thought.
             (thought) => {
-                console.log(`%c ${thought}`, 'color: navy; font-size: 24px;');
-            }
+                console.log(`%c${thought}`, 'color: navy; font-size: 16px; font-family: arial');
+            },
+
+            // Handles a function call.
+            (name, args) => {
+                console.log(`%c${name}%c(${args})`, 'color: maroon; font-size: 16px; background-color: #eee', 'color: navy; font-size: 16px; background-color: #eee');
+            },
         );
     }, []);
 

@@ -14,9 +14,7 @@ export default function ChatInput({onMessagesSubmit}: ChatInputProps) {
     return (
         <form onSubmit={handleSubmit}>
             <div className="align-middle flex flex-row m-2">
-                <label>Message:
-                    <input name="message" className="form-input ml-1 mr-2 flex-1" type="text" />
-                </label>
+                <input type="text" name="message" className="form-input ml-1 mr-2 flex-1" />
                 <button type="submit" className="btn btn-primary">Send</button>
             </div>
         </form>

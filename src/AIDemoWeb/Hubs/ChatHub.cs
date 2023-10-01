@@ -22,7 +22,7 @@ public class ChatHub : Hub
     public async Task NewMessage(string username, string message)
     {
         await Clients.All.SendAsync("messageReceived", username, message);
-        await _publishEndpoint.Publish(new ChatMessageReceived { Author = username, Message = message });
+        await _publishEndpoint.Publish(new ChatMessageReceived(username, message));
     }
 
     /// <summary>
@@ -32,5 +32,15 @@ public class ChatHub : Hub
     public async Task NewThought(string message)
     {
         await Clients.All.SendAsync("thoughtReceived", message);
+    }
+
+    /// <summary>
+    /// When the AI is calling a function.
+    /// </summary>
+    /// <param name="name">The name of a function.</param>
+    /// <param name="args">The arguments to the function.</param>
+    public async Task NewFunction(string name, string args)
+    {
+        await Clients.All.SendAsync("functionReceived", name, args);
     }
 }

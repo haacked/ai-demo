@@ -11,6 +11,7 @@ class Connector {
     public events: (
         onMessageReceived: (username: string, message: string) => void,
         onThoughtReceived: (message: string) => void,
+        onFunctionReceived: (name: string, args: string) => void,
     ) => void;
     static instance: Connector;
     constructor() {
@@ -19,12 +20,15 @@ class Connector {
             .withAutomaticReconnect()
             .build();
         this.connection.start().catch(err => document.write(err));
-        this.events = (onMessageReceived, onThoughtReceived) => {
+        this.events = (onMessageReceived, onThoughtReceived, onFunctionReceived) => {
             this.connection.on("messageReceived", (username, message) => {
                 onMessageReceived(username, message);
             });
-            this.connection.on("thoughtReceived", (message) => {
-                onThoughtReceived(message);
+            this.connection.on("thoughtReceived", (thought) => {
+                onThoughtReceived(thought);
+            });
+            this.connection.on("functionReceived", (name, args) => {
+                onFunctionReceived(name, args);
             });
         };
     }
@@ -34,6 +38,10 @@ class Connector {
 
     public newThought = (messages: string) => {
         this.connection.send("newThought", messages).then(_ => console.debug("thought sent"));
+    }
+
+    public newFunction = (name: string, args: string) => {
+        this.connection.send("newFunction", name, args).then(_ => console.debug("function sent"));
     }
     public static getInstance(): Connector {
         if (!Connector.instance)

@@ -3,15 +3,6 @@ namespace AIDemoWeb.Entities.Eventing.Messages;
 /// <summary>
 /// A new chat message.
 /// </summary>
-public record ChatMessageReceived
-{
-    /// <summary>
-    /// The author of the message.
-    /// </summary>
-    public required string Author { get; init; }
-
-    /// <summary>
-    /// The text of the message.
-    /// </summary>
-    public required string Message { get; init; }
-}
+/// <param name="Author">The author of the message.</param>
+/// <param name="Message">The message text.</param>
+public record ChatMessageReceived(string Author, string Message);
