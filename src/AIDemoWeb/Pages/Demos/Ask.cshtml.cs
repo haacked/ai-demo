@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure.AI.OpenAI;
+using Haack.AIDemoWeb.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Serious;
@@ -22,6 +23,9 @@ public class AskPageModel : PageModel
     public string? Question { get; init; }
 
     [BindProperty]
+    public string? PreviousMessages { get; set; }
+
+    [BindProperty]
     public string SystemPrompt { get; init; } =
         "Hello, you are a friendly chat bot who is part of a demo I'm giving and wants to represent me and Chat GPT well.";
 
@@ -38,8 +42,7 @@ public class AskPageModel : PageModel
         {
             Messages =
             {
-                new ChatMessage(ChatRole.System,  SystemPrompt),
-                new ChatMessage(ChatRole.User, Question),
+                new ChatMessage(ChatRole.System, SystemPrompt)
             },
             // Available functions.
             Functions = new List<FunctionDefinition>
@@ -80,17 +83,34 @@ public class AskPageModel : PageModel
                 }
             }
         };
+
+        foreach (var message in ChatMessageExtensions.FromSerializedJson(PreviousMessages))
+        {
+            options.Messages.Add(message);
+        }
+        options.Messages.Add(new ChatMessage(ChatRole.User, Question));
+
         var response = await _client.GetChatCompletionsAsync(options, cancellationToken);
 
         Answer = response switch
         {
             { Value.Choices: [{ Message: { FunctionCall: { Name: "arithmetic" } } message}] }
                 => await CallFunctionAsync(message),
-            { HasValue: true } => string.Join("\n", response.Value.Choices.Select(c => c.Message.Content)),
+            { HasValue: true } => ReturnAnswerAsync(response.Value.Choices[0]),
             _ => "I don't know",
         };
 
+        // Serialize the new set of "previous messages into the hidden input"
+        PreviousMessages = options.Messages.Skip(1).ToJson(); // Skip the system message.
+
         return Page();
+
+        string ReturnAnswerAsync(ChatChoice choice)
+        {
+            options.Messages.Add(choice.Message);
+
+            return choice.Message.Content;
+        }
 
         async Task<string> CallFunctionAsync(ChatMessage message)
         {
@@ -125,13 +145,14 @@ public class AskPageModel : PageModel
 
             var newResponse = await _client.GetChatCompletionsAsync(options, cancellationToken);
 
+            var assistantMessage = newResponse.Value.Choices[0].Message;
+            options.Messages.Add(assistantMessage);
             return string.Join("\n", newResponse.Value.Choices.Select(c => c.Message.Content));
         }
     }
 }
 
 public record ArithmeticArguments(long Left, Operation Operation, long Right, long? Answer = null);
-
 
 public enum Operation
 {
