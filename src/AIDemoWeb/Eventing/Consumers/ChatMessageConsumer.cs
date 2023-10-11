@@ -61,8 +61,7 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
             var response = await _client.GetChatCompletionsAsync(options, context.CancellationToken);
             var responseChoice = response.Value.Choices[0];
 
-            int chainedFunctions = 0;
-            while (responseChoice.FinishReason == CompletionsFinishReason.FunctionCall && chainedFunctions < 5) // Don't allow infinite loops.
+            if (responseChoice.FinishReason == CompletionsFinishReason.FunctionCall)
             {
                 await SendThought("I have a function that can help with this! I'll call it.");
                 await SendFunction(responseChoice.Message.FunctionCall);
@@ -89,8 +88,6 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
                     await SendResponseAsync(context, "Ok, got it.");
                     return;
                 }
-
-                chainedFunctions++;
             }
 
             await SendResponseAsync(context, responseChoice.Message.Content);
