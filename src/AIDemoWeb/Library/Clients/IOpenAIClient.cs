@@ -12,12 +12,17 @@ public interface IOpenAIClient
     public static Uri BaseAddress => new("https://api.openai.com/v1");
 
     [Get("/models")]
-    Task<OpenAIResponse<List<OpenAIEntity>>> GetModelsAsync([Authorize] string apiToken, CancellationToken cancellationToken = default);
+    Task<OpenAIResponse<List<OpenAIEntity>>> GetModelsAsync(
+        [Authorize] string apiToken,
+        CancellationToken cancellationToken = default);
 }
 
 public record OpenAIResponse<T>(
-    [property: JsonPropertyName("object")] string ObjectType,
-    [property: JsonPropertyName("data")] T Data);
+    [property: JsonPropertyName("object")]
+    string ObjectType,
+
+    [property: JsonPropertyName("data")]
+    T Data);
 
 /// <summary>
 /// A model returned from the Open AI API.
