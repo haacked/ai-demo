@@ -34,4 +34,27 @@ public static class MathExtensions
         // Calculate cosine similarity
         return dotProduct / (magnitude1 * magnitude2);
     }
+    
+    public static long DoArithmetic(ArithmeticArguments arguments)
+    {
+        var result = arguments switch
+        {
+            { Operation: Operation.Add } => arguments.Left + arguments.Right,
+            { Operation: Operation.Subtract } => arguments.Left - arguments.Right,
+            { Operation: Operation.Multiply } => arguments.Left * arguments.Right,
+            { Operation: Operation.Divide } => arguments.Left / arguments.Right,
+            _ => throw new InvalidOperationException("Unknown operation.")
+        };
+        return result;
+    }
+}
+
+public record ArithmeticArguments(long Left, Operation Operation, long Right, long? Answer = null);
+
+public enum Operation
+{
+    Add,
+    Subtract,
+    Multiply,
+    Divide,
 }

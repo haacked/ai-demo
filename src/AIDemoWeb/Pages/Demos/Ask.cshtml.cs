@@ -94,7 +94,7 @@ public class AskPageModel : PageModel
 
         Answer = response switch
         {
-            { Value.Choices: [{ Message: { FunctionCall: { Name: "arithmetic" } } message}] }
+            { Value.Choices: [{ Message: { FunctionCall.Name: "arithmetic" } message }] }
                 => await CallFunctionAsync(message),
             { HasValue: true } => ReturnAnswerAsync(response.Value.Choices[0]),
             _ => "I don't know",
@@ -126,14 +126,7 @@ public class AskPageModel : PageModel
                 return "I don't know";
             }
 
-            var result = arguments switch
-            {
-                { Operation: Operation.Add } => arguments.Left + arguments.Right,
-                { Operation: Operation.Subtract } => arguments.Left - arguments.Right,
-                { Operation: Operation.Multiply } => arguments.Left * arguments.Right,
-                { Operation: Operation.Divide } => arguments.Left / arguments.Right,
-                _ => throw new InvalidOperationException("Unknown operation.")
-            };
+            var result = MathExtensions.DoArithmetic(arguments);
 
             options.Messages.Add(message);
 
@@ -147,17 +140,7 @@ public class AskPageModel : PageModel
 
             var assistantMessage = newResponse.Value.Choices[0].Message;
             options.Messages.Add(assistantMessage);
-            return string.Join("\n", newResponse.Value.Choices.Select(c => c.Message.Content));
+            return assistantMessage.Content;
         }
     }
-}
-
-public record ArithmeticArguments(long Left, Operation Operation, long Right, long? Answer = null);
-
-public enum Operation
-{
-    Add,
-    Subtract,
-    Multiply,
-    Divide,
 }
