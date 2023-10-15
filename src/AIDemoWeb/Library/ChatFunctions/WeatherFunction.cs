@@ -1,8 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using System.Web;
+using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
 
@@ -13,8 +12,9 @@ namespace Serious.ChatFunctions;
 /// <summary>
 /// Extends Chat GPT with a function that returns the current weather in a given location.
 /// </summary>
-public class WeatherChatFunction : ChatFunction<WeatherArguments, WeatherResult>
+public class WeatherFunction : ChatFunction<WeatherArguments, WeatherResult>
 {
+    readonly IWeatherApiClient _weatherApiClient;
     readonly string _apiKey;
 
     protected override string Name => "get_current_weather";
@@ -23,8 +23,9 @@ public class WeatherChatFunction : ChatFunction<WeatherArguments, WeatherResult>
 
     public int Order => 1; // Comes after the UserFactFunction
 
-    public WeatherChatFunction(IOptions<WeatherOptions> weatherOptions)
+    public WeatherFunction(IWeatherApiClient weatherApiClient, IOptions<WeatherOptions> weatherOptions)
     {
+        _weatherApiClient = weatherApiClient;
         _apiKey = weatherOptions.Value.ApiKey.Require();
     }
 
@@ -39,27 +40,13 @@ public class WeatherChatFunction : ChatFunction<WeatherArguments, WeatherResult>
             Unit.Celsius => "metric",
             _ => "standard"
         };
-        var apiKey = HttpUtility.UrlEncode(_apiKey);
-        var location = HttpUtility.UrlEncode(arguments.Location);
-        var weatherEndpoint = $"https://api.openweathermap.org/data/2.5/weather?appid={apiKey}&q={location}&units={units}";
-        var httpClient = new HttpClient();
-        var response = await httpClient.GetFromJsonAsync<WeatherResponse>(new Uri(weatherEndpoint), cancellationToken);
+
+        var response = await _weatherApiClient.GetWeatherAsync(_apiKey, arguments.Location, units, cancellationToken);
 
         return response is not null
             ? new WeatherResult(response.Main.Temperature, arguments.Unit)
             : null;
     }
-}
-
-public record WeatherResult(double Temperature, Unit Unit);
-
-public enum Unit
-{
-    [EnumMember(Value = "celsius")]
-    Celsius,
-
-    [EnumMember(Value = "fahrenheit")]
-    Fahrenheit,
 }
 
 /// <summary>
@@ -76,118 +63,4 @@ public record WeatherArguments(
     [property: JsonPropertyName("unit")]
     Unit Unit = Unit.Fahrenheit);
 
-public record Coordinates(
-    [property: JsonPropertyName("lon")]
-    double Longitude,
-
-    [property: JsonPropertyName("lat")]
-    double Latitude);
-
-public record Weather(
-    [property: JsonPropertyName("id")]
-    int Id,
-
-    [property: JsonPropertyName("main")]
-    string Main,
-
-    [property: JsonPropertyName("description")]
-    string Description,
-
-    [property: JsonPropertyName("icon")]
-    string Icon);
-
-public record MainWeatherData(
-    [property: JsonPropertyName("temp")]
-    double Temperature,
-
-    [property: JsonPropertyName("feels_like")]
-    double FeelsLike,
-
-    [property: JsonPropertyName("temp_min")]
-    double MinTemperature,
-
-    [property: JsonPropertyName("temp_max")]
-    double MaxTemperature,
-
-    [property: JsonPropertyName("pressure")]
-    int Pressure,
-
-    [property: JsonPropertyName("humidity")]
-    int Humidity,
-
-    [property: JsonPropertyName("sea_level")]
-    int SeaLevel,
-
-    [property: JsonPropertyName("grnd_level")]
-    int GroundLevel);
-
-public record Wind(
-    [property: JsonPropertyName("speed")]
-    double Speed,
-
-    [property: JsonPropertyName("deg")]
-    int Degree,
-
-    [property: JsonPropertyName("gust")]
-    double Gust);
-
-public record Clouds(
-    [property: JsonPropertyName("all")]int All);
-
-public record Sys(
-    [property: JsonPropertyName("type")]
-    int Type,
-
-    [property: JsonPropertyName("id")]
-    int Id,
-
-    [property: JsonPropertyName("country")]
-    string Country,
-
-    [property: JsonPropertyName("sunrise")]
-    int Sunrise,
-
-    [property: JsonPropertyName("sunset")]
-    int Sunset);
-
-public record WeatherResponse(
-
-    [property: JsonPropertyName("coord")]
-    Coordinates Coordinates,
-
-    [property: JsonPropertyName("weather")]
-    List<Weather> Weather,
-
-    [property: JsonPropertyName("base")]
-    string Base,
-
-    [property: JsonPropertyName("main")]
-    MainWeatherData Main,
-
-    [property: JsonPropertyName("visibility")]
-    int Visibility,
-
-    [property: JsonPropertyName("wind")]
-    Wind Wind,
-
-    [property: JsonPropertyName("clouds")]
-    Clouds Clouds,
-
-    [property: JsonPropertyName("dt")]
-    long Dt,
-
-    [property: JsonPropertyName("sys")]
-    Sys Sys,
-
-    [property: JsonPropertyName("timezone")]
-    int Timezone,
-
-    [property: JsonPropertyName("id")]
-    int Id,
-
-    [property: JsonPropertyName("name")]
-    string Name,
-
-    [property: JsonPropertyName("cod")]
-    int Cod
-);
+public record WeatherResult(double Temperature, Unit Unit);

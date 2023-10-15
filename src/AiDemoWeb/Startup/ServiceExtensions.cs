@@ -114,6 +114,7 @@ public static class ServiceExtensions
     {
         services.AddTransient<LoggingHttpMessageHandler>();
         services.AddRefitClient<IOpenAIClient>(IOpenAIClient.BaseAddress);
+        services.AddRefitClient<IWeatherApiClient>(IWeatherApiClient.BaseAddress);
     }
 
     static IHttpClientBuilder AddRefitClient<T>(this IServiceCollection services, Uri baseAddress) where T : class
