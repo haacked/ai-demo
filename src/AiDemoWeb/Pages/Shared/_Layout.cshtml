@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="~/dist/css/main.css" asp-append-version="true" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="~/dist/js/main.js" asp-append-version="true"></script>
+    <script src="https://kit.fontawesome.com/ff2f030d73.js" crossorigin="anonymous"></script>
     <title>@ViewData["Title"] - AIDemoWeb</title>
 </head>
 <body class="font-sans">
@@ -19,6 +20,8 @@
                 <span>Hello, @ViewContext.HttpContext.User.Identity.Name</span>
             }
         </div>
+
+        <partial name="Navigation" />
 
         <main role="main" class="pb-3">
             @RenderBody()
