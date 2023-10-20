@@ -50,15 +50,5 @@
     <Content Update="**\package.json" CopyToPublishDirectory="Never" CopyToOutputDirectory="Never" />
     <Content Update="**\package-lock.json" CopyToPublishDirectory="Never" CopyToOutputDirectory="Never" />
     <Content Update="**\packages.lock.json" CopyToPublishDirectory="Never" CopyToOutputDirectory="Never" />
-
-
-
-
-
-
   </ItemGroup>
-
-
-
-
 </Project>
