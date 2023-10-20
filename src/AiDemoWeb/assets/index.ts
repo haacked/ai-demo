@@ -2,3 +2,4 @@
 
 import './index.css';
 import './ts';
+import 'flowbite';
