@@ -1,7 +1,8 @@
 module.exports = {
     content: [
-       './Pages/**/*.{html,cshtml}',
-       './assets/**/*.{ts,tsx,js}',
+        './Pages/**/*.{html,cshtml}',
+        './assets/**/*.{ts,tsx,js}',
+        './node_modules/flowbite/**/*.js',
     ],
     safelist: [
         "text-red-800",
@@ -33,5 +34,6 @@ module.exports = {
     },
     plugins: [
         require('@tailwindcss/typography'),
+        require('flowbite/plugin'),
     ],
 }
