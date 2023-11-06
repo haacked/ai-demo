@@ -101,6 +101,16 @@
         "resolved": "8.1.1",
         "contentHash": "qrRUuJSkmCht+kG4Gf01jtbzNhYbUssy99VsUYlk9d/Z3vFCRpLn7Iulh3V3OWhpWaeHfHUKTMx9VbOB1uoo/A=="
       },
+      "Pgvector.EntityFrameworkCore": {
+        "type": "Direct",
+        "requested": "[0.1.2, )",
+        "resolved": "0.1.2",
+        "contentHash": "7HfV70Un5qxgIBFVzC+Lv66nlRdp2H6apYIiPUSGELYXY+DwbfJWCuLOA+ixLK4pSstKJtRVruSLcienfIL17w==",
+        "dependencies": {
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "7.0.0",
+          "Pgvector": "0.1.4"
+        }
+      },
       "Refit": {
         "type": "Direct",
         "requested": "[7.0.0, )",
@@ -355,6 +365,14 @@
         "contentHash": "TAqvwRnm3NJ0QvN7cvu6geJkbI0XPzGVRElVY5hF4gsgA+BnE12x6GM1TLhdeq+7ZKvvo3BD8jXKnXmr3tvdEw==",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "6.0.0"
+        }
+      },
+      "Pgvector": {
+        "type": "Transitive",
+        "resolved": "0.1.4",
+        "contentHash": "OWwNQ9W3z+4JFp0mnv7Av6HvY+f473E2rSUeVoMtcddbbTFBBYcmrX396HiMlWcg698lwQeZogcbXDdRese5aA==",
+        "dependencies": {
+          "Npgsql": "7.0.0"
         }
       },
       "System.CodeDom": {

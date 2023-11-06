@@ -1,4 +1,3 @@
-using Haack.AIDemoWeb.Migrations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Haack.AIDemoWeb.Entities;
@@ -23,7 +22,8 @@ public class AIDemoContext : DbContext
         // IMPORTANT! Custom crap goes AFTER the call to base.OnModelCreating
         //
 
-        modelBuilder.HasPostgresExtension("citext");
+        modelBuilder.HasPostgresExtension("citext"); // case insensitive text
+        modelBuilder.HasPostgresExtension("vector"); // pgvector for vector similarity support.
 
         // User names must be unique.
         modelBuilder.Entity<User>()
