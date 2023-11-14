@@ -6,6 +6,7 @@ using Haack.AIDemoWeb.Library;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using OpenAIDemo.Hubs;
+using Pgvector.EntityFrameworkCore;
 
 namespace Serious.ChatFunctions;
 
@@ -36,38 +37,33 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
         // Calculate the embedding for the question.
         var embeddings = await _client.GetEmbeddingsAsync(arguments.Question, cancellationToken);
 
-        var user = await _db.Users
-            .Include(u => u.Facts)
-            .FirstOrDefaultAsync(u => u.Name == arguments.Username, cancellationToken);
-
-        if (user is null)
+        if (embeddings is null)
         {
             return null;
         }
 
-        // Grab the item with the highest cosine similarity.
-        var facts = user.Facts
-            .Select(fact => new
+        // Cosine similarity == 1 - Cosine Distance.
+        var facts = await _db.UserFacts
+            .Where(f => f.User.Name == arguments.Username)
+            .Select(f => new
             {
-                Fact = fact,
-                Similarity = fact.Embeddings.CosineSimilarity(embeddings)
+                Fact = f,
+                Distance = f.Embeddings.CosineDistance(embeddings),
             })
-            .Where(candidate => candidate.Similarity > 0.8)
-            .OrderByDescending(candidate => candidate.Similarity)
-            .ToList();
+            .Where(x => x.Distance <= 0.25)
+            .OrderBy(x => x.Distance)
+            .ToListAsync(cancellationToken);
 
         if (facts.Count > 0)
         {
-            var factSummary = string.Join("\n", facts.Select(f => $"Similarity: {f.Similarity}\tFact: {f.Fact.Content} Justification: {f.Fact.Justification} Source: {f.Fact.Source}"));
+            var factSummary = string.Join("\n", facts.Select(f => $"Similarity: {1.0 - f.Distance} Fact: {f.Fact.Content} Justification: {f.Fact.Justification} Source: {f.Fact.Source}"));
 
             await SendThought($"I have {facts.Count.ToQuantity("answer")} to that question\n\n{factSummary}");
             var answer = string.Join("\n", facts.Select(a => a.Fact.Content));
             return new UserFactResult(answer);
         }
-        else
-        {
-            return new UserFactResult("I do not know");
-        }
+
+        return new UserFactResult("I do not know");
 
         async Task SendThought(string thought)
             => await _hubContext.Clients.All.SendAsync("thoughtReceived", thought, cancellationToken);

@@ -3,6 +3,7 @@ using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
+using Pgvector;
 
 namespace Serious;
 
@@ -54,7 +55,7 @@ public class OpenAIClientAccessor
     /// </summary>
     /// <param name="prompt">The prompt for this embeddings request.</param>
     /// <param name="cancellationToken">The cancellation token to use.</param>
-    public async Task<List<float>> GetEmbeddingsAsync(string prompt, CancellationToken cancellationToken)
+    public async Task<Vector?> GetEmbeddingsAsync(string prompt, CancellationToken cancellationToken)
     {
         var response = await GetEmbeddingsAsync(new EmbeddingsOptions(prompt), cancellationToken);
         if (response.HasValue)
@@ -62,11 +63,11 @@ public class OpenAIClientAccessor
             var embedding = response.Value.Data;
             if (embedding is { Count: > 0 })
             {
-                return embedding[0].Embedding.ToList();
+                return new Vector(embedding[0].Embedding.ToArray());
             }
         }
 
-        return new List<float>();
+        return null;
     }
 
     public async Task<List<OpenAIEntity>> GetModelsAsync(CancellationToken cancellationToken = default)

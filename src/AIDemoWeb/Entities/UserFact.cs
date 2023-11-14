@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Pgvector;
+
 namespace Haack.AIDemoWeb.Entities;
 
 /// <summary>
@@ -18,8 +21,12 @@ public class UserFact
     /// <summary>
     /// Embeddings for the fact.
     /// </summary>
+    /// <remarks>
+    /// The output dimensions for text-embedding-ada-002 is 1536.
+    /// </remarks>
     #pragma warning disable CA1002
-    public required List<float> Embeddings { get; init; }
+    [Column(TypeName = "vector(1536 )")]
+    public required Vector Embeddings { get; init; }
     #pragma warning restore CA1002
 
     /// <summary>

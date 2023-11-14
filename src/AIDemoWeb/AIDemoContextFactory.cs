@@ -1,6 +1,7 @@
 using Haack.AIDemoWeb.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Pgvector.EntityFrameworkCore;
 
 namespace AIDemoWeb.Entities;
 
@@ -22,6 +23,7 @@ public class AIDemoContextFactory : IDesignTimeDbContextFactory<AIDemoContext>
             .UseNpgsql(configuration.GetConnectionString(AIDemoContext.ConnectionStringName),
                 options =>
                 {
+                    options.UseVector();
                     options.MigrationsAssembly("AIDemoWeb");
                 });
         return new AIDemoContext(optionsBuilder.Options);

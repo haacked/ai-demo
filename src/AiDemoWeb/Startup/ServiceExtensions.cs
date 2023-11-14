@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Refit;
 using Serious;
-
+using Pgvector.EntityFrameworkCore;
 namespace Haack.AIDemoWeb.Startup;
 
 public static class ServiceExtensions
@@ -41,7 +41,11 @@ public static class ServiceExtensions
 #endif
         options.ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
 
-        options.UseNpgsql(connectionString, o => o.MigrationsAssembly("AIDemoWeb"));
+        options.UseNpgsql(connectionString, o =>
+        {
+            o.UseVector();
+            o.MigrationsAssembly("AIDemoWeb");
+        });
     }
 
     public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)

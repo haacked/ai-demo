@@ -2,18 +2,20 @@
 using Haack.AIDemoWeb.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Pgvector;
 
 #nullable disable
 
 namespace Haack.AIDemoWeb.Migrations
 {
     [DbContext(typeof(AIDemoContext))]
-    partial class AIDemoContextModelSnapshot : ModelSnapshot
+    [Migration("20231107172252_AddVectorColumn")]
+    partial class AddVectorColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,7 +58,7 @@ namespace Haack.AIDemoWeb.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Vector>("Embeddings")
+                    b.Property<byte[]>("Embeddings")
                         .IsRequired()
                         .HasColumnType("vector(1536 )");
 

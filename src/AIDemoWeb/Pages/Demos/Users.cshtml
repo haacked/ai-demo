@@ -27,7 +27,12 @@
                                 <td>@fact.Content</td>
                                 <td>@fact.Source</td>
                                 <td>@fact.Justification</td>
-                                <td>@string.Join(",", fact.Embeddings)</td>
+                                <td>
+                                    @fact.Embeddings.ToArray().Length
+                                    <details>
+                                        @string.Join(",", fact.Embeddings)
+                                    </details>
+                                </td>
                             </tr>
                         }
                     </tbody>
