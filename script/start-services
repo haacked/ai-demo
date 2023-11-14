@@ -12,9 +12,9 @@ if ! type docker-compose >/dev/null 2>&1; then
 fi
 
 # Shut down old services
-docker stop aidemodb_postgres >/dev/null 2>&1 || true
-docker rm aidemodb_postgres >/dev/null 2>&1 || true
-docker stop aidemodb_ngrok >/dev/null 2>&1 || true
-docker rm aidemodb_ngrok >/dev/null 2>&1 || true
+# docker stop aidemodb_ngrok >/dev/null 2>&1 || true
+# docker rm aidemodb_ngrok >/dev/null 2>&1 || true
+docker stop aidemo_postgres >/dev/null 2>&1 || true
+docker rm aidemo_postgres >/dev/null 2>&1 || true
 
 docker-compose up -d
