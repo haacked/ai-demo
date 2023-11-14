@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Pgvector;
 
 #nullable disable
 
@@ -55,7 +56,7 @@ namespace Haack.AIDemoWeb.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<byte[]>("Embeddings")
+                    b.Property<Vector>("Embeddings")
                         .IsRequired()
                         .HasColumnType("vector(1536 )");
 
