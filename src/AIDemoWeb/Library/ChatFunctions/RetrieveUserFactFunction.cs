@@ -50,7 +50,7 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
             .Select(fact => new
             {
                 Fact = fact,
-                Similarity = fact.Embeddings.CosineSimilarity(embeddings)
+                Similarity = fact.Embeddings!.ToArray().CosineSimilarity(embeddings)
             })
             .Where(candidate => candidate.Similarity > 0.8)
             .OrderByDescending(candidate => candidate.Similarity)

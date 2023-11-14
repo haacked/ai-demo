@@ -28,7 +28,7 @@
                                 <td>@fact.Source</td>
                                 <td>@fact.Justification</td>
                                 <td>
-                                    @fact.Embeddings.Count
+                                    @fact.Embeddings.ToArray().Length
                                     <details>
                                         @string.Join(",", fact.Embeddings)
                                     </details>

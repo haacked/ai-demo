@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Pgvector;
 
 namespace Haack.AIDemoWeb.Entities;
 
@@ -25,7 +26,7 @@ public class UserFact
     /// </remarks>
     #pragma warning disable CA1002
     [Column(TypeName = "vector(1536 )")]
-    public required List<float> Embeddings { get; init; }
+    public required Vector Embeddings { get; init; }
     #pragma warning restore CA1002
 
     /// <summary>

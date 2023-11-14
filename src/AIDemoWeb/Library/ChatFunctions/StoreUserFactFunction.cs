@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Entities;
 using Microsoft.EntityFrameworkCore;
+using Pgvector;
 
 namespace Serious.ChatFunctions;
 
@@ -46,7 +47,7 @@ public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
                 User = user,
                 UserId = user.Id,
                 Content = arguments.Fact,
-                Embeddings = embeddings,
+                Embeddings = new Vector(embeddings),
                 Justification = arguments.Justification,
                 Source = source,
             });
@@ -56,7 +57,7 @@ public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
         return null; // No need to respond.
     }
 
-    async Task<List<float>> GetEmbeddingsAsync(UserFactArguments arguments, CancellationToken cancellationToken)
+    async Task<float[]> GetEmbeddingsAsync(UserFactArguments arguments, CancellationToken cancellationToken)
     {
         try
         {
@@ -66,7 +67,7 @@ public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
                 var embedding = response.Value.Data;
                 if (embedding is { Count: > 0 })
                 {
-                    return embedding[0].Embedding.ToList();
+                    return embedding[0].Embedding.ToArray();
                 }
             }
         }
@@ -75,7 +76,7 @@ public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
 #pragma warning restore CA1031
         {
         }
-        return new List<float>();
+        return Array.Empty<float>();
     }
 }
 
