@@ -12,9 +12,24 @@
 
 
     <h1 class="text-lg font-semibold leading-tight mt-2">Available Models</h1>
-    <ul class="list-disc ml-4">
-        @foreach (var modelEntity in Model.Models.OrderBy(m => m.Id)) {
-            <li>@modelEntity.Id</li>
-        }
-    </ul>
+    <table class="ml-4">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>created</th>
+            <th>owned_by</th>
+            <th>object</th>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach (var modelEntity in Model.Models.OrderBy(m => m.Id)) {
+                <tr>
+                    <td>@modelEntity.Id</td>
+                    <td>@modelEntity.Created</td>
+                    <td>@modelEntity.OwnedBy</td>
+                    <td>@modelEntity.ObjectType</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </section>

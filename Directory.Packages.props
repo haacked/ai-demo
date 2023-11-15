@@ -16,5 +16,6 @@
     <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.1.2" />
     <PackageVersion Include="refit" Version="7.0.0" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="7.0.0" />
+    <PackageVersion Include="System.Text.Json" Version="8.0.0"/>
   </ItemGroup>
 </Project>

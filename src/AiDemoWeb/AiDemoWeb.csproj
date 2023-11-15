@@ -45,6 +45,7 @@
     <PackageReference Include="Pgvector.EntityFrameworkCore" />
     <PackageReference Include="refit" />
     <PackageReference Include="Refit.HttpClientFactory" />
+    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
 
   <ItemGroup>

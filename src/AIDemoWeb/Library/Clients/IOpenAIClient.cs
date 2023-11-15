@@ -20,8 +20,6 @@ public interface IOpenAIClient
 public record OpenAIResponse<T>(
     [property: JsonPropertyName("object")]
     string ObjectType,
-
-    [property: JsonPropertyName("data")]
     T Data);
 
 /// <summary>
@@ -32,14 +30,10 @@ public record OpenAIResponse<T>(
 /// <param name="Created">When the entity was created.</param>
 /// <param name="OwnedBy">Who owns the entity.</param>
 public record OpenAIEntity(
-    [property: JsonPropertyName("id")]
     string Id,
 
     [property: JsonPropertyName("object")]
     string ObjectType,
 
-    [property: JsonPropertyName("created")]
     long Created,
-
-    [property: JsonPropertyName("owned_by")]
     string OwnedBy);
