@@ -32,8 +32,12 @@ public class OpenAIClientAccessor
         ChatCompletionsOptions chatCompletionsOptions,
         CancellationToken cancellationToken = default) =>
         await Client.GetChatCompletionsAsync(
-            _options.Model,
-            chatCompletionsOptions,
+            new ChatCompletionsOptions(_options.Model, chatCompletionsOptions.Messages)
+            {
+                // HACK: This is ugly. I have to copy everything.
+                // I filed an issue and am crossing my fingers: https://github.com/Azure/azure-sdk-for-net/issues/40002
+                Functions = chatCompletionsOptions.Functions,
+            },
             cancellationToken);
 
     /// <summary>
@@ -45,8 +49,7 @@ public class OpenAIClientAccessor
         EmbeddingsOptions embeddingsOptions,
         CancellationToken cancellationToken = default) =>
         await Client.GetEmbeddingsAsync(
-            _options.EmbeddingModel,
-            embeddingsOptions,
+            new EmbeddingsOptions(_options.EmbeddingModel, embeddingsOptions.Input),
             cancellationToken);
 
 
@@ -57,7 +60,9 @@ public class OpenAIClientAccessor
     /// <param name="cancellationToken">The cancellation token to use.</param>
     public async Task<Vector?> GetEmbeddingsAsync(string prompt, CancellationToken cancellationToken)
     {
-        var response = await GetEmbeddingsAsync(new EmbeddingsOptions(prompt), cancellationToken);
+        var response = await GetEmbeddingsAsync(
+            new EmbeddingsOptions { Input = new List<string> { prompt }},
+            cancellationToken);
         if (response.HasValue)
         {
             var embedding = response.Value.Data;

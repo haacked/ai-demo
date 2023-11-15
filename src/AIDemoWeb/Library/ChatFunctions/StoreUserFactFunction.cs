@@ -61,7 +61,9 @@ public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
     {
         try
         {
-            var response = await _client.GetEmbeddingsAsync(new EmbeddingsOptions(arguments.Fact), cancellationToken);
+            var response = await _client.GetEmbeddingsAsync(
+                new EmbeddingsOptions { Input = new List<string> { arguments.Fact }},
+                cancellationToken);
             if (response.HasValue)
             {
                 var embedding = response.Value.Data;
