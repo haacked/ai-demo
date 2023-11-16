@@ -70,7 +70,7 @@ public record AssistantCreateBody
     public string? Instructions { get; init; }
 }
 
-public record AssistantDeletedResponse(
+public record ObjectDeletedResponse(
     string Id,
     [property: JsonPropertyName("object")]
     string ObjectType,

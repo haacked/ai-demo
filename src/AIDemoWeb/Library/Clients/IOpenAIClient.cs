@@ -39,9 +39,9 @@ public interface IOpenAIClient
     /// <summary>
     /// Creates an assistant.
     /// </summary>
-    /// <param name="apiToken"></param>
-    /// <param name="body"></param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="body">The assistant to create.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
     /// <returns>The created assistant.</returns>
     [Post("/assistants")]
     [Headers("OpenAI-Beta: assistants=v1")]
@@ -57,14 +57,65 @@ public interface IOpenAIClient
     /// </summary>
     /// <param name="apiToken"></param>
     /// <param name="assistantId">The ID of the assistant to delete.</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>The created assistant.</returns>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>The result of the operation.</returns>
     [Delete("/assistants/{assistantId}")]
     [Headers("OpenAI-Beta: assistants=v1")]
-    Task<AssistantDeletedResponse> DeleteAssistantAsync(
+    Task<ObjectDeletedResponse> DeleteAssistantAsync(
         [Authorize]
         string apiToken,
         string assistantId,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Returns a list of files.
+    /// </summary>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="purpose">Only returns files with the given purpose.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>A list of files.</returns>
+    [Get("/files")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<OpenAIResponse<List<File>>> GetFilesAsync(
+        [Authorize]
+        string apiToken,
+        string? purpose = null,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Uploads a file to the Open AI API.
+    /// </summary>
+    /// <param name="apiToken"></param>
+    /// <param name="purpose">The intended purpose of the uploaded file. Can be 'fine-tune' or 'assistants'.</param>
+    /// <param name="file">The file to upload.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns></returns>
+    [Multipart]
+    [Post("/files")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<HttpResponseMessage> UploadFileAsync(
+        [Authorize]
+        string apiToken,
+        string purpose,
+        StreamPart file,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Deletes a file.
+    /// </summary>
+    /// <param name="apiToken"></param>
+    /// <param name="fileId">The ID of the file to delete.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>The result of the operation.</returns>
+    [Delete("/files/{fileId}")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<ObjectDeletedResponse> DeleteFileAsync(
+        [Authorize]
+        string apiToken,
+        string fileId,
         CancellationToken cancellationToken = default
     );
 }
