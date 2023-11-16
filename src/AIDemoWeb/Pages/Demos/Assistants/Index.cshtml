@@ -1,0 +1,36 @@
+@page
+@model AIDemoWeb.Demos.Pages.Assistants.AssistantsIndexPageModel
+
+@{
+    ViewData["Title"] = "Assistants";
+}
+
+<section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
+    <h1 class="text-lg font-semibold leading-tight">Assistants</h1>
+    <p class="mt-2">This is a list of active assistants.</p>
+    <table class="ml-4">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>description</th>
+            <th>tools</th>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach (var assistant in Model.Assistants) {
+                <tr>
+                    <td>@assistant.Id</td>
+                    <td>@assistant.Name</td>
+                    <td>
+                        <ul class="list-disc">
+                        @foreach (var tool in assistant.Tools) {
+                            <li><code>@tool.Type</code></li>
+                        }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
