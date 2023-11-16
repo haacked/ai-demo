@@ -35,6 +35,38 @@ public interface IOpenAIClient
         string apiToken,
         CancellationToken cancellationToken = default
     );
+
+    /// <summary>
+    /// Creates an assistant.
+    /// </summary>
+    /// <param name="apiToken"></param>
+    /// <param name="body"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The created assistant.</returns>
+    [Post("/assistants")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<Assistant> CreateAssistantAsync(
+        [Authorize]
+        string apiToken,
+        AssistantCreateBody body,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Deletes an assistant.
+    /// </summary>
+    /// <param name="apiToken"></param>
+    /// <param name="assistantId">The ID of the assistant to delete.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The created assistant.</returns>
+    [Delete("/assistants/{assistantId}")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<AssistantDeletedResponse> DeleteAssistantAsync(
+        [Authorize]
+        string apiToken,
+        string assistantId,
+        CancellationToken cancellationToken = default
+    );
 }
 
 public record OpenAIResponse<T>(

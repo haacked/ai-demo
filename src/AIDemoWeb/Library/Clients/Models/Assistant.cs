@@ -69,3 +69,9 @@ public record AssistantCreateBody
     [MaxLength(32768)]
     public string? Instructions { get; init; }
 }
+
+public record AssistantDeletedResponse(
+    string Id,
+    [property: JsonPropertyName("object")]
+    string ObjectType,
+    bool Deleted);

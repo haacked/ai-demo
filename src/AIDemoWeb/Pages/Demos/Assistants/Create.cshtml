@@ -1,0 +1,18 @@
+@page
+@model AIDemoWeb.Demos.Pages.Assistants.CreateAssistantPageModel
+
+@{
+    ViewData["Title"] = "Create an assistant";
+}
+
+<section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
+    <h1 class="text-lg font-semibold leading-tight">Create an assistant</h1>
+    <form method="post">
+        <div class="p-2">
+            <label asp-for="Name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+            <input asp-for="Name" />
+            <span asp-validation-for="Name"></span>
+        </div>
+        <input type="submit" class="btn btn-primary" />
+    </form>
+</section>
