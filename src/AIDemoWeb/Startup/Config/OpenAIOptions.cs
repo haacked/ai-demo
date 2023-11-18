@@ -28,6 +28,11 @@ public class OpenAIOptions
     public string Model { get; init; } = "gpt-3.5-turbo";
 
     /// <summary>
+    /// The model used for text retrieval within an assistant.
+    /// </summary>
+    public string RetrievalModel { get; init; } = "gpt-4-1106-preview";
+
+    /// <summary>
     /// The model to use for embeddings.
     /// </summary>
     public string EmbeddingModel { get; init; } = "text-embedding-ada-002";

@@ -95,7 +95,7 @@ public interface IOpenAIClient
     [Multipart]
     [Post("/files")]
     [Headers("OpenAI-Beta: assistants=v1")]
-    Task<HttpResponseMessage> UploadFileAsync(
+    Task<File> UploadFileAsync(
         [Authorize]
         string apiToken,
         string purpose,
@@ -145,5 +145,5 @@ public record OpenAIEntity(
 /// <summary>
 /// A tool that is enabled for an assistant.
 /// </summary>
-/// <param name="Type"></param>
+/// <param name="Type">The type of tool. Either <c>code_interpreter</c>, <c>function</c>, or <c>retrieval</c></param>
 public record AssistantTool(string Type);

@@ -1,13 +1,13 @@
 @page
-@model AIDemoWeb.Demos.Pages.Assistants.AssistantsIndexPageModel
+@model AIDemoWeb.Demos.Pages.Files.FilesIndexPageModel
 
 @{
-    ViewData["Title"] = "Assistants";
+    ViewData["Title"] = "Files";
 }
 
 <section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
-    <h1 class="text-lg font-semibold leading-tight">Assistants</h1>
-    <p class="mt-2">This is a list of active assistants.</p>
+    <h1 class="text-lg font-semibold leading-tight">Files</h1>
+    <p class="mt-2">This is a list of uploaded files.</p>
 
     @if (Model.StatusMessage is not null) {
         <div id="toast-success" class="flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
@@ -31,36 +31,22 @@
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
             <th scope="col" class="px-6 py-3">id</th>
-            <th scope="col" class="px-6 py-3">name</th>
-            <th scope="col" class="px-6 py-3">description</th>
-            <th scope="col" class="px-6 py-3">files</th>
-            <th scope="col" class="px-6 py-3">tools</th>
+            <th scope="col" class="px-6 py-3">filename</th>
+            <th scope="col" class="px-6 py-3">purpose</th>
+            <th scope="col" class="px-6 py-3">bytes</th>
             <th scope="col" class="px-6 py-3"></th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var assistant in Model.Assistants) {
+        @foreach (var file in Model.Files) {
             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">@assistant.Id</th>
-                <td class="px-6 py-4">@assistant.Name</td>
-                <td class="px-6 py-4">@assistant.Description</td>
-                <td class="px-6 py-4">
-                    <ul class="list-disc">
-                        @foreach (var fileId in assistant.FileIds) {
-                            <li><code>@fileId</code></li>
-                        }
-                    </ul>
-                </td>
-                <td class="px-6 py-4">
-                    <ul class="list-disc">
-                        @foreach (var tool in assistant.Tools) {
-                            <li><code>@tool.Type</code></li>
-                        }
-                    </ul>
-                </td>
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">@file.Id</th>
+                <td class="px-6 py-4">@file.Filename</td>
+                <td class="px-6 py-4">@file.Bytes</td>
+                <td class="px-6 py-4">@file.Purpose</td>
                 <td class="px-6 py-4">
                     <form method="post">
-                        <input type="hidden" asp-for="AssistantIdToDelete" value="@assistant.Id" />
+                        <input type="hidden" asp-for="FileIdToDelete" value="@file.Id" />
                         <button type="submit" class="btn btn-danger" title="delete"><i class="fa-solid fa-x"></i></button>
                     </form>
                 </td>
@@ -69,5 +55,5 @@
         </tbody>
     </table>
 
-    <a asp-page="Create">Create an assistant</a>
+    <a asp-page="Upload">Upload a file</a>
 </section>
