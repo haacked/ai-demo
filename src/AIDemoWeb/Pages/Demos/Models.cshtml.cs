@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Azure.AI.OpenAI;
-using Haack.AIDemoWeb.Library.Clients;
+﻿using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using Serious;

@@ -87,7 +87,7 @@ public interface IOpenAIClient
     /// <summary>
     /// Uploads a file to the Open AI API.
     /// </summary>
-    /// <param name="apiToken"></param>
+    /// <param name="apiToken">The Open AI API Key.</param>
     /// <param name="purpose">The intended purpose of the uploaded file. Can be 'fine-tune' or 'assistants'.</param>
     /// <param name="file">The file to upload.</param>
     /// <param name="cancellationToken">The cancellation token to use.</param>
@@ -106,7 +106,7 @@ public interface IOpenAIClient
     /// <summary>
     /// Deletes a file.
     /// </summary>
-    /// <param name="apiToken"></param>
+    /// <param name="apiToken">The Open AI API Key.</param>
     /// <param name="fileId">The ID of the file to delete.</param>
     /// <param name="cancellationToken">The cancellation token to use.</param>
     /// <returns>The result of the operation.</returns>
@@ -116,6 +116,38 @@ public interface IOpenAIClient
         [Authorize]
         string apiToken,
         string fileId,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Creates a thread.
+    /// </summary>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="messages">The messages to start the thread with.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>The created <see cref="AssistantThread"/>.</returns>
+    [Post("/threads")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<AssistantThread> CreateThreadAsync(
+        [Authorize]
+        string apiToken,
+        IReadOnlyList<Message> messages,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Deletes a thread.
+    /// </summary>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="threadId">The ID of the thread to delete.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>The result of the operation.</returns>
+    [Delete("/threads/{threadId}")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<ObjectDeletedResponse> DeleteThreadAsync(
+        [Authorize]
+        string apiToken,
+        string threadId,
         CancellationToken cancellationToken = default
     );
 }
