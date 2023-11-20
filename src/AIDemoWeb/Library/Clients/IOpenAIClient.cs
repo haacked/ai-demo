@@ -120,6 +120,22 @@ public interface IOpenAIClient
     );
 
     /// <summary>
+    /// Gets info about a thread.
+    /// </summary>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="threadId">The Id of the thread.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>The created <see cref="AssistantThread"/>.</returns>
+    [Get("/threads/{threadId}")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<AssistantThread> GetThreadAsync(
+        [Authorize]
+        string apiToken,
+        string threadId,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
     /// Creates a thread.
     /// </summary>
     /// <param name="apiToken">The Open AI API Key.</param>
@@ -131,7 +147,7 @@ public interface IOpenAIClient
     Task<AssistantThread> CreateThreadAsync(
         [Authorize]
         string apiToken,
-        IReadOnlyList<Message> messages,
+        IReadOnlyList<MessageCreateBody> messages,
         CancellationToken cancellationToken = default
     );
 
@@ -145,6 +161,56 @@ public interface IOpenAIClient
     [Delete("/threads/{threadId}")]
     [Headers("OpenAI-Beta: assistants=v1")]
     Task<ObjectDeletedResponse> DeleteThreadAsync(
+        [Authorize]
+        string apiToken,
+        string threadId,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Returns a list of messages for a given thread.
+    /// </summary>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="threadId">The ID of the thread to delete.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>A list of messages for the thread.</returns>
+    [Get("/threads/{threadId}/messages")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<OpenAIResponse<List<Message>>> GetMessagesAsync(
+        [Authorize]
+        string apiToken,
+        string threadId,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Creates a message in a thread.
+    /// </summary>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="threadId">The ID of the thread to delete.</param>
+    /// <param name="body">The message to create.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>The created assistant.</returns>
+    [Post("/threads/{threadId}/messages")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<Message> CreateMessageAsync(
+        [Authorize]
+        string apiToken,
+        string threadId,
+        MessageCreateBody body,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Returns a list of execution runs for a given thread.
+    /// </summary>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="threadId">The ID of the thread to delete.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>A list of messages for the thread.</returns>
+    [Get("/threads/{threadId}/runs")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<OpenAIResponse<List<ThreadRun>>> GetRunsAsync(
         [Authorize]
         string apiToken,
         string threadId,

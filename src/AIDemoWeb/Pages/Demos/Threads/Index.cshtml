@@ -43,8 +43,11 @@
                 <td class="px-6 py-4"><code>@thread.ThreadId</code></td>
                 <td class="px-6 py-4">@thread.Creator.Name</td>
                 <td class="px-6 py-4">
-                    <form method="post">
-                        <input type="hidden" asp-for="ThreadIdToDelete" value="@thread.Id" />
+                    <a asp-page="Details" asp-route-id="@thread.ThreadId" class="btn btn-primary inline-block" title="details">
+                        <i class="fa-solid fa-info"></i>
+                    </a>
+                    <form method="post" class="inline-block">
+                        <input type="hidden" asp-for="ThreadIdToDelete" value="@thread.Id"/>
                         <button type="submit" class="btn btn-danger" title="delete"><i class="fa-solid fa-x"></i></button>
                     </form>
                 </td>

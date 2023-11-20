@@ -3,7 +3,6 @@ using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Refit;
@@ -23,21 +22,11 @@ public class CreateThreadPageModel : PageModel
     [TempData]
     public string? StatusMessage { get; set; }
 
-    public IReadOnlyList<SelectListItem> AvailableFileIds { get; set; } = Array.Empty<SelectListItem>();
-
-    public IReadOnlyList<string> AvailableTools { get; set; } = new [] { "code_interpreter", "retrieval" };
-
     public CreateThreadPageModel(AIDemoContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
     {
         _db = db;
         _options = options.Value;
         _openAIClient = openAIClient;
-    }
-
-    public async Task OnGetAsync(CancellationToken cancellationToken = default)
-    {
-        var response = await _openAIClient.GetFilesAsync(_options.ApiKey.Require(), "assistants", cancellationToken);
-        AvailableFileIds = response.Data.Select(f => new SelectListItem(f.Filename, f.Id)).ToList();
     }
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
@@ -51,7 +40,7 @@ public class CreateThreadPageModel : PageModel
         {
             var createdThread = await _openAIClient.CreateThreadAsync(
                 _options.ApiKey.Require(),
-                Array.Empty<Message>(),
+                Array.Empty<MessageCreateBody>(),
                 cancellationToken);
 
             StatusMessage = $"Assistant {createdThread.Id} created.";

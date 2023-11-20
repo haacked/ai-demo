@@ -50,11 +50,11 @@ public class ThreadsIndexPageModel : PageModel
         _db.Threads.Remove(threadToDelete);
         await _db.SaveChangesAsync(cancellationToken);
 
-        var response = await _openAIClient.DeleteAssistantAsync(
+        var response = await _openAIClient.DeleteThreadAsync(
             _options.ApiKey.Require(),
             ThreadIdToDelete.Require(),
             cancellationToken);
-        StatusMessage = $"Assistant {response.Id} deleted.";
+        StatusMessage = $"Thread {response.Id} deleted.";
         return RedirectToPage();
     }
 }
