@@ -1,0 +1,206 @@
+/*
+These styles come from https://github.com/CreativeBulma/bulma-tooltip which are
+licensed under the MIT license.
+
+https://github.com/CreativeBulma/bulma-tooltip/blob/master/LICENSE
+*/
+
+[data-tooltip]:not(.is-loading),
+[data-tooltip]:not(.is-disabled),
+[data-tooltip]:not([disabled]) {
+  cursor: pointer;
+  overflow: visible;
+  position: relative;
+}
+
+[data-tooltip]:not(.is-loading)::before,
+[data-tooltip]:not(.is-disabled)::before,
+[data-tooltip]:not([disabled])::before {
+  top: 0;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  margin-top: -5px;
+  margin-bottom: auto;
+  transform: translate(-50%, -100%);
+}
+
+[data-tooltip]:not(.is-loading)::before,
+[data-tooltip]:not(.is-disabled)::before,
+[data-tooltip]:not([disabled])::before {
+  box-sizing: border-box;
+  color: white;
+  display: inline-block;
+  font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-size: 0.75rem;
+  hyphens: auto;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  visibility: hidden;
+  z-index: 1020;
+  background: rgba(74, 74, 74, 0.9);
+  border-radius: 2px;
+  content: attr(data-tooltip);
+  padding: 0.5rem 1rem;
+  width: 25vw;
+}
+
+[data-tooltip]:not(.is-loading).has-tooltip-multiline::before,
+[data-tooltip]:not(.is-disabled).has-tooltip-multiline::before,
+[data-tooltip]:not([disabled]).has-tooltip-multiline::before {
+  height: auto;
+  width: 15rem;
+  max-width: 15rem;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: keep-all;
+}
+
+[data-tooltip]:not(.is-loading).has-tooltip-bottom::before,
+[data-tooltip]:not(.is-disabled).has-tooltip-bottom::before,
+[data-tooltip]:not([disabled]).has-tooltip-bottom::before {
+  top: auto;
+  right: auto;
+  bottom: 0;
+  left: 50%;
+  margin-top: auto;
+  margin-bottom: -5px;
+  transform: translate(-50%, 100%);
+}
+
+[data-tooltip]:not(.is-loading).has-tooltip-arrow::after,
+[data-tooltip]:not(.is-disabled).has-tooltip-arrow::after,
+[data-tooltip]:not([disabled]).has-tooltip-arrow::after {
+  top: 0;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  margin-top: -5px;
+  margin-right: auto;
+  margin-bottom: auto;
+  margin-left: -5px;
+  border-color: rgba(74, 74, 74, 0.9) transparent transparent transparent;
+  content: "";
+}
+
+[data-tooltip]:not(.is-loading).has-tooltip-left::before,
+[data-tooltip]:not(.is-disabled).has-tooltip-left::before,
+[data-tooltip]:not([disabled]).has-tooltip-left::before {
+  top: auto;
+  right: auto;
+  bottom: 50%;
+  left: -5px;
+  transform: translate(-100%, 50%);
+}
+
+[data-tooltip]:not(.is-loading).has-tooltip-left.has-tooltip-arrow::after,
+[data-tooltip]:not(.is-disabled).has-tooltip-left.has-tooltip-arrow::after,
+[data-tooltip]:not([disabled]).has-tooltip-left.has-tooltip-arrow::after {
+  top: auto;
+  right: auto;
+  bottom: 50%;
+  left: 0;
+  margin-top: auto;
+  margin-right: auto;
+  margin-bottom: -6px;
+  margin-left: -5px;
+  border-color: transparent transparent transparent rgba(74, 74, 74, 0.9);
+}
+
+[data-tooltip]:not(.is-loading).has-tooltip-right::before,
+[data-tooltip]:not(.is-disabled).has-tooltip-right::before,
+[data-tooltip]:not([disabled]).has-tooltip-right::before {
+  top: auto;
+  right: -5px;
+  bottom: 50%;
+  left: auto;
+  margin-top: auto;
+  transform: translate(100%, 50%);
+}
+
+[data-tooltip]:not(.is-loading).has-tooltip-arrow::after,
+[data-tooltip]:not(.is-disabled).has-tooltip-arrow::after,
+[data-tooltip]:not([disabled]).has-tooltip-arrow::after {
+  box-sizing: border-box;
+  color: white;
+  display: inline-block;
+  font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-size: 0.75rem;
+  hyphens: auto;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  visibility: hidden;
+  z-index: 1020;
+  content: '';
+  border-style: solid;
+  border-width: 6px;
+  border-color: rgba(74, 74, 74, 0.9) transparent transparent transparent;
+  margin-bottom: -5px;
+}
+
+/* left */
+
+[data-tooltip]:not(.is-loading).has-tooltip-left.has-tooltip-arrow::after,
+[data-tooltip]:not(.is-disabled).has-tooltip-left.has-tooltip-arrow::after,
+[data-tooltip]:not([disabled]).has-tooltip-left.has-tooltip-arrow::after {
+  top: auto;
+  right: auto;
+  bottom: 50%;
+  left: 0;
+  margin-top: auto;
+  margin-right: auto;
+  margin-bottom: -6px;
+  margin-left: -5px;
+  border-color: transparent transparent transparent rgba(74, 74, 74, 0.9);
+}
+
+/* right */
+[data-tooltip]:not(.is-loading).has-tooltip-right.has-tooltip-arrow::after,
+[data-tooltip]:not(.is-disabled).has-tooltip-right.has-tooltip-arrow::after,
+[data-tooltip]:not([disabled]).has-tooltip-right.has-tooltip-arrow::after {
+  top: auto;
+  right: 0;
+  bottom: 50%;
+  left: auto;
+  margin-top: auto;
+  margin-right: -6px;
+  margin-bottom: -6px;
+  margin-left: auto;
+  border-color: transparent rgba(74, 74, 74, 0.9) transparent transparent;
+}
+
+/* Bottom */
+
+[data-tooltip]:not(.is-loading).has-tooltip-bottom.has-tooltip-arrow::after,
+[data-tooltip]:not(.is-disabled).has-tooltip-bottom.has-tooltip-arrow::after,
+[data-tooltip]:not([disabled]).has-tooltip-bottom.has-tooltip-arrow::after {
+  top: auto;
+  right: auto;
+  bottom: -1px;
+  left: 50%;
+  margin-top: auto;
+  margin-right: auto;
+  margin-bottom: -5px;
+  margin-left: -5px;
+  border-color: transparent transparent rgba(74, 74, 74, 0.9) transparent;
+}
+
+[data-tooltip]:not(.is-loading):hover::before,
+[data-tooltip]:not(.is-loading):hover::after,
+[data-tooltip]:not(.is-loading).has-tooltip-active::before,
+[data-tooltip]:not(.is-loading).has-tooltip-active::after,
+[data-tooltip]:not(.is-disabled):hover::before,
+[data-tooltip]:not(.is-disabled):hover::after,
+[data-tooltip]:not(.is-disabled).has-tooltip-active::before,
+[data-tooltip]:not(.is-disabled).has-tooltip-active::after,
+[data-tooltip]:not([disabled]):hover::before,
+[data-tooltip]:not([disabled]):hover::after,
+[data-tooltip]:not([disabled]).has-tooltip-active::before,
+[data-tooltip]:not([disabled]).has-tooltip-active::after {
+  opacity: 1;
+  visibility: visible;
+}

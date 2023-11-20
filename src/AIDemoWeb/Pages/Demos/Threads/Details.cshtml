@@ -42,12 +42,18 @@
                     @foreach (var messageContent in message.Content) {
                         <li class="items-center py-2 px-3 text-sm leading-6">
                             <span class="text-gray-400">type: @messageContent.Type</span>
-                            <div class="flex min-w-0 gap-2">
-                                <span class="font-medium">@messageContent.Text.Value</span>
-                            </div>
-                            <div class="rounded-md border border-gray-200 py-1">
-                                <partial name="Shared/Annotations" model="messageContent.Text.Annotations"/>
-                            </div>
+                            @if (messageContent.Text is { } messageContentText) {
+                                <div class="flex min-w-0 gap-2">
+                                    <partial name="Shared/MessageContentText" model="@messageContentText" />
+                                </div>
+                                <div class="rounded-md border border-gray-200 py-1">
+                                    <partial name="Shared/Annotations" model="messageContentText.Annotations"/>
+                                </div>
+                            } else if (messageContent.ImageFile is { } imageFile) {
+                                <div class="flex min-w-0 gap-2">
+                                    <span class="font-medium">File Id: @imageFile.FileId</span>
+                                </div>
+                            }
                         </li>
                     }
                 </ul>
