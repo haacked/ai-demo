@@ -22,11 +22,11 @@ namespace Haack.AIDemoWeb.Library.Clients;
 /// <param name="Instructions">The instructions that the assistant used for this run.</param>
 /// <param name="Tools">The list of tools that the assistant used for this run.</param>
 /// <param name="FileIds">The list of File IDs the assistant used for this run.</param>
-/// <summary>
+/// <param name="Metadata">
 /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional
 /// information about the object in a structured format. Keys can be a maximum of 64 characters long and values can
 /// be a maximum of 512 characters long.
-/// </summary>
+/// </param>
 public record ThreadRun(
     string Id,
     [property: JsonPropertyName("object")]
@@ -34,8 +34,8 @@ public record ThreadRun(
     long CreatedAt,
     string AssistantId,
     string ThreadId,
-    RunStatus Status,
-    long StartedAt,
+    string Status,
+    long? StartedAt,
     long? ExpiresAt,
     long? CancelledAt,
     long? FailedAt,
@@ -47,6 +47,42 @@ public record ThreadRun(
     IReadOnlyList<string> FileIds,
     IReadOnlyDictionary<string, string> Metadata
 );
+
+/// <summary>
+/// Used to create a thread run.
+/// </summary>
+public record ThreadRunCreateBody
+{
+    /// <summary>
+    /// The ID of the assistant to use to execute this run.
+    /// </summary>
+    public required string AssistantId { get; init; }
+
+    /// <summary>
+    /// The ID of the Model to be used to execute this run. If a value is provided here, it will override the model
+    /// associated with the assistant. If not, the model associated with the assistant will be used.
+    /// </summary>
+    public string? Model { get; init; }
+
+    /// <summary>
+    /// Override the default system message of the assistant. This is useful for modifying the behavior on a per-run
+    /// basis.
+    /// </summary>
+    public string? Instructions { get; init; }
+
+    /// <summary>
+    /// Override the tools the assistant can use for this run. This is useful for modifying the behavior on a
+    /// per-run basis.
+    /// </summary>
+    public IReadOnlyList<AssistantTool>? Tools { get; init; }
+
+    /// <summary>
+    /// Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional
+    /// information about the object in a structured format. Keys can be a maximum of 64 characters long and values can
+    /// be a maximum of 512 characters long.
+    /// </summary>
+    public IReadOnlyDictionary<string, string>? Metadata { get; init; }
+}
 
 /// <summary>
 /// An error associated with a run.

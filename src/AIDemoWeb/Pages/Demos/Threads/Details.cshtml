@@ -11,7 +11,7 @@
     <div class="px-4 sm:px-0">
         <h3 class="text-base font-semibold leading-7 text-gray-900">Thread Details</h3>
         <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Metadata stored in the API and our database</p>
-      </div>
+    </div>
 
     <div class="mt-6 border-t border-gray-100">
         <dl class="divide-y divide-gray-100">
@@ -27,104 +27,89 @@
                 <dt class="text-sm font-medium leading-6 text-gray-900">Creator</dt>
                 <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">@Model.ThreadEntity.Creator.Name</dd>
             </div>
-            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                <dt class="text-sm font-medium leading-6 text-gray-900">Messages</dt>
-                <dd class="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">role</th>
-                            <th scope="col" class="px-6 py-3">content</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var message in Model.Messages) {
-                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">@message.Role</th>
-                                <td class="px-6 py-4">
-                                    @foreach (var messageContent in message.Content) {
-                                        <dl class="divide-y divide-gray-100">
-                                            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                                <dt class="text-sm font-medium leading-6 text-gray-900">Type</dt>
-                                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">@messageContent.Type</dd>
-                                            </div>
-                                            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                                <dt class="text-sm font-medium leading-6 text-gray-900">Text</dt>
-                                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">@messageContent.Text.Value</dd>
-                                            </div>
-                                            <ul role="list" class="divide-y divide-gray-100 rounded-md border border-gray-200">
-                                                @foreach (var annotation in messageContent.Text.Annotations) {
-                                                    <li class="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                                                        <div class="flex w-0 flex-1 items-center">
-                                                            <svg class="h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                                <path fill-rule="evenodd" d="M15.621 4.379a3 3 0 00-4.242 0l-7 7a3 3 0 004.241 4.243h.001l.497-.5a.75.75 0 011.064 1.057l-.498.501-.002.002a4.5 4.5 0 01-6.364-6.364l7-7a4.5 4.5 0 016.368 6.36l-3.455 3.553A2.625 2.625 0 119.52 9.52l3.45-3.451a.75.75 0 111.061 1.06l-3.45 3.451a1.125 1.125 0 001.587 1.595l3.454-3.553a3 3 0 000-4.242z" clip-rule="evenodd"/>
-                                                            </svg>
-                                                            <div class="ml-4 flex min-w-0 flex-1 gap-2">
-                                                                <span class="truncate font-medium">@annotation</span>
-                                                                <span class="flex-shrink-0 text-gray-400">2.4mb</span>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                }
-                                            </ul>
-                                        </dl>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                    <form method="post">
-                        <div class="p-2">
-                            <label asp-for="NewMessageContent" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New message</label>
-                            <textarea asp-for="NewMessageContent"
-                                rows="4"
-                                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 focus:cursor-auto dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your question here…"></textarea>
-                            <span asp-validation-for="NewMessageContent"></span>
-                        </div>
-                        <div class="p-2">
-                            <button type="submit" class="mt-2 btn btn-primary">Submit</button>
-                        </div>
-                    </form>
-                </dd>
-            </div>
-            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                <dt class="text-sm font-medium leading-6 text-gray-900">Runs</dt>
-                <dd class="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">id</th>
-                            <th scope="col" class="px-6 py-3">assistant_id</th>
-                            <th scope="col" class="px-6 py-3">status</th>
-                            <th scope="col" class="px-6 py-3">last_error</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var message in Model.Runs) {
-                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">@message.Id</th>
-                                <td class="px-6 py-4"><code>@message.ThreadId</code></td>
-                                <td class="px-6 py-4">
-                                    @if (message.LastError is { } lastError) {
-                                        <dl class="divide-y divide-gray-100">
-                                            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                                <dt class="text-sm font-medium leading-6 text-gray-900">Code</dt>
-                                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">@lastError.Code</dd>
-                                            </div>
-                                            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                                <dt class="text-sm font-medium leading-6 text-gray-900">Message</dt>
-                                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">@lastError.Message</dd>
-                                            </div>
-                                        </dl>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </dd>
-            </div>
         </dl>
     </div>
+
+    <div class="px-4 sm:px-0">
+        <h3 class="text-base font-semibold leading-7 text-gray-900">Messages</h3>
+    </div>
+
+    <ul class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        @foreach (var message in Model.Messages) {
+            <li class="bg-white dark:bg-gray-800 dark:border-gray-700 my-2">
+                <span>@message.Role</span>
+                <ul role="list" class="divide-y divide-gray-100 rounded-md border border-gray-200 my-1">
+                    @foreach (var messageContent in message.Content) {
+                        <li class="items-center py-2 px-3 text-sm leading-6">
+                            <span class="text-gray-400">type: @messageContent.Type</span>
+                            <div class="flex min-w-0 gap-2">
+                                <span class="font-medium">@messageContent.Text.Value</span>
+                            </div>
+                            <div class="rounded-md border border-gray-200 py-1">
+                                <partial name="Shared/Annotations" model="messageContent.Text.Annotations"/>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+    <form method="post">
+        <div class="p-2">
+            <label asp-for="NewMessageContent" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New message</label>
+            <textarea asp-for="NewMessageContent"
+                rows="4"
+                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 focus:cursor-auto dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your question here…"></textarea>
+            <span asp-validation-for="NewMessageContent"></span>
+        </div>
+        <div class="p-2">
+            <button type="submit" class="mt-2 btn btn-primary">Submit</button>
+        </div>
+    </form>
+
+    <div class="px-4 sm:px-0">
+        <h3 class="text-base font-semibold leading-7 text-gray-900">Runs</h3>
+    </div>
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+            <th scope="col" class="px-6 py-3">id</th>
+            <th scope="col" class="px-6 py-3">assistant_id</th>
+            <th scope="col" class="px-6 py-3">status</th>
+            <th scope="col" class="px-6 py-3">last_error</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var run in Model.Runs) {
+            <tr class="bg-white dark:bg-gray-800 dark:border-gray-700">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">@run.Id</th>
+                <td class="px-6 py-4"><code>@run.ThreadId</code></td>
+                <td class="px-6 py-4">
+                    @if (run.LastError is { } lastError) {
+                        <dl class="divide-y divide-gray-100">
+                            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Code</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">@lastError.Code</dd>
+                            </div>
+                            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Message</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">@lastError.Message</dd>
+                            </div>
+                        </dl>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <form method="post" asp-page-handler="CreateRun">
+        <div class="p-2">
+            <label asp-for="AssistantIdForRun" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Create Run</label>
+            <select asp-for="AssistantIdForRun" asp-items="Model.Assistants"></select>
+            <span asp-validation-for="AssistantIdForRun"></span>
+        </div>
+        <div class="p-2">
+            <button type="submit" class="mt-2 btn btn-primary">Submit</button>
+        </div>
+    </form>
 </section>

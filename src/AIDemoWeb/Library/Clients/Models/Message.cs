@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace Haack.AIDemoWeb.Library.Clients;
@@ -101,4 +100,4 @@ public record MessageContent(string Type, MessageText Text);
 /// </summary>
 /// <param name="Value">The value of the message text.</param>
 /// <param name="Annotations">Annotations?</param>
-public record MessageText(string Value, IReadOnlyList<JsonObject> Annotations);
+public record MessageText(string Value, IReadOnlyList<Annotation> Annotations);

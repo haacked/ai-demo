@@ -3,6 +3,7 @@ using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serious;
@@ -25,6 +26,17 @@ public class ThreadDetailsPageModel : PageModel
         _openAIClient = openAIClient;
     }
 
+    [BindProperty]
+    public string NewMessageContent { get; set; } = default!;
+
+    [BindProperty]
+    public string? AssistantIdForRun { get; set; }
+
+    [BindProperty]
+    public string? RunIdToDelete { get; set; }
+
+    public IReadOnlyList<SelectListItem> Assistants { get; private set; } = Array.Empty<SelectListItem>();
+
     public Haack.AIDemoWeb.Entities.AssistantThread ThreadEntity { get; private set; } = default!;
 
     public Haack.AIDemoWeb.Library.Clients.AssistantThread Thread { get; private set; } = default!;
@@ -33,8 +45,6 @@ public class ThreadDetailsPageModel : PageModel
 
     public IReadOnlyList<ThreadRun> Runs { get; private set; } = Array.Empty<ThreadRun>();
 
-    [BindProperty]
-    public string NewMessageContent { get; set; } = default!;
 
     public async Task<IActionResult> OnGetAsync(string id, CancellationToken cancellationToken = default)
     {
@@ -46,6 +56,7 @@ public class ThreadDetailsPageModel : PageModel
             return NotFound();
         }
 
+        var apiKey = _options.ApiKey.Require();
         var username = User.Identity?.Name;
         var currentUser = await _db.Users.SingleOrDefaultAsync(u => u.Name == username, cancellationToken);
 
@@ -54,13 +65,19 @@ public class ThreadDetailsPageModel : PageModel
             return Forbid();
         }
 
-        var thread = await _openAIClient.GetThreadAsync(_options.ApiKey.Require(), id, cancellationToken);
+        var thread = await _openAIClient.GetThreadAsync(apiKey, id, cancellationToken);
 
         ThreadEntity = threadEntity;
         Thread = thread;
 
-        var response = await _openAIClient.GetMessagesAsync(_options.ApiKey.Require(), id, cancellationToken);
+        var response = await _openAIClient.GetMessagesAsync(apiKey, id, order: "asc", cancellationToken: cancellationToken);
         Messages = response.Data;
+
+        var assistantsResponse = await _openAIClient.GetAssistantsAsync(apiKey, cancellationToken);
+        Assistants = assistantsResponse.Data.Select(a => new SelectListItem(a.Name, a.Id)).ToList();
+
+        var runsResponse = await _openAIClient.GetRunsAsync(apiKey, id, cancellationToken);
+        Runs = runsResponse.Data;
 
         return Page();
     }
@@ -79,6 +96,19 @@ public class ThreadDetailsPageModel : PageModel
             cancellationToken);
 
         StatusMessage = $"Message {message.Id} added to the thread.";
+
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostCreateRunAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var run = await _openAIClient.CreateRunAsync(
+            _options.ApiKey.Require(),
+            id,
+            new ThreadRunCreateBody { AssistantId = AssistantIdForRun.Require() },
+            cancellationToken);
+
+        StatusMessage = $"Run {run.Id} created.";
 
         return RedirectToPage();
     }
