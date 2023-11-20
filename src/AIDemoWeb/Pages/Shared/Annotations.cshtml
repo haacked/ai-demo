@@ -10,6 +10,7 @@
         <th scope="col" class="px-6 py-3">end_index</th>
         <th scope="col" class="px-6 py-3">file_citation.file_id</th>
         <th scope="col" class="px-6 py-3">file_citation.quote</th>
+        <th scope="col" class="px-6 py-3">file_path.file_id</th>
 
     </tr>
     </thead>
@@ -20,8 +21,15 @@
             <td class="px-6 py-4">@annotation.Text</td>
             <td class="px-6 py-4">@annotation.StartIndex</td>
             <td class="px-6 py-4">@annotation.EndIndex</td>
-            <td class="px-6 py-4">@annotation.FileCitation.FileId</td>
-            <td class="px-6 py-4">@annotation.FileCitation.Quote</td>
+            <td class="px-6 py-4">
+                @annotation.FileCitation?.FileId
+            </td>
+            <td class="px-6 py-4">
+                @annotation.FileCitation?.Quote
+            </td>
+            <td class="px-6 py-4">
+                @annotation.FilePath?.FileId
+            </td>
         </tr>
     }
     </tbody>

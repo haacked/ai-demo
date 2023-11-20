@@ -92,8 +92,8 @@ public record Message
 /// The content of a message.
 /// </summary>
 /// <param name="Type">The type of message.</param>
-/// <param name="Text">The text of the message.</param>
-public record MessageContent(string Type, MessageText Text);
+/// <param name="Text">The text of the message, if this is <c>text</c>.</param>
+public record MessageContent(string Type, MessageText? Text, FileReference? ImageFile);
 
 /// <summary>
 /// Text and annotations for a message.
@@ -101,3 +101,9 @@ public record MessageContent(string Type, MessageText Text);
 /// <param name="Value">The value of the message text.</param>
 /// <param name="Annotations">Annotations?</param>
 public record MessageText(string Value, IReadOnlyList<Annotation> Annotations);
+
+/// <summary>
+/// A reference to a file.
+/// </summary>
+/// <param name="FileId">The File ID of the image in the message content.</param>
+public record FileReference(string FileId);
