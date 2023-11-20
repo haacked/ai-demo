@@ -1,91 +1,80 @@
-<!-- drawer component -->
-<div class="fixed top-0 left-0 z-40">
-    <button type="button"
-            class="text-gray-400 p-1 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-1 mt-2 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white"
-            data-drawer-target="drawer-navigation"
-            data-drawer-show="drawer-navigation"
-            data-drawer-edge="true"
-            data-drawer-edge-offset="left-[60px]"
-            aria-controls="drawer-navigation">
-        <svg viewBox="0 0 100 80" width="40" height="40">
-            <rect width="100" height="20" rx="10" style="fill:rgb(120,120,120)"></rect>
-            <rect y="30" width="100" height="20" rx="10" style="fill:rgb(120,120,120)"></rect>
-            <rect y="60" width="100" height="20" rx="10" style="fill:rgb(120,120,120)"></rect>
-        </svg>
-    </button>
-</div>
+    <ul class="space-y-2 font-medium">
+        <li>
+            <a asp-page="/Demos/Ask"
+               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <span class="w-6">
+                    <i class="fa-solid fa-question"></i>
+                </span>
+                <span class="ml-3">Ask the AI</span>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Demos/Chat" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <span class="w-6">
+                    <i class="fa-regular fa-comments"></i>
+                </span>
+                <span class="ml-3">Chat</span>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Demos/Assistants/Index" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <span class="w-6">
+                    <i class="fa-solid fa-handshake-angle"></i>
+                </span>
+                <span class="ml-3">Assistants</span>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Demos/Threads/Index" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <span class="w-6">
+                    <i class="fa-solid fa-headset"></i>
+                </span>
+                <span class="ml-3">Threads</span>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Demos/Files/Index" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <span class="w-6">
+                    <i class="fa-regular fa-file"></i>
+                </span>
+                <span class="ml-3">Files</span>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Demos/Users" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <span class="w-6">
+                    <i class="fa-solid fa-users"></i>
+                </span>
+                <span class="ml-3">Users</span>
+            </a>
+        </li>
+        <li>
+            <a asp-page="/Demos/Models" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <span class="w-6">
+                    <i class="fa-solid fa-share-nodes"></i>
+                </span>
+                <span class="ml-3">Models</span>
+            </a>
+        </li>
 
-<div id="drawer-navigation"
-     class="fixed top-0 left-0 z-40 h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white w-64 dark:bg-gray-800"
-     tabindex="-1"
-     aria-labelledby="drawer-navigation-label">
-    <h5 id="drawer-navigation-label" class="text-base font-semibold text-gray-500 uppercase dark:text-gray-400">Menu</h5>
-    <button type="button"
-            data-drawer-toggle="drawer-navigation"
-            aria-controls="drawer-navigation"
-            class="text-gray-400 p-1 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 right-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
-        <svg viewBox="0 0 100 80" width="40" height="40">
-            <rect width="100" height="20" rx="10" style="fill:rgb(120,120,120)"></rect>
-            <rect y="30" width="100" height="20" rx="10" style="fill:rgb(120,120,120)"></rect>
-            <rect y="60" width="100" height="20" rx="10" style="fill:rgb(120,120,120)"></rect>
-        </svg>
-        <span class="sr-only">Toggle menu</span>
-    </button>
-    <div class="py-4 overflow-y-auto">
-        <ul class="space-y-2 font-medium">
+        @if (ViewContext.HttpContext.User.Identity is {IsAuthenticated: true }) {
             <li>
-                <a asp-page="/Demos/Ask"
-                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <a asp-page="/Logout" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <span class="w-6">
-                        <i class="fa-solid fa-question"></i>
+                        <i class="fa-solid fa-user"></i>
                     </span>
-                    <span class="ml-3">Ask the AI</span>
+                    <span class="flex-1 ml-3 whitespace-nowrap">Sign out</span>
                 </a>
             </li>
+        } else {
             <li>
-                <a asp-page="/Demos/Chat" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <a asp-page="/Login" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <span class="w-6">
-                        <i class="fa-regular fa-comments"></i>
+                        <i class="fa-regular fa-user"></i>
                     </span>
-                    <span class="ml-3">Chat</span>
+                    <span class="flex-1 ml-3 whitespace-nowrap">Sign In</span>
                 </a>
             </li>
-            <li>
-                <a asp-page="/Demos/Users" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <span class="w-6">
-                        <i class="fa-solid fa-users"></i>
-                    </span>
-                    <span class="ml-3">Users</span>
-                </a>
-            </li>
-            <li>
-                <a asp-page="/Demos/Models" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <span class="w-6">
-                        <i class="fa-solid fa-share-nodes"></i>
-                    </span>
-                    <span class="ml-3">Models</span>
-                </a>
-            </li>
+        }
+    </ul>
 
-            @if (ViewContext.HttpContext.User.Identity is {IsAuthenticated: true }) {
-                <li>
-                    <a asp-page="/Logout" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                        <span class="w-6">
-                            <i class="fa-solid fa-user"></i>
-                        </span>
-                        <span class="flex-1 ml-3 whitespace-nowrap">Sign out</span>
-                    </a>
-                </li>
-            } else {
-                <li>
-                    <a asp-page="/Login" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                        <span class="w-6">
-                            <i class="fa-regular fa-user"></i>
-                        </span>
-                        <span class="flex-1 ml-3 whitespace-nowrap">Sign In</span>
-                    </a>
-                </li>
-            }
-        </ul>
-    </div>
-</div>

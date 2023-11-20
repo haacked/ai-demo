@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library.Clients;
 using MassTransit;
@@ -117,7 +118,12 @@ public static class ServiceExtensions
     public static void AddClients(this IServiceCollection services)
     {
         services.AddTransient<LoggingHttpMessageHandler>();
-        services.AddRefitClient<IOpenAIClient>(IOpenAIClient.BaseAddress);
+        services.AddRefitClient<IOpenAIClient>(IOpenAIClient.BaseAddress,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                PropertyNameCaseInsensitive = true,
+            });
         services.AddRefitClient<IWeatherApiClient>(IWeatherApiClient.BaseAddress);
     }
 
@@ -127,6 +133,22 @@ public static class ServiceExtensions
             .ConfigureHttpClient(c => c.BaseAddress = baseAddress)
 #if DEBUG
             .AddHttpMessageHandler<LoggingHttpMessageHandler>()
+#endif
+            ;
+    }
+
+    static IHttpClientBuilder AddRefitClient<T>(
+        this IServiceCollection services,
+        Uri baseAddress,
+        JsonSerializerOptions serializerOptions) where T : class
+    {
+        return services.AddRefitClient<T>(new RefitSettings
+                {
+                    ContentSerializer = new SystemTextJsonContentSerializer(serializerOptions)
+                })
+                .ConfigureHttpClient(c => c.BaseAddress = baseAddress)
+#if DEBUG
+                .AddHttpMessageHandler<LoggingHttpMessageHandler>()
 #endif
             ;
     }

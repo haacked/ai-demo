@@ -11,6 +11,7 @@ public class User
     public User()
     {
         Facts = new EntityList<UserFact>();
+        Threads = new EntityList<AssistantThread>();
     }
 
     // Special constructor called by EF Core.
@@ -18,6 +19,7 @@ public class User
     public User(DbContext db)
     {
         Facts = new EntityList<UserFact>(db, this, nameof(Facts));
+        Threads = new EntityList<AssistantThread>(db, this, nameof(Threads));
     }
 
     /// <summary>
@@ -39,4 +41,9 @@ public class User
     /// Facts about the user.
     /// </summary>
     public EntityList<UserFact> Facts { get; }
+
+    /// <summary>
+    /// The threads started by this user.
+    /// </summary>
+    public EntityList<AssistantThread> Threads { get; }
 }

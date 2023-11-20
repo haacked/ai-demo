@@ -13,6 +13,8 @@ public class AIDemoContext : DbContext
 
     public DbSet<User> Users { get; init; } = null!;
 
+    public DbSet<AssistantThread> Threads { get; init; } = null!;
+
     public DbSet<UserFact> UserFacts { get; init; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

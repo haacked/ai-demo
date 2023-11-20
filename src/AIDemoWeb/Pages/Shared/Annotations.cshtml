@@ -1,0 +1,28 @@
+@model IReadOnlyList<Haack.AIDemoWeb.Library.Clients.Annotation>
+
+<table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <caption>Annotations</caption>
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+    <tr>
+        <th scope="col" class="px-6 py-3">type</th>
+        <th scope="col" class="px-6 py-3">text</th>
+        <th scope="col" class="px-6 py-3">start_index</th>
+        <th scope="col" class="px-6 py-3">end_index</th>
+        <th scope="col" class="px-6 py-3">file_citation.file_id</th>
+        <th scope="col" class="px-6 py-3">file_citation.quote</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var annotation in Model) {
+        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+            <td class="px-6 py-4">@annotation.Type</td>
+            <td class="px-6 py-4">@annotation.Text</td>
+            <td class="px-6 py-4">@annotation.StartIndex</td>
+            <td class="px-6 py-4">@annotation.EndIndex</td>
+            <td class="px-6 py-4">@annotation.FileCitation.FileId</td>
+            <td class="px-6 py-4">@annotation.FileCitation.Quote</td>
+        </tr>
+    }
+    </tbody>
+</table>
