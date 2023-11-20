@@ -219,6 +219,15 @@ public interface IOpenAIClient
     /// </summary>
     /// <param name="apiToken">The Open AI API Key.</param>
     /// <param name="threadId">The ID of the thread to delete.</param>
+    /// <param name="limit">A limit on the number of messages to return.</param>
+    /// <param name="order">Sort order by the <c>created_at</c> timestamp of the objects.
+    /// <c>asc</c> for ascending order and <c>desc</c> for descending order.</param>
+    /// <param name="after">A cursor for use in pagination. after is an object ID that defines your place in the list.
+    /// For instance, if you make a list request and receive 100 objects, ending with obj_foo,
+    /// your subsequent call can include after=obj_foo in order to fetch the next page of the list.</param>
+    /// <param name="before">A cursor for use in pagination. before is an object ID that defines your place in the
+    /// list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent
+    /// call can include before=obj_foo in order to fetch the previous page of the list.</param>
     /// <param name="cancellationToken">The cancellation token to use.</param>
     /// <returns>A list of <see cref="ThreadRun"/>s for the thread.</returns>
     [Get("/threads/{threadId}/runs")]
@@ -227,6 +236,10 @@ public interface IOpenAIClient
         [Authorize]
         string apiToken,
         string threadId,
+        int limit = 20,
+        string? order = null,
+        string? after = null,
+        string? before = null,
         CancellationToken cancellationToken = default
     );
 

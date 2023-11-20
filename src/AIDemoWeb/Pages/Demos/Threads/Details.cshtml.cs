@@ -45,7 +45,6 @@ public class ThreadDetailsPageModel : PageModel
 
     public IReadOnlyList<ThreadRun> Runs { get; private set; } = Array.Empty<ThreadRun>();
 
-
     public async Task<IActionResult> OnGetAsync(string id, CancellationToken cancellationToken = default)
     {
         var threadEntity = await _db.Threads
@@ -76,7 +75,7 @@ public class ThreadDetailsPageModel : PageModel
         var assistantsResponse = await _openAIClient.GetAssistantsAsync(apiKey, cancellationToken);
         Assistants = assistantsResponse.Data.Select(a => new SelectListItem(a.Name, a.Id)).ToList();
 
-        var runsResponse = await _openAIClient.GetRunsAsync(apiKey, id, cancellationToken);
+        var runsResponse = await _openAIClient.GetRunsAsync(apiKey, id, order: "asc", cancellationToken: cancellationToken);
         Runs = runsResponse.Data;
 
         return Page();

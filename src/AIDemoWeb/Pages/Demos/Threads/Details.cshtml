@@ -70,38 +70,7 @@
     <div class="px-4 sm:px-0">
         <h3 class="text-base font-semibold leading-7 text-gray-900">Runs</h3>
     </div>
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-        <tr>
-            <th scope="col" class="px-6 py-3">id</th>
-            <th scope="col" class="px-6 py-3">assistant_id</th>
-            <th scope="col" class="px-6 py-3">status</th>
-            <th scope="col" class="px-6 py-3">last_error</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var run in Model.Runs) {
-            <tr class="bg-white dark:bg-gray-800 dark:border-gray-700">
-                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">@run.Id</th>
-                <td class="px-6 py-4"><code>@run.ThreadId</code></td>
-                <td class="px-6 py-4">
-                    @if (run.LastError is { } lastError) {
-                        <dl class="divide-y divide-gray-100">
-                            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                <dt class="text-sm font-medium leading-6 text-gray-900">Code</dt>
-                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">@lastError.Code</dd>
-                            </div>
-                            <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                <dt class="text-sm font-medium leading-6 text-gray-900">Message</dt>
-                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">@lastError.Message</dd>
-                            </div>
-                        </dl>
-                    }
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    <partial name="Shared/Runs" model="Model.Runs" />
     <form method="post" asp-page-handler="CreateRun">
         <div class="p-2">
             <label asp-for="AssistantIdForRun" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Create Run</label>
