@@ -1,5 +1,5 @@
 import {createRoot} from "react-dom/client";
-import ChatApp from "./components/chatApp";
+import ChatApp from "./chat/components/chatApp";
 import {ChatContextProvider} from "./hooks/useChat";
 import {IdentityContextProvider} from "./hooks/useIdentity";
 

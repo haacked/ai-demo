@@ -5,7 +5,6 @@ export interface IdentityContextState {
     username: string,
 }
 
-
 export const IdentityContext = createContext(null as IdentityContextState | null);
 
 export default function useIdentity() {

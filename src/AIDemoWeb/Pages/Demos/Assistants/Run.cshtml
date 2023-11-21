@@ -1,0 +1,23 @@
+@page "{id}"
+@model AIDemoWeb.Demos.Pages.Assistants.RunAssistantPageModel
+
+@{
+    ViewData["Title"] = "Run Assistant";
+}
+
+<section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
+    <h1 class="text-lg font-semibold leading-tight">Welcome</h1>
+    <p class="mt-2">This is a demonstration of a 1-1 OpenAI Assistant chat bot.</p>
+
+    <div id="assistant-root"
+         class="mt-2"
+         data-username="@Model.User.Identity?.Name"
+         data-assistant-name="@Model.Assistant.Name"
+         data-thread-id="@Model.ThreadId">
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/dist/js/assistant.js" asp-append-version="true">
+    </script>
+}

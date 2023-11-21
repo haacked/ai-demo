@@ -8,7 +8,8 @@ module.exports = {
     target: 'web',
     entry: {
         main: './assets/index',
-        react: './assets/react/index'
+        react: './assets/react/index',
+        assistant: './assets/react/assistant/index'
     },
     output: {
        publicPath: "/dist/js/",

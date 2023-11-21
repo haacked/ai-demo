@@ -1,13 +1,13 @@
 export interface ChatInputProps {
-    onMessagesSubmit: (value: string) => void;
+    onMessageSubmit: (value: string) => void;
 }
 
-export default function ChatInput({onMessagesSubmit}: ChatInputProps) {
+export default function ChatInput({onMessageSubmit}: ChatInputProps) {
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         const form = e.currentTarget as HTMLFormElement;
         const formData = new FormData(form);
-        onMessagesSubmit(formData.get('message') as string);
+        onMessageSubmit(formData.get('message') as string);
         form.reset();
     }
 

@@ -1,4 +1,4 @@
-import {ChatMessage} from "../models/ChatMessage";
+import {ChatMessage} from "../../models/chatMessage";
 
 export interface ChatLogProps {
     messages: ChatMessage[];

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {createContext, useContext, useMemo, useState} from "react";
-import {ChatMessage} from "../models/ChatMessage";
+import {ChatMessage} from "../models/chatMessage";
 
 export interface ChatContextState {
     messages: ChatMessage[],

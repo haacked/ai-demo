@@ -37,6 +37,22 @@ public interface IOpenAIClient
     );
 
     /// <summary>
+    /// Returns the specified assistant.
+    /// </summary>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="assistantId">The ID of the assistant to get.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>A list of assistants.</returns>
+    [Get("/assistants/{assistantId}")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<Assistant> GetAssistantAsync(
+        [Authorize]
+        string apiToken,
+        string assistantId,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
     /// Creates an assistant.
     /// </summary>
     /// <param name="apiToken">The Open AI API Key.</param>
