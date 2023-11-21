@@ -1,5 +1,5 @@
 import React from "react";
-import Avatar from "./avatar";
+import Avatar from "../../components/avatar";
 import useIdentity from "../../hooks/useIdentity";
 
 interface ChatHeaderProps {

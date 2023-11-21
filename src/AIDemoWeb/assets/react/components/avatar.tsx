@@ -1,7 +1,7 @@
 export default function Avatar(props:{username: string | null}) {
     return (
         <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full">
-            {props.username ? (
+            {props.username && props.username != "The Bot" ? (
                 <img
                     src={`https://github.com/${props.username}.png`}
                     alt="avatar" />
