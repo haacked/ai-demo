@@ -11,7 +11,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.12" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
-    <PackageVersion Include="OctoKit" Version="8.1.1" />
+    <PackageVersion Include="OctoKit" Version="9.0.0" />
     <PackageVersion Include="OpenAI" Version="1.7.2" />
     <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.1.2" />
     <PackageVersion Include="refit" Version="7.0.0" />
