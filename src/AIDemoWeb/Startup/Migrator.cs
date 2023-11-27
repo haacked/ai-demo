@@ -21,7 +21,7 @@ public class Migrator
     public async Task ApplyMigrationsAsync()
     {
         var pending = (await _db.Database.GetPendingMigrationsAsync()).ToList();
-        if (!pending.Any())
+        if (pending.Count is 0)
         {
             return;
         }

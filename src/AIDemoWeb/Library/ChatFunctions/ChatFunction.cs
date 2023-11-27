@@ -27,10 +27,7 @@ public abstract class ChatFunction<TArguments, TResult> : IChatFunction where TA
         string source,
         CancellationToken cancellationToken)
     {
-        var arguments = JsonSerializer.Deserialize<TArguments>(unvalidatedArguments, new JsonSerializerOptions
-        {
-            Converters = { new JsonStringEnumConverter() }
-        });
+        var arguments = JsonSerializer.Deserialize<TArguments>(unvalidatedArguments, JsonSerialization.Options);
 
         if (arguments is null)
         {
@@ -50,7 +47,7 @@ public abstract class ChatFunction<TArguments, TResult> : IChatFunction where TA
         // then add it to the messages after the first User message and initial response FunctionCall
         return JsonSerializer.Serialize(
             result,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            JsonSerialization.Options);
     }
 
     protected abstract Task<TResult?> InvokeAsync(

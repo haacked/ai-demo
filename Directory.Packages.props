@@ -3,17 +3,17 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="7.0.4" />
+    <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="8.0.0" />
     <PackageVersion Include="Azure.AI.OpenAI" Version="1.0.0-beta.9" />
-    <PackageVersion Include="MassTransit" Version="8.1.1" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.12" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.12" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.12" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.12" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
-    <PackageVersion Include="OctoKit" Version="8.1.1" />
+    <PackageVersion Include="MassTransit" Version="8.1.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.0" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+    <PackageVersion Include="OctoKit" Version="9.0.0" />
     <PackageVersion Include="OpenAI" Version="1.7.2" />
-    <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.1.2" />
+    <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.2.0" />
     <PackageVersion Include="refit" Version="7.0.0" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="7.0.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.0"/>
