@@ -298,6 +298,8 @@ public static class StringExtensions
         };
     }
 
+    static readonly char[] WordBoundaryCharacters = {'_', '-', ' '};
+
     /// <summary>
     /// Split a string into contingent parts. Especially useful for case conversions.
     /// </summary>
@@ -321,7 +323,7 @@ public static class StringExtensions
         // match list before returning results to the caller.
         // See "Remarks" section in documentation for more info:
         // https://docs.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.regex.split?view=netcore-3.1
-        var words = allMatches.Where(w => w.IndexOfAny(new[] { '_', '-', ' ' }) < 0);
+        var words = allMatches.Where(w => w.IndexOfAny(WordBoundaryCharacters) < 0);
 
         return words.ToArray();
     }

@@ -8,6 +8,8 @@
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
     <UserSecretsId>679f516b-fc62-4c81-be3e-2cb639960e16</UserSecretsId>
+    <TargetFramework>net8.0</TargetFramework>
+    <UseRidGraph>true</UseRidGraph>
   </PropertyGroup>
 
   <Target Name="RunWebpack" AfterTargets="AfterBuild">

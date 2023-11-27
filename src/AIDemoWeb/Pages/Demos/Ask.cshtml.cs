@@ -6,6 +6,7 @@ using Haack.AIDemoWeb.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Serious;
+using Serious.ChatFunctions;
 
 namespace AIDemoWeb.Demos.Pages;
 
@@ -30,6 +31,8 @@ public class AskPageModel : PageModel
         "Hello, you are a friendly chat bot who is part of a demo I'm giving and wants to represent me and Chat GPT well.";
 
     public string Answer { get; private set; } = string.Empty;
+
+    static readonly string[] RequiredArguments = { "left", "op", "right" };
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
     {
@@ -73,7 +76,7 @@ public class AskPageModel : PageModel
                                    description = "The value that serves as the right operand of the operation."
                                }
                            },
-                           required = new[] { "left", "op", "right" }
+                           required = RequiredArguments,
                        },
                        new JsonSerializerOptions
                        {
@@ -115,11 +118,9 @@ public class AskPageModel : PageModel
         async Task<string> CallFunctionAsync(ChatMessage message)
         {
             var functionCall = message.FunctionCall;
-            var arguments = JsonSerializer.Deserialize<ArithmeticArguments>(functionCall.Arguments, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Converters = { new JsonStringEnumConverter() }
-            });
+            var arguments = JsonSerializer.Deserialize<ArithmeticArguments>(
+                functionCall.Arguments,
+                JsonSerialization.Options);
 
             if (arguments is null)
             {

@@ -46,7 +46,7 @@ public class FunctionDispatcher
         // then add it to the messages after the first User message and initial response FunctionCall
         var content = JsonSerializer.Serialize(
             result,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            JsonSerialization.Options);
 
         return new ChatMessage(ChatRole.Function, content)
         {

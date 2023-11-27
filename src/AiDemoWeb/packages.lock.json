@@ -1,7 +1,7 @@
 {
   "version": 2,
   "dependencies": {
-    "net7.0": {
+    "net8.0": {
       "AspNet.Security.OAuth.GitHub": {
         "type": "Direct",
         "requested": "[7.0.4, )",
@@ -471,7 +471,7 @@
         "contentHash": "zteT+G8xuGu6mS+mzDzYXbzS7rd3K6Fjb9RiZlYlJPam2/hU7JCBZBVEcywNuR+oZ1ncTvc/cq0faRr3P01OVg=="
       }
     },
-    "net7.0/linux-x64": {
+    "net8.0/linux-x64": {
       "System.Text.Encoding.CodePages": {
         "type": "Transitive",
         "resolved": "4.5.1",
@@ -487,7 +487,7 @@
         "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
       }
     },
-    "net7.0/win10-x86": {
+    "net8.0/win10-x86": {
       "System.Text.Encoding.CodePages": {
         "type": "Transitive",
         "resolved": "4.5.1",
