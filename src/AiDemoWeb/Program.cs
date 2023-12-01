@@ -1,5 +1,6 @@
 using Haack.AIDemoWeb.Startup;
 using Haack.AIDemoWeb.Startup.Config;
+using Haack.AIDemoWeb.Components;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using OpenAIDemo.Hubs;
@@ -9,6 +10,8 @@ using Serious.ChatFunctions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
 builder.Services.AddClients();
@@ -35,11 +38,13 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAntiforgery();
 
 app.MapRazorPages().RequireAuthorization();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.MapGet("/logout", async ctx =>
 {
