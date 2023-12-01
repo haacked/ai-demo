@@ -43,6 +43,8 @@ app.UseAuthorization();
 app.UseAntiforgery();
 
 app.MapRazorPages().RequireAuthorization();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.MapGet("/logout", async ctx =>
 {
@@ -55,7 +57,5 @@ app.MapGet("/logout", async ctx =>
 });
 
 app.MapHub<ChatHub>("/hub");
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
 
 app.Run();
