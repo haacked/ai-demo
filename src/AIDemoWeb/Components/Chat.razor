@@ -1,5 +1,8 @@
 @using Haack.AIDemoWeb.Library.Clients
 @using Haack.AIDemoWeb.Library
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject NavigationManager NavigationManager
+
 <div class="max-w-sm mx-auto">
     <div class="flex flex-row justify-between items-center py-2">
         <p class="text-md text-white bg-blue-500 px-2 py-1 font-semibold animate-pulse">
@@ -35,7 +38,7 @@
             }
         </div>
         <div class="px-6 py-3 bg-white w-100 overflow-hidden rounded-bl-xl rounded-br-xla">
-            <form @onsubmit="SendMessage" class="flex flex-row items-center space-x-5">
+            <form @onsubmit="SubmitForm" class="flex flex-row items-center space-x-5">
                 <div class="relative w-full">
                     <input
                         type="text"
@@ -53,11 +56,13 @@
 </div>
 
 @code {
-    readonly List<BlazorMessage> _messages  = new() {
+    readonly List<BlazorMessage> _messages  = new()
+    {
         new BlazorMessage("Hi, I’m the bot. How can I help you?", "The Bot", false, DateTime.Now.AddMinutes(-1)),
     };
-
     string? _currentMessage;
+    private string? _hubUrl;
+    HubConnection? _hubConnection;
 
     [Parameter]
     public string? AssistantName { get; set; }
@@ -65,12 +70,65 @@
     [Parameter]
     public string? Username { get; set; }
 
-
-    void SendMessage()
+    protected override async Task OnInitializedAsync()
     {
-        if (_currentMessage is not null) {
-            _messages.Add(new BlazorMessage(_currentMessage, Username ?? "Unknown", true, DateTime.Now));
+        try
+        {
+            var baseUrl = NavigationManager.BaseUri;
+
+            _hubUrl = baseUrl.TrimEnd('/') + "/assistant-hub";
+
+            _hubConnection = new HubConnectionBuilder()
+                .WithUrl(_hubUrl)
+                .WithAutomaticReconnect()
+                .Build();
+
+            _hubConnection.On<string, string>("Broadcast", BroadcastMessage);
+
+            await _hubConnection.StartAsync();
+        }
+        catch (Exception e)
+        {
+            _currentMessage = $"ERROR: Failed to start chat client: {e.Message}";
+        }
+    }
+
+    private void BroadcastMessage(string name, string message)
+    {
+        var isUser = name.Equals(Username, StringComparison.OrdinalIgnoreCase);
+
+        _messages.Add(new BlazorMessage(message, name, isUser, DateTime.Now));
+
+        // Inform blazor the UI needs updating
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DisconnectAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.StopAsync();
+            await _hubConnection.DisposeAsync();
+        }
+
+        _hubConnection = null;
+    }
+
+    private async Task SendAsync(string message)
+    {
+        if (!string.IsNullOrWhiteSpace(message) && _hubConnection is not null)
+        {
+            await _hubConnection.SendAsync("Broadcast", Username, message);
+
             _currentMessage = string.Empty;
+        }
+    }
+
+    async Task SubmitForm()
+    {
+        if (_currentMessage is not null)
+        {
+            await SendAsync(_currentMessage);
         }
     }
 }

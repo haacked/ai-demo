@@ -56,6 +56,7 @@ app.MapGet("/logout", async ctx =>
         });
 });
 
-app.MapHub<ChatHub>("/hub");
+app.MapHub<ChatHub>("/chat-hub");
+app.MapHub<AssistantHub>("/assistant-hub");
 
 app.Run();
