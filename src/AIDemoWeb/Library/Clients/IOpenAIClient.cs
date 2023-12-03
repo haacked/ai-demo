@@ -37,6 +37,22 @@ public interface IOpenAIClient
     );
 
     /// <summary>
+    /// Returns the specified assistant.
+    /// </summary>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="assistantId">The ID of the assistant to get.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>A list of assistants.</returns>
+    [Get("/assistants/{assistantId}")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<Assistant> GetAssistantAsync(
+        [Authorize]
+        string apiToken,
+        string assistantId,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
     /// Creates an assistant.
     /// </summary>
     /// <param name="apiToken">The Open AI API Key.</param>
@@ -171,7 +187,7 @@ public interface IOpenAIClient
     /// Returns a list of messages for a given thread.
     /// </summary>
     /// <param name="apiToken">The Open AI API Key.</param>
-    /// <param name="threadId">The ID of the thread to delete.</param>
+    /// <param name="threadId">The ID of the thread the messages belong to.</param>
     /// <param name="limit">A limit on the number of messages to return.</param>
     /// <param name="order">Sort order by the <c>created_at</c> timestamp of the objects.
     /// <c>asc</c> for ascending order and <c>desc</c> for descending order.</param>
@@ -185,7 +201,7 @@ public interface IOpenAIClient
     /// <returns>A list of messages for the thread.</returns>
     [Get("/threads/{threadId}/messages")]
     [Headers("OpenAI-Beta: assistants=v1")]
-    Task<OpenAIResponse<List<Message>>> GetMessagesAsync(
+    Task<OpenAIResponse<List<ThreadMessage>>> GetMessagesAsync(
         [Authorize]
         string apiToken,
         string threadId,
@@ -200,13 +216,13 @@ public interface IOpenAIClient
     /// Creates a message in a thread.
     /// </summary>
     /// <param name="apiToken">The Open AI API Key.</param>
-    /// <param name="threadId">The ID of the thread to delete.</param>
+    /// <param name="threadId">The ID of the thread to create the message for.</param>
     /// <param name="body">The message to create.</param>
     /// <param name="cancellationToken">The cancellation token to use.</param>
-    /// <returns>The created <see cref="Message"/>.</returns>
+    /// <returns>The created <see cref="ThreadMessage"/>.</returns>
     [Post("/threads/{threadId}/messages")]
     [Headers("OpenAI-Beta: assistants=v1")]
-    Task<Message> CreateMessageAsync(
+    Task<ThreadMessage> CreateMessageAsync(
         [Authorize]
         string apiToken,
         string threadId,
@@ -218,7 +234,7 @@ public interface IOpenAIClient
     /// Returns a list of execution runs for a given thread.
     /// </summary>
     /// <param name="apiToken">The Open AI API Key.</param>
-    /// <param name="threadId">The ID of the thread to delete.</param>
+    /// <param name="threadId">The ID of the thread to retrieve runs for.</param>
     /// <param name="limit">A limit on the number of messages to return.</param>
     /// <param name="order">Sort order by the <c>created_at</c> timestamp of the objects.
     /// <c>asc</c> for ascending order and <c>desc</c> for descending order.</param>
@@ -244,10 +260,28 @@ public interface IOpenAIClient
     );
 
     /// <summary>
+    /// Returns an execution run.
+    /// </summary>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="runId">The Id of the run to retrieve.</param>
+    /// <param name="threadId">The ID of the thread the run is for.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>A list of <see cref="ThreadRun"/>s for the thread.</returns>
+    [Get("/threads/{threadId}/runs/{runId}")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<ThreadRun> GetRunAsync(
+        [Authorize]
+        string apiToken,
+        string runId,
+        string threadId,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
     /// Creates a run for a thread.
     /// </summary>
     /// <param name="apiToken">The Open AI API Key.</param>
-    /// <param name="threadId">The ID of the thread to delete.</param>
+    /// <param name="threadId">The ID of the thread to create the run for.</param>
     /// <param name="body">The thread run to create.</param>
     /// <param name="cancellationToken">The cancellation token to use.</param>
     /// <returns>The created <see cref="ThreadRun"/>.</returns>

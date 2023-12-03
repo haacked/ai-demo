@@ -58,9 +58,14 @@
                         }
                     </ul>
                 </td>
-                <td class="px-6 py-4">
-                    <form method="post">
-                        <input type="hidden" asp-for="AssistantIdToDelete" value="@assistant.Id" />
+                <td class="px-6 py-4 flex">
+                    <a asp-page="Run"
+                       class="btn flex-col"
+                       asp-route-id="@assistant.Id">
+                        <i class="fa-regular fa-comments"></i>
+                    </a>
+                    <form method="post" class="flex-col ml-2">
+                        <input type="hidden" asp-for="AssistantIdToDelete" value="@assistant.Id"/>
                         <button type="submit" class="btn btn-danger" title="delete"><i class="fa-solid fa-x"></i></button>
                     </form>
                 </td>

@@ -1,9 +1,9 @@
-import ChatLog from "./ChatLog";
-import useChat from "../hooks/useChat";
+import ChatLog from "./chatLog";
+import useChat from "../../hooks/useChat";
 import {useEffect} from "react";
-import useIdentity from "../hooks/useIdentity";
-import Connector from "../models/Connector";
-import ChatInput from "./ChatInput";
+import useIdentity from "../../hooks/useIdentity";
+import Connector from "../models/connector";
+import ChatInput from "./chatInput";
 
 export default function ChatApp() {
     const {messages, appendMessage} = useChat()
@@ -43,7 +43,7 @@ export default function ChatApp() {
     return (
         <div className="border border-gray-300">
             <ChatLog messages={messages} />
-            <ChatInput onMessagesSubmit={onNewMessage} />
+            <ChatInput onMessageSubmit={onNewMessage} />
         </div>
     );
 }

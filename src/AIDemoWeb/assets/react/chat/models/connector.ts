@@ -16,7 +16,7 @@ class Connector {
     static instance: Connector;
     constructor() {
         this.connection = new signalR.HubConnectionBuilder()
-            .withUrl('/hub')
+            .withUrl('/chat-hub')
             .withAutomaticReconnect()
             .build();
         this.connection.start().catch(err => document.write(err));
