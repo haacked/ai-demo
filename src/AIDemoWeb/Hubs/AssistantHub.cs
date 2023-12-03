@@ -1,14 +1,22 @@
+using AIDemoWeb.Entities.Eventing.Messages;
+using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 
 namespace OpenAIDemo.Hubs;
 
 public class AssistantHub : Hub
 {
-    public const string HubUrl = "/assistant-hub";
+    readonly IPublishEndpoint _publishEndpoint;
 
-    public async Task Broadcast(string username, string message)
+    public AssistantHub(IPublishEndpoint publishEndpoint)
     {
-        await Clients.All.SendAsync("Broadcast", username, message);
+        _publishEndpoint = publishEndpoint;
+    }
+
+    public async Task Broadcast(string message, bool isUser, string assistantName, string assistantId, string threadId)
+    {
+        await Clients.All.SendAsync("Broadcast", message, isUser, assistantName, assistantId, threadId);
+        await _publishEndpoint.Publish(new AssistantMessageReceived(message, assistantName, assistantId, threadId));
     }
 
     public override Task OnConnectedAsync()

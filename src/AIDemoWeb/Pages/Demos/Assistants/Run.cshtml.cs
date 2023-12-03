@@ -58,4 +58,15 @@ public class RunAssistantPageModel : PageModel
 
         return Page();
     }
+
+    public async Task<IActionResult> OnPostAsync(string id, CancellationToken cancellationToken = default)
+    {
+        // Delete any thread entities associated with this user...
+        var username = User.Identity?.Name;
+        var currentUser = await _db.Users.SingleOrDefaultAsync(u => u.Name == username, cancellationToken);
+        var threads = await _db.Threads.Where(t => t.Creator == currentUser).ToListAsync(cancellationToken);
+        _db.Threads.RemoveRange(threads);
+        await _db.SaveChangesAsync(cancellationToken);
+        return RedirectToPage();
+    }
 }

@@ -1,3 +1,3 @@
 namespace Haack.AIDemoWeb.Library.Clients;
 
-public record BlazorMessage(string Text, string Author, bool IsUser, DateTime Created);
+public record BlazorMessage(string Text, bool IsUser, DateTime Created);

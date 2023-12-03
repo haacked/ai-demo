@@ -31,7 +31,7 @@ public record MessageCreateBody
 /// <summary>
 /// A message associated with a thread.
 /// </summary>
-public record Message
+public record ThreadMessage
 {
     /// <summary>
     /// The message id.

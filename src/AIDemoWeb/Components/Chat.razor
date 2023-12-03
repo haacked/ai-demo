@@ -1,7 +1,13 @@
 @using Haack.AIDemoWeb.Library.Clients
 @using Haack.AIDemoWeb.Library
+@using Haack.AIDemoWeb.Startup.Config
 @using Microsoft.AspNetCore.SignalR.Client;
+@using Microsoft.Extensions.Options
+@using OpenAIDemo.Hubs
+@using Serious
 @inject NavigationManager NavigationManager
+@inject IOpenAIClient OpenAIClient
+@inject IOptions<OpenAIOptions> OpenAIOptions
 
 <div class="max-w-sm mx-auto">
     <div class="flex flex-row justify-between items-center py-2">
@@ -29,7 +35,7 @@
                     </div>
                     <div class="px-2 w-fit py-3 flex flex-col rounded-lg text-white @(message.IsUser ? "order-1 mr-2 bg-blue-500" : "order-2 ml-2 bg-green-500")">
                         <span class="text-xs text-gray-200">
-                            @message.Author &nbsp;-&nbsp;
+                            @(message.IsUser ? Username : AssistantName) &nbsp;-&nbsp;
                             @message.Created.ToLocalTime()
                         </span>
                         <span class="text-md">@message.Text</span>
@@ -42,7 +48,7 @@
                 <div class="relative w-full">
                     <input
                         type="text"
-                        @bind="@_currentMessage"
+                        @bind="@_newMessage"
                         name="message"
                         class="w-full block p-1.5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"/>
                 </div>
@@ -56,11 +62,8 @@
 </div>
 
 @code {
-    readonly List<BlazorMessage> _messages  = new()
-    {
-        new BlazorMessage("Hi, I’m the bot. How can I help you?", "The Bot", false, DateTime.Now.AddMinutes(-1)),
-    };
-    string? _currentMessage;
+    readonly List<BlazorMessage> _messages  = new();
+    string? _newMessage;
     private string? _hubUrl;
     HubConnection? _hubConnection;
 
@@ -68,36 +71,61 @@
     public string? AssistantName { get; set; }
 
     [Parameter]
+    public string? AssistantId { get; set; }
+
+    [Parameter]
+    public string? AssistantThreadId { get; set; }
+
+    [Parameter]
     public string? Username { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        if (AssistantId is null) {
+            _newMessage = "$ERROR: Assistant ID is null";
+            return;
+        }
+
+        if (AssistantThreadId is null) {
+            _newMessage = "$ERROR: Assistant ThreadId is null";
+            return;
+        }
+
+        // Load the chat history
+        var apiToken = OpenAIOptions.Value.ApiKey.Require();
+        var history = await OpenAIClient.GetMessagesAsync(apiToken, AssistantThreadId, order: "asc");
+
+        _messages.Add(new BlazorMessage(
+            $"Hi, I’m the {AssistantName} bot. How can I help you?",
+            IsUser: false,
+            DateTime.Now.AddMinutes(-1)));
+        _messages.AddRange(history.Data.SelectMany(m => m.ToBlazorMessages()));
+
+        var baseUrl = NavigationManager.BaseUri;
+
+        _hubUrl = baseUrl.TrimEnd('/') + "/assistant-hub";
+
+
         try
         {
-            var baseUrl = NavigationManager.BaseUri;
-
-            _hubUrl = baseUrl.TrimEnd('/') + "/assistant-hub";
-
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl(_hubUrl)
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On<string, string>("Broadcast", BroadcastMessage);
+            _hubConnection.On<string, bool, string, string, string>(nameof(AssistantHub.Broadcast), BroadcastMessage);
 
             await _hubConnection.StartAsync();
         }
         catch (Exception e)
         {
-            _currentMessage = $"ERROR: Failed to start chat client: {e.Message}";
+            _newMessage = $"ERROR: Failed to start chat client: {e.Message}";
         }
     }
 
-    private void BroadcastMessage(string name, string message)
+    private void BroadcastMessage(string message, bool isUser, string assistantName, string assistantId, string threadId)
     {
-        var isUser = name.Equals(Username, StringComparison.OrdinalIgnoreCase);
-
-        _messages.Add(new BlazorMessage(message, name, isUser, DateTime.Now));
+        _messages.Add(new BlazorMessage(message, isUser, DateTime.Now));
 
         // Inform blazor the UI needs updating
         InvokeAsync(StateHasChanged);
@@ -114,21 +142,19 @@
         _hubConnection = null;
     }
 
-    private async Task SendAsync(string message)
-    {
-        if (!string.IsNullOrWhiteSpace(message) && _hubConnection is not null)
-        {
-            await _hubConnection.SendAsync("Broadcast", Username, message);
-
-            _currentMessage = string.Empty;
-        }
-    }
-
     async Task SubmitForm()
     {
-        if (_currentMessage is not null)
+        if (!string.IsNullOrWhiteSpace(_newMessage) && _hubConnection is not null)
         {
-            await SendAsync(_currentMessage);
+            await _hubConnection.SendAsync(
+                "Broadcast",
+                _newMessage,
+                true /*isUser*/,
+                AssistantName,
+                AssistantId,
+                AssistantThreadId);
+
+            _newMessage = string.Empty;
         }
     }
 }

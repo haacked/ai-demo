@@ -41,7 +41,7 @@ public class ThreadDetailsPageModel : PageModel
 
     public Haack.AIDemoWeb.Library.Clients.AssistantThread Thread { get; private set; } = default!;
 
-    public IReadOnlyList<Message> Messages { get; private set; } = Array.Empty<Message>();
+    public IReadOnlyList<ThreadMessage> Messages { get; private set; } = Array.Empty<ThreadMessage>();
 
     public IReadOnlyList<ThreadRun> Runs { get; private set; } = Array.Empty<ThreadRun>();
 
