@@ -14,7 +14,14 @@ public static class ThreadMessageExtensions
                 { ImageFile: { } imageFile } => $"File: {imageFile.FileId}",
                 _ => "Unknown response",
             };
-            yield return new BlazorMessage(text, message.Role is "user", DateTimeOffset.FromUnixTimeSeconds(message.CreatedAt).DateTime);
+
+            var annotations = content.Text?.Annotations ?? Array.Empty<Annotation>();
+
+            yield return new BlazorMessage(
+                text,
+                message.Role is "user",
+                DateTimeOffset.FromUnixTimeSeconds(message.CreatedAt).DateTime,
+                annotations);
         }
     }
 }
