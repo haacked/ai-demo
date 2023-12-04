@@ -50,23 +50,23 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
             },
             context.CancellationToken);
 
-        var retryDelayMultiplier = 1;
+        var retryAttempt = 1;
 
         // Now we need to poll the run for the bot's response. We'll do it up to a minute.
         while (run.Status is not ("completed" or "cancelled" or "failed" or "expired") && DateTime.UtcNow < runCreateDate.AddMinutes(1))
         {
-            if (retryDelayMultiplier is 4)
+            if (retryAttempt is 4)
             {
                 // We only want to send this message once and only if the bot is taking a while to respond.
                 await SendResponseAsync("Thinking…");
             }
-            await Task.Delay(1000 * retryDelayMultiplier, context.CancellationToken);
+            await Task.Delay(1000, context.CancellationToken);
             run = await _openAIClient.GetRunAsync(
                 _options.ApiKey.Require(),
                 run.Id,
                 threadId,
                 context.CancellationToken);
-            retryDelayMultiplier *= 2;
+            retryAttempt++;
         }
 
         if (run.Status is "completed")

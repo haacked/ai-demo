@@ -8,6 +8,7 @@
 @inject NavigationManager NavigationManager
 @inject IOpenAIClient OpenAIClient
 @inject IOptions<OpenAIOptions> OpenAIOptions
+@inject IJSRuntime JsRuntime
 
 <div class="max-w-sm mx-auto">
     <div class="flex flex-row justify-between items-center py-2">
@@ -27,7 +28,7 @@
             <div class="space-x-1">
             </div>
         </div>
-        <div class="max-h-96 h-96 px-6 py-1 overflow-auto">
+        <div id="message-list" class="max-h-96 h-96 px-6 py-1 overflow-auto">
             @foreach (var message in _messages) {
                 <div class="py-2 flex flex-row w-full @(message.IsUser ? "justify-end" : "justify-start")">
                     <div class="@(message.IsUser ? "order-2" : "order-1")">
@@ -38,7 +39,7 @@
                             @(message.IsUser ? Username : AssistantName) &nbsp;-&nbsp;
                             @message.Created.ToLocalTime()
                         </span>
-                        <span class="text-md">@message.Text</span>
+                        <MessageContent Message="@message" />
                     </div>
                 </div>
             }
@@ -60,6 +61,15 @@
         </div>
     </div>
 </div>
+<script>
+    ScrollLastMessageIntoView = () => {
+        const messages = document.getElementById("message-list");
+        const lastMessage = messages.lastElementChild;
+        if (lastMessage) {
+            lastMessage.scrollIntoView();
+        }
+    }
+</script>
 
 @code {
     readonly List<BlazorMessage> _messages  = new();
@@ -104,7 +114,6 @@
         var baseUrl = NavigationManager.BaseUri;
 
         _hubUrl = baseUrl.TrimEnd('/') + "/assistant-hub";
-
 
         try
         {
@@ -156,5 +165,9 @@
 
             _newMessage = string.Empty;
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        await JsRuntime.InvokeVoidAsync("ScrollLastMessageIntoView");
     }
 }
