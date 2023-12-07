@@ -1,4 +1,5 @@
 using AIDemoWeb.Entities.Eventing.Messages;
+using Haack.AIDemoWeb.Library.Clients;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 
@@ -15,7 +16,7 @@ public class AssistantHub : Hub
 
     public async Task Broadcast(string message, bool isUser, string assistantName, string assistantId, string threadId)
     {
-        await Clients.All.SendAsync("Broadcast", message, isUser, assistantName, assistantId, threadId);
+        await Clients.All.SendAsync("Broadcast", message, isUser, assistantName, assistantId, threadId, Array.Empty<Annotation>());
         await _publishEndpoint.Publish(new AssistantMessageReceived(message, assistantName, assistantId, threadId));
     }
 

@@ -8,7 +8,7 @@
         @if (_shownAnnotations.Contains(annotationIndex)) {
             <div class="absolute">
                 <div class="p-4 ml-2 text-xs w-64 rounded-md bg-gray-800 text-gray-50">
-                    <sup class="text-xs">@i</sup>@(annotation.FileCitation?.Quote ?? annotation.FilePath?.FileId)
+                    <sup class="text-xs">@annotationIndex</sup>@(annotation.FileCitation?.Quote ?? annotation.FilePath?.FileId)
                 </div>
             </div>
         }
