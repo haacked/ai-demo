@@ -81,7 +81,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
 
             foreach (var reply in response.Data.SelectMany(m => m.ToBlazorMessages()).Where(m => !m.IsUser))
             {
-                await SendResponseAsync(reply.Text);
+                await SendResponseAsync(reply.Text, reply.Annotations);
             }
         }
         else
@@ -91,7 +91,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
 
         return;
 
-        async Task SendResponseAsync(string response)
+        async Task SendResponseAsync(string response, IReadOnlyList<Annotation>? annotations = null)
         {
             await _hubContext.Clients.All.SendAsync(
                 nameof(AssistantHub.Broadcast),
@@ -100,6 +100,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
                 assistantName,
                 assistantId,
                 threadId,
+                annotations ?? Array.Empty<Annotation>(),
                 context.CancellationToken);
         }
     }

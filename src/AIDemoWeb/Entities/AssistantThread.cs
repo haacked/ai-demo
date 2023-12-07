@@ -17,6 +17,13 @@ public class AssistantThread
     public required string ThreadId { get; init; }
 
     /// <summary>
+    /// The assistant this thread is associated with. When an execution run is created for
+    /// a thread, the assistant associated by that run is set here. From then on, this thread is
+    /// only valid for that assistant.
+    /// </summary>
+    public string? AssistantId { get; init; }
+
+    /// <summary>
     /// The app user that created this thread.
     /// </summary>
     public required User Creator { get; init; }

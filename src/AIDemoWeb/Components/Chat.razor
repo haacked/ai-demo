@@ -122,7 +122,7 @@
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On<string, bool, string, string, string>(nameof(AssistantHub.Broadcast), BroadcastMessage);
+            _hubConnection.On<string, bool, string, string, string, IReadOnlyList<Annotation>>(nameof(AssistantHub.Broadcast), BroadcastMessage);
 
             await _hubConnection.StartAsync();
         }
@@ -132,9 +132,15 @@
         }
     }
 
-    private void BroadcastMessage(string message, bool isUser, string assistantName, string assistantId, string threadId)
+    private void BroadcastMessage(
+        string message,
+        bool isUser,
+        string assistantName,
+        string assistantId,
+        string threadId,
+        IReadOnlyList<Annotation>? annotations)
     {
-        _messages.Add(new BlazorMessage(message, isUser, DateTime.Now));
+        _messages.Add(new BlazorMessage(message, isUser, DateTime.Now, annotations));
 
         // Inform blazor the UI needs updating
         InvokeAsync(StateHasChanged);
