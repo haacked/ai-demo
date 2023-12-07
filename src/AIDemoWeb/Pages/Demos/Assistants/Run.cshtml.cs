@@ -34,7 +34,9 @@ public class RunAssistantPageModel : PageModel
         var username = User.Identity?.Name;
         var currentUser = await _db.Users.SingleOrDefaultAsync(u => u.Name == username, cancellationToken);
 
-        var threadEntity = await _db.Threads.SingleOrDefaultAsync(t => t.Creator == currentUser, cancellationToken);
+        var threadEntity = await _db.Threads
+            .Where(t => t.AssistantId == id)
+            .SingleOrDefaultAsync(t => t.Creator == currentUser, cancellationToken);
 
         if (threadEntity is null)
         {
@@ -47,6 +49,7 @@ public class RunAssistantPageModel : PageModel
             threadEntity = new Haack.AIDemoWeb.Entities.AssistantThread
             {
                 ThreadId = createdThread.Id,
+                AssistantId = id,
                 Creator = currentUser.Require(),
                 CreatorId = currentUser.Id,
             };
@@ -64,7 +67,9 @@ public class RunAssistantPageModel : PageModel
         // Delete any thread entities associated with this user...
         var username = User.Identity?.Name;
         var currentUser = await _db.Users.SingleOrDefaultAsync(u => u.Name == username, cancellationToken);
-        var threads = await _db.Threads.Where(t => t.Creator == currentUser).ToListAsync(cancellationToken);
+        var threads = await _db.Threads
+            .Where(t => t.Creator == currentUser && t.AssistantId == id)
+            .ToListAsync(cancellationToken);
         _db.Threads.RemoveRange(threads);
         await _db.SaveChangesAsync(cancellationToken);
         return RedirectToPage();
