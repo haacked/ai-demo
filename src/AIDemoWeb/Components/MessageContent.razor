@@ -1,9 +1,10 @@
 @using Haack.AIDemoWeb.Library.Clients
 <span class="text-md relative">
-    @for(int i = 0; i < Message.Annotations?.Count; i++) {
+    @{ var startIndex = 0; }
+    @for (int i = 0; i < Message.Annotations?.Count; i++) {
         var annotation = Message.Annotations[i];
         var annotationIndex = i + 1;
-        <span>@Message.Text[_startIndex..annotation.StartIndex]</span>
+        <span>@Message.Text[startIndex..annotation.StartIndex]</span>
         <a class="cursor-pointer" @onclick="() => ToggleAnnotation(annotationIndex)">[@annotationIndex]</a>
         @if (_shownAnnotations.Contains(annotationIndex)) {
             <div class="absolute">
@@ -13,13 +14,12 @@
             </div>
         }
 
-        _startIndex = annotation.EndIndex;
+        startIndex = annotation.EndIndex;
     }
-    <span>@Message.Text[_startIndex..]</span>
+    <span>@Message.Text[startIndex..]</span>
 </span>
 
 @code{
-    int _startIndex = 0;
     readonly List<int> _shownAnnotations = new();
 
     [Parameter]
@@ -32,6 +32,5 @@
         } else {
             _shownAnnotations.Add(annotationIndex);
         }
-        _startIndex = 0;
     }
 }
