@@ -49,6 +49,7 @@
     <PackageReference Include="refit" />
     <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="TagHelperPack" />
   </ItemGroup>
 
   <ItemGroup>
