@@ -16,10 +16,36 @@ public class AssistantHub : Hub
         _logger = logger;
     }
 
-    public async Task Broadcast(string message, bool isUser, string assistantName, string assistantId, string threadId)
+    public async Task Broadcast(string message, bool isUser, string? assistantName, string? assistantId, string? threadId)
     {
-        await Clients.All.SendAsync("Broadcast", message, isUser, assistantName, assistantId, threadId, Array.Empty<Annotation>());
+        await Clients.All.SendAsync(
+            nameof(Broadcast),
+            message,
+            isUser,
+            assistantName,
+            assistantId,
+            threadId,
+            Array.Empty<Annotation>());
         await _publishEndpoint.Publish(new AssistantMessageReceived(message, assistantName, assistantId, threadId));
+    }
+
+    /// <summary>
+    /// When the AI has thoughts about what it is doing, broadcast it to all clients.
+    /// </summary>
+    /// <param name="message">The thought.</param>
+    public async Task BroadcastThought(string message)
+    {
+        await Clients.All.SendAsync(nameof(BroadcastThought), message);
+    }
+
+    /// <summary>
+    /// When the AI is calling a function.
+    /// </summary>
+    /// <param name="name">The name of a function.</param>
+    /// <param name="args">The arguments to the function.</param>
+    public async Task BroadcastFunctionCall(string name, string args)
+    {
+        await Clients.All.SendAsync(nameof(BroadcastFunctionCall), name, args);
     }
 
     public override Task OnConnectedAsync()

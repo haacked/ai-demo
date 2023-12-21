@@ -13,7 +13,7 @@
 <div class="max-w-sm mx-auto">
     <div class="flex flex-row justify-between items-center py-2">
         <p class="text-md text-white bg-blue-500 px-2 py-1 font-semibold animate-pulse">
-            @AssistantName
+            @(AssistantName ?? "Clippy")
         </p>
     </div>
     <div class="bg-white border border-gray-200 rounded-lg shadow relative">
@@ -91,28 +91,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (AssistantId is null) {
-            _newMessage = "$ERROR: Assistant ID is null";
-            return;
+        if (AssistantId is not null && AssistantThreadId is not null)
+        {
+            // Load the chat history for the current assistant.
+            var apiToken = OpenAIOptions.Value.ApiKey.Require();
+            var history = await OpenAIClient.GetMessagesAsync(apiToken, AssistantThreadId, order: "asc");
+
+            _messages.Add(new BlazorMessage(
+                $"Hi, I’m the {AssistantName} bot. How can I help you?",
+                IsUser: false,
+                DateTime.Now.AddMinutes(-1)));
+            _messages.AddRange(history.Data.SelectMany(m => m.ToBlazorMessages()));
         }
-
-        if (AssistantThreadId is null) {
-            _newMessage = "$ERROR: Assistant ThreadId is null";
-            return;
-        }
-
-        // Load the chat history
-        var apiToken = OpenAIOptions.Value.ApiKey.Require();
-        var history = await OpenAIClient.GetMessagesAsync(apiToken, AssistantThreadId, order: "asc");
-
-        _messages.Add(new BlazorMessage(
-            $"Hi, I’m the {AssistantName} bot. How can I help you?",
-            IsUser: false,
-            DateTime.Now.AddMinutes(-1)));
-        _messages.AddRange(history.Data.SelectMany(m => m.ToBlazorMessages()));
 
         var baseUrl = NavigationManager.BaseUri;
-
         _hubUrl = baseUrl.TrimEnd('/') + "/assistant-hub";
 
         try
@@ -122,7 +114,12 @@
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On<string, bool, string, string, string, IReadOnlyList<Annotation>>(nameof(AssistantHub.Broadcast), BroadcastMessage);
+            _hubConnection.On<string, bool, string?, string?, string?, IReadOnlyList<Annotation>>(
+                nameof(AssistantHub.Broadcast),
+                BroadcastMessage);
+
+            _hubConnection.On<string>(nameof(AssistantHub.BroadcastThought), BroadcastThought);
+            _hubConnection.On<string, string>(nameof(AssistantHub.BroadcastFunctionCall), BroadcastFunctionCall);
 
             await _hubConnection.StartAsync();
         }
@@ -132,12 +129,13 @@
         }
     }
 
-    private void BroadcastMessage(
+
+    void BroadcastMessage(
         string message,
         bool isUser,
-        string assistantName,
-        string assistantId,
-        string threadId,
+        string? assistantName,
+        string? assistantId,
+        string? threadId,
         IReadOnlyList<Annotation>? annotations)
     {
         _messages.Add(new BlazorMessage(message, isUser, DateTime.Now, annotations));
@@ -146,7 +144,17 @@
         InvokeAsync(StateHasChanged);
     }
 
-    private async Task DisconnectAsync()
+    void BroadcastThought(string thought)
+    {
+        JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16: \ud83d\udcad %c{thought}", "`@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap'); font-size: 16px; font-family: Orbitron, Roboto, Courier");
+    }
+
+    void BroadcastFunctionCall(string name, string args)
+    {
+        JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16:  \u2699\ufe0f %c{name}%c({args})", "font-size: 16px; font-family: Orbitron, Roboto, Courier");
+    }
+
+    async Task DisconnectAsync()
     {
         if (_hubConnection is not null)
         {
@@ -173,7 +181,8 @@
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender) {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
         await JsRuntime.InvokeVoidAsync("ScrollLastMessageIntoView");
     }
 }
