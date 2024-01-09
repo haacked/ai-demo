@@ -1,6 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Azure.AI.OpenAI;
 
 namespace Serious.ChatFunctions;
 
@@ -15,12 +13,10 @@ public abstract class ChatFunction<TArguments, TResult> : IChatFunction where TA
 
     protected abstract string Description { get; }
 
-    public FunctionDefinition Definition => new()
-    {
-        Name = Name,
-        Description = Description,
-        Parameters = BinaryDataGenerator.GenerateBinaryData(typeof(TArguments)),
-    };
+    public FunctionDescription Definition => new(
+        Name,
+        Description,
+        BinaryDataGenerator.GetParametersDictionary(typeof(TArguments)));
 
     async Task<string?> IChatFunction.InvokeAsync(
         string unvalidatedArguments,

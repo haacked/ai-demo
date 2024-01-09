@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Refit;
+using Serious.ChatFunctions;
 
 namespace Haack.AIDemoWeb.Library.Clients;
 
@@ -322,4 +323,4 @@ public record OpenAIEntity(
 /// A tool that is enabled for an assistant.
 /// </summary>
 /// <param name="Type">The type of tool. Either <c>code_interpreter</c>, <c>function</c>, or <c>retrieval</c></param>
-public record AssistantTool(string Type);
+public record AssistantTool(string Type, FunctionDescription? Function = null);

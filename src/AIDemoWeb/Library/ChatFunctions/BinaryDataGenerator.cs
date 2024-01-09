@@ -9,7 +9,19 @@ namespace Serious.ChatFunctions;
 
 public static class BinaryDataGenerator
 {
-    public static BinaryData GenerateBinaryData(Type type)
+    public static BinaryData GenerateBinaryData(Type type) => GetParametersDictionary(type).ToBinaryData();
+
+
+    public static BinaryData ToBinaryData(this IReadOnlyDictionary<string, object> parameters)
+    {
+        return BinaryData.FromObjectAsJson(parameters, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters = { new JsonStringEnumConverter() }
+        });
+    }
+
+    public static IReadOnlyDictionary<string, object> GetParametersDictionary(Type type)
     {
         var properties = new Dictionary<string, object>();
 
@@ -42,18 +54,12 @@ public static class BinaryDataGenerator
             .Select(p => p.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? p.Name)
             .ToArray();
 
-        var result = new Dictionary<string, object>
+        return new Dictionary<string, object>
         {
             { "type", "object" },
             { "properties", properties },
             { "required", requiredProperties }
         };
-
-        return BinaryData.FromObjectAsJson(result, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters = { new JsonStringEnumConverter() }
-        });
     }
 
     static Type GetPropertyType(PropertyInfo propertyInfo)

@@ -46,7 +46,15 @@
             <label asp-for="Tools" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tools</label>
             @foreach (var tool in Model.AvailableTools) {
                 <label class="block">
-                    <input type="checkbox" name="Tools" value="@tool" /> <code>@tool</code>
+                    <input type="checkbox" name="Tools" value="@tool.Type" /> <code>@tool.Type</code> @tool.Description
+                </label>
+            }
+        </div>
+        <div class="p-2">
+            <label asp-for="Tools" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Functions</label>
+            @foreach (var tool in Model.AvailableFunctions) {
+                <label class="block">
+                    <input type="checkbox" name="Tools" value="@tool.Function.Name" /> <code>@tool.Function.Name</code> @tool.Description
                 </label>
             }
         </div>

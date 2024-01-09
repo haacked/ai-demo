@@ -118,7 +118,8 @@ public static class ServiceExtensions
     public static void AddClients(this IServiceCollection services)
     {
         services.AddTransient<LoggingHttpMessageHandler>();
-        services.AddRefitClient<IOpenAIClient>(IOpenAIClient.BaseAddress,
+        services.AddRefitClient<IOpenAIClient>(
+            IOpenAIClient.BaseAddress,
             new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
@@ -143,12 +144,12 @@ public static class ServiceExtensions
         JsonSerializerOptions serializerOptions) where T : class
     {
         return services.AddRefitClient<T>(new RefitSettings
-                {
-                    ContentSerializer = new SystemTextJsonContentSerializer(serializerOptions)
-                })
-                .ConfigureHttpClient(c => c.BaseAddress = baseAddress)
+            {
+                ContentSerializer = new SystemTextJsonContentSerializer(serializerOptions),
+            })
+            .ConfigureHttpClient(c => c.BaseAddress = baseAddress)
 #if DEBUG
-                .AddHttpMessageHandler<LoggingHttpMessageHandler>()
+            .AddHttpMessageHandler<LoggingHttpMessageHandler>()
 #endif
             ;
     }
