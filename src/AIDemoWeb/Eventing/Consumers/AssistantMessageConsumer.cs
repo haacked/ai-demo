@@ -18,6 +18,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
     readonly OpenAIClientAccessor _client;
     readonly FunctionDispatcher _dispatcher;
     readonly IOpenAIClient _openAIClient;
+    readonly ILogger<AssistantMessageConsumer> _logger;
     readonly OpenAIOptions _options;
 
     // We'll only maintain the last 20 messages in memory.
@@ -28,12 +29,14 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
         OpenAIClientAccessor client,
         FunctionDispatcher dispatcher,
         IOpenAIClient openAIClient,
-        IOptions<OpenAIOptions> options)
+        IOptions<OpenAIOptions> options,
+        ILogger<AssistantMessageConsumer> logger)
     {
         _hubContext = hubContext;
         _client = client;
         _dispatcher = dispatcher;
         _openAIClient = openAIClient;
+        _logger = logger;
         _options = options.Value;
     }
 
@@ -111,6 +114,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
             catch (Exception ex)
 #pragma warning restore CA1031
             {
+                _logger.ErrorRetrievingChatResponse(ex);
                 await SendResponseAsync($"Sorry, I'm having trouble thinking right now: `{ex.Message}`");
             }
         }
@@ -154,6 +158,35 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
                     threadId,
                     context.CancellationToken);
                 retryAttempt++;
+
+
+                if (run.Status is "requires_action")
+                {
+                    await SendThought($"Assistant run {run.Id} needs me to call a function.");
+
+                    var outputs = new List<ToolOutput>();
+                    foreach (var toolCall in run.RequiredAction?.SubmitToolOutputs.ToolCalls ?? Enumerable.Empty<RequiredToolCall>())
+                    {
+                        await SendFunction(toolCall.Function);
+
+                        var result = await _dispatcher.DispatchAsync(
+                            toolCall.Function,
+                            message,
+                            context.CancellationToken);
+
+                        if (result is not null)
+                        {
+                            outputs.Add(new ToolOutput(toolCall.Id, result.Content));
+                        }
+                    }
+
+                    run = await _openAIClient.SubmitToolOutputs(
+                        _options.ApiKey,
+                        threadId,
+                        run.Id,
+                        new ToolsOutputsSubmissionBody(outputs),
+                        context.CancellationToken);
+                }
             }
 
             if (run.Status is "completed")
@@ -205,4 +238,15 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
                 context.CancellationToken);
         }
     }
+}
+
+public static partial class AssistantMessageConsumerLoggingExtensions
+{
+    [LoggerMessage(
+        EventId = 1,
+        Level = LogLevel.Error,
+        Message = "Error retrieving Chat GPT response")]
+    public static partial void ErrorRetrievingChatResponse(
+        this ILogger<AssistantMessageConsumer> logger,
+        Exception exception);
 }

@@ -295,6 +295,27 @@ public interface IOpenAIClient
         ThreadRunCreateBody body,
         CancellationToken cancellationToken = default
     );
+
+    /// <summary>
+    /// When a run has the status: <c>requires_action</c> and <c>required_action.type</c> is <c>submit_tool_outputs</>
+    /// call this endpoint to submit the outputs from the tool calls once they're all completed.
+    /// All outputs must be submitted in a single request.
+    /// </summary>
+    /// <param name="apiToken">The Open AI API Key.</param>
+    /// <param name="threadId">The ID of the thread to which this run belongs.</param>
+    /// <param name="runId">The ID of the run that requires the tool output submission.</param>
+    /// <param name="body">The tool outputs.</param>
+    /// <param name="cancellationToken">The cancellation token to use.</param>
+    /// <returns>The modified <see cref="ThreadRun"/>.</returns>
+    [Post("/threads/{threadId}/runs/{runId}/submit_tool_outputs")]
+    [Headers("OpenAI-Beta: assistants=v1")]
+    Task<ThreadRun> SubmitToolOutputs(
+        [Authorize]
+        string apiToken,
+        string threadId,
+        string runId,
+        ToolsOutputsSubmissionBody body,
+        CancellationToken cancellationToken = default);
 }
 
 public record OpenAIResponse<T>(
