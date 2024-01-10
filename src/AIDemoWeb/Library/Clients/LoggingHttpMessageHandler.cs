@@ -4,7 +4,7 @@ namespace Haack.AIDemoWeb.Library.Clients;
 
 public class LoggingHttpMessageHandler : DelegatingHandler
 {
-        readonly ILogger<LoggingHttpMessageHandler> _logger;
+    readonly ILogger<LoggingHttpMessageHandler> _logger;
 
     /// <summary>
     /// Constructs a <see cref="LoggingHttpMessageHandler"/> with the given <paramref name="logger"/>.

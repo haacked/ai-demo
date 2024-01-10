@@ -1,5 +1,3 @@
-using Azure.AI.OpenAI;
-
 namespace Serious.ChatFunctions;
 
 public interface IChatFunction
@@ -9,7 +7,7 @@ public interface IChatFunction
     /// <summary>
     /// Describes the chat function.
     /// </summary>
-    FunctionDefinition Definition { get; }
+    FunctionDescription Definition { get; }
 
     /// <summary>
     /// Invokes the function and returns a JSON string with the result.
@@ -19,3 +17,5 @@ public interface IChatFunction
     /// <param name="cancellationToken">A cancellation token.</param>
     Task<string?> InvokeAsync(string unvalidatedArguments, string source, CancellationToken cancellationToken);
 }
+
+public record FunctionDescription(string Name, string Description, IReadOnlyDictionary<string, object> Parameters);

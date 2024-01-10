@@ -17,7 +17,10 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
     // We'll only maintain the last 20 messages in memory.
     static readonly LimitedQueue<ChatMessage> Messages = new(20);
 
-    public ChatMessageConsumer(IHubContext<ChatHub> hubContext, OpenAIClientAccessor client, FunctionDispatcher dispatcher)
+    public ChatMessageConsumer(
+        IHubContext<ChatHub> hubContext,
+        OpenAIClientAccessor client,
+        FunctionDispatcher dispatcher)
     {
         _hubContext = hubContext;
         _client = client;
@@ -27,13 +30,6 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
     public async Task Consume(ConsumeContext<ChatMessageReceived> context)
     {
         var (author, message) = context.Message;
-
-        bool showPrompt = false;
-        if (message.EndsWith("--prompt", StringComparison.Ordinal))
-        {
-            showPrompt = true;
-            message = message[..^"--prompt".Length];
-        }
 
         Messages.Enqueue(new ChatMessage(ChatRole.User, $"{author}:{message}"));
 
@@ -51,11 +47,6 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
             foreach (var chatMessage in Messages)
             {
                 options.Messages.Add(chatMessage);
-            }
-
-            if (showPrompt)
-            {
-                await SendThought(string.Join("\n", options.Messages.Select(m => m.Content)));
             }
 
             var response = await _client.GetChatCompletionsAsync(options, context.CancellationToken);
@@ -103,11 +94,14 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
         return;
 
         async Task SendThought(string thought)
-            => await _hubContext.Clients.All.SendAsync("thoughtReceived", thought, context.CancellationToken);
+            => await _hubContext.Clients.All.SendAsync(
+                nameof(AssistantHub.BroadcastThought),
+                thought,
+                context.CancellationToken);
 
         async Task SendFunction(FunctionCall functionCall)
             => await _hubContext.Clients.All.SendAsync(
-                "functionReceived",
+                nameof(AssistantHub.BroadcastFunctionCall),
                 functionCall.Name,
                 functionCall.Arguments,
                 context.CancellationToken);

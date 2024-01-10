@@ -17,6 +17,7 @@ builder.Services.AddRazorPages()
 builder.Services.AddClients();
 builder.Services.AddDatabase(builder.Configuration);
 builder.Services.RegisterOpenAI(builder.Configuration);
+builder.Services.Configure<GitHubOptions>(builder.Configuration.GetSection(GitHubOptions.GitHub));
 builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddMigrationServices();
 builder.Services.AddSignalR();

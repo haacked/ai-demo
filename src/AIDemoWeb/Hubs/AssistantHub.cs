@@ -8,27 +8,70 @@ namespace OpenAIDemo.Hubs;
 public class AssistantHub : Hub
 {
     readonly IPublishEndpoint _publishEndpoint;
+    readonly ILogger<AssistantHub> _logger;
 
-    public AssistantHub(IPublishEndpoint publishEndpoint)
+    public AssistantHub(IPublishEndpoint publishEndpoint, ILogger<AssistantHub> logger)
     {
         _publishEndpoint = publishEndpoint;
+        _logger = logger;
     }
 
-    public async Task Broadcast(string message, bool isUser, string assistantName, string assistantId, string threadId)
+    public async Task Broadcast(string message, bool isUser, string? assistantName, string? assistantId, string? threadId)
     {
-        await Clients.All.SendAsync("Broadcast", message, isUser, assistantName, assistantId, threadId, Array.Empty<Annotation>());
+        await Clients.All.SendAsync(
+            nameof(Broadcast),
+            message,
+            isUser,
+            assistantName,
+            assistantId,
+            threadId,
+            Array.Empty<Annotation>());
         await _publishEndpoint.Publish(new AssistantMessageReceived(message, assistantName, assistantId, threadId));
+    }
+
+    /// <summary>
+    /// When the AI has thoughts about what it is doing, broadcast it to all clients.
+    /// </summary>
+    /// <param name="message">The thought.</param>
+    public async Task BroadcastThought(string message)
+    {
+        await Clients.All.SendAsync(nameof(BroadcastThought), message);
+    }
+
+    /// <summary>
+    /// When the AI is calling a function.
+    /// </summary>
+    /// <param name="name">The name of a function.</param>
+    /// <param name="args">The arguments to the function.</param>
+    public async Task BroadcastFunctionCall(string name, string args)
+    {
+        await Clients.All.SendAsync(nameof(BroadcastFunctionCall), name, args);
     }
 
     public override Task OnConnectedAsync()
     {
-        Console.WriteLine($"{Context.ConnectionId} connected");
+        _logger.Connected(Context.ConnectionId);
         return base.OnConnectedAsync();
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        Console.WriteLine($"Disconnected {exception?.Message} {Context.ConnectionId}");
+        _logger.Disconnected(exception, Context.ConnectionId);
         await base.OnDisconnectedAsync(exception);
     }
+}
+
+public static partial class AssistantHubLoggingExtensions
+{
+    [LoggerMessage(
+        EventId = 1,
+        Level = LogLevel.Information,
+        Message = "{ConnectionId} connected")]
+    public static partial void Connected(this ILogger<AssistantHub> logger, string connectionId);
+
+    [LoggerMessage(
+        EventId = 2,
+        Level = LogLevel.Information,
+        Message = "{ConnectionId} disconnected")]
+    public static partial void Disconnected(this ILogger<AssistantHub> logger, Exception? exception, string connectionId);
 }

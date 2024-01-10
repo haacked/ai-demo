@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
 using Refit;
 using Serious;
+using Serious.ChatFunctions;
 
 #pragma warning disable CA2227, CA1002, CA1819
 
@@ -27,15 +28,28 @@ public class CreateAssistantPageModel : PageModel
 
     public IReadOnlyList<SelectListItem> AvailableFileIds { get; set; } = Array.Empty<SelectListItem>();
 
-    public IReadOnlyList<string> AvailableTools { get; set; } = new [] { "code_interpreter", "retrieval" };
+    public IReadOnlyList<ToolDescriptor> AvailableTools { get; }
+
+    public IReadOnlyList<FunctionToolDescriptor> AvailableFunctions { get; }
 
     [TempData]
     public string? StatusMessage { get; set; }
 
-    public CreateAssistantPageModel(IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+    static readonly ToolDescriptor[] DefaultTools =
+    {
+        new("code_interpreter") { Description = "Code Interpreter" },
+        new("retrieval") { Description = "Information Retrieval"},
+    };
+
+    public CreateAssistantPageModel(
+        IEnumerable<IChatFunction> functions,
+        IOptions<OpenAIOptions> options,
+        IOpenAIClient openAIClient)
     {
         _options = options.Value;
         _openAIClient = openAIClient;
+        AvailableTools = DefaultTools;
+        AvailableFunctions = functions.Select(f => new FunctionToolDescriptor(f.Definition)).ToList();
     }
 
     public async Task OnGetAsync(CancellationToken cancellationToken = default)
@@ -55,12 +69,14 @@ public class CreateAssistantPageModel : PageModel
         {
             Model = _options.RetrievalModel,
             FileIds = FileIds,
-            Tools = Tools.Select(t => new AssistantTool(t)).ToList(),
+            Tools = Tools.Select(GetToolByTypeOrName).ToList(),
         };
         try
         {
-            var response =
-                await _openAIClient.CreateAssistantAsync(_options.ApiKey.Require(), request, cancellationToken);
+            var response = await _openAIClient.CreateAssistantAsync(
+                _options.ApiKey.Require(),
+                request,
+                cancellationToken);
 
             StatusMessage = $"Assistant {response.Id} created.";
 
@@ -73,4 +89,31 @@ public class CreateAssistantPageModel : PageModel
             return Page();
         }
     }
+
+    AssistantTool GetToolByTypeOrName(string typeOrName)
+    {
+        var tool = AvailableTools.FirstOrDefault(t => t.Type == typeOrName);
+        if (tool is not null)
+        {
+            return new AssistantTool(tool.Type);
+        }
+
+        var function = AvailableFunctions.FirstOrDefault(f => f.Function.Name == typeOrName);
+        if (function is not null)
+        {
+            return new AssistantTool("function", function.Function);
+        }
+
+        throw new ArgumentException($"Unknown tool type or name: {typeOrName}");
+    }
+}
+
+public record ToolDescriptor(string Type)
+{
+    public virtual string Description { get; init; } = string.Empty;
+}
+
+public record FunctionToolDescriptor(FunctionDescription Function) : ToolDescriptor("function")
+{
+    public override string Description => Function.Description;
 }

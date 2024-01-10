@@ -61,6 +61,12 @@ public class FunctionDispatcher
         .Values
         .OrderBy(f => f.Order)
         .Select(f => f.Definition)
+        .Select(d => new FunctionDefinition
+        {
+            Name = d.Name,
+            Description = d.Description,
+            Parameters = d.Parameters.ToBinaryData(),
+        })
         .ToList();
 }
 

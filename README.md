@@ -20,9 +20,20 @@ And set up the following environment variables:
 OpenAI_OrganizationId={Your org id}
 ```
 
-This also requires setting up a GitHub OAuth App for authentication.
+This also requires setting up a [GitHub OAuth App](https://github.com/settings/developers) for authentication.
 
 And to enable others to participate, I'm using ngrok: http://bit.ly/haack-ai (redirects to https://devoted-upright-bluejay.ngrok-free.app/) to expose my local web server to the internet.
+
+This also requires setting up a [GitHub OAuth App](https://github.com/settings/developers) for authentication.
+
+You can point that app to https://localhost:7047/signin-github for the callback URL.
+
+To enable others to participate, I'm using ngrok: http://bit.ly/haack-ai (redirects to https://devoted-upright-bluejay.ngrok-free.app/) to expose my local web server to the internet.
+If you want to do the same, make sure to set the following environment variable:
+
+```bash
+GitHub_Host={Your ngrok host name}
+```
 
 ## Running
 

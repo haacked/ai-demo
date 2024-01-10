@@ -6,8 +6,28 @@
 }
 
 <section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
-    <h1 class="text-lg font-semibold leading-tight">Welcome</h1>
-    <p class="mt-2">This site demonstrates using Open AI in multiple ways.</p>
+    <div asp-authz="false">
+        <h1 class="text-lg font-semibold leading-tight">Welcome</h1>
+        <p class="mt-2">This site demonstrates using Open AI in multiple ways.</p>
 
-    <partial name="Shared/Navigation" />
+            But first, you need to <a asp-page="/Login">login</a>.
+    </div>
+
+    <div asp-authz>
+        <h1 class="text-lg font-semibold leading-tight">Welcome</h1>
+            <p class="mt-2">This is a demonstration of a 1-1 OpenAI Assistant chat bot.</p>
+
+            <form method="post">
+                <button type="submit" class="btn btn-primary">New conversation</button>
+            </form>
+
+            <div class="mt-2">
+                <component type="typeof(Chat)"
+                           render-mode="ServerPrerendered"
+                           param-AssistantName="@Model.AssistantName"
+                           param-AssistantId="@Model.Assistant?.Id"
+                           param-AssistantThreadId="@Model.ThreadId"
+                           param-Username="@Model.User.Identity?.Name" />
+            </div>
+    </div>
 </section>

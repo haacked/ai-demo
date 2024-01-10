@@ -1,5 +1,6 @@
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using Azure.AI.OpenAI;
 
 namespace Haack.AIDemoWeb.Library.Clients;
 
@@ -27,6 +28,9 @@ namespace Haack.AIDemoWeb.Library.Clients;
 /// information about the object in a structured format. Keys can be a maximum of 64 characters long and values can
 /// be a maximum of 512 characters long.
 /// </param>
+/// <param name="RequiredAction">
+/// Details on the action required to continue the run. Will be <c>null</c> if no action is required
+/// </param>
 public record ThreadRun(
     string Id,
     [property: JsonPropertyName("object")]
@@ -45,8 +49,16 @@ public record ThreadRun(
     string Instructions,
     IReadOnlyList<AssistantTool> Tools,
     IReadOnlyList<string> FileIds,
-    IReadOnlyDictionary<string, string> Metadata
+    IReadOnlyDictionary<string, string> Metadata,
+    RequiredAction? RequiredAction = null
 );
+
+/// <summary>
+/// An error associated with a run.
+/// </summary>
+/// <param name="Code">One of <c>server_error</c> or <c>rate_limit_exceeded</c>.</param>
+/// <param name="Message"></param>
+public record OpenAIError(string Code, string Message);
 
 /// <summary>
 /// Used to create a thread run.
@@ -85,11 +97,48 @@ public record ThreadRunCreateBody
 }
 
 /// <summary>
-/// An error associated with a run.
+/// The body of the request to submit tool outputs.
 /// </summary>
-/// <param name="Code">One of <c>server_error</c> or <c>rate_limit_exceeded</c>.</param>
-/// <param name="Message"></param>
-public record OpenAIError(string Code, string Message);
+/// <param name="ToolOutputs">A list of tools for which the outputs are being submitted.</param>
+public record ToolsOutputsSubmissionBody(IReadOnlyList<ToolOutput> ToolOutputs);
+
+/// <summary>
+/// Output of calling a tool (aka function).
+/// </summary>
+/// <param name="ToolCallId">
+/// The ID of the tool call in the <c>required_action</c> object within the run object the output is being
+/// submitted for.
+/// </param>
+/// <param name="Output">The output of the tool call to be submitted to continue the run.</param>
+public record ToolOutput(string ToolCallId, string Output);
+
+/// <summary>
+/// Details on the action required to continue the run. Will be null if no action is required
+/// </summary>
+/// <param name="SubmitToolOutputs">Details on the tool outputs needed for this run to continue.</param>
+public record RequiredAction(RequiredToolsOutputs SubmitToolOutputs)
+{
+    public string Type => "submit_tool_outputs";
+}
+
+/// <summary>
+/// Details on the tool outputs needed for this run to continue.
+/// </summary>
+/// <param name="ToolCalls">A list of the relevant tool calls.</param>
+public record RequiredToolsOutputs(IReadOnlyList<RequiredToolCall> ToolCalls);
+
+/// <summary>
+/// Information about a tool to call. We still need to do the calling and submit the output.
+/// </summary>
+/// <param name="Id">The ID of the tool call. This ID must be referenced when you submit the tool outputs in using the Submit tool outputs to run endpoint.</param>
+/// <param name="Function">The function definition.</param>
+public record RequiredToolCall(string Id, FunctionCall Function)
+{
+    /// <summary>
+    /// The type of tool call the output is required for. For now, this is always <c>function</c>.
+    /// </summary>
+    public string Type => "function";
+}
 
 /// <summary>
 /// Possible run statuses.
