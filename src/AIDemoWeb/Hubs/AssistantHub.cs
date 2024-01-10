@@ -16,17 +16,18 @@ public class AssistantHub : Hub
         _logger = logger;
     }
 
-    public async Task Broadcast(string message, bool isUser, string? assistantName, string? assistantId, string? threadId)
+    public async Task Broadcast(string message, string author, bool isUser, string? assistantName, string? assistantId, string? threadId)
     {
         await Clients.All.SendAsync(
             nameof(Broadcast),
             message,
+            author,
             isUser,
             assistantName,
             assistantId,
             threadId,
             Array.Empty<Annotation>());
-        await _publishEndpoint.Publish(new AssistantMessageReceived(message, assistantName, assistantId, threadId));
+        await _publishEndpoint.Publish(new AssistantMessageReceived(message, author, assistantName, assistantId, threadId));
     }
 
     /// <summary>

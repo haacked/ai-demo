@@ -27,7 +27,7 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
     }
 
     protected override string Name => "retrieve_user_fact";
-    protected override string Description => "Retrieves information about a user when asked about a user.";
+    protected override string Description => "Retrieves information someone asks a question about user or themself.";
 
     protected override async Task<object?> InvokeAsync(
         RetrieveUserFactArguments arguments,

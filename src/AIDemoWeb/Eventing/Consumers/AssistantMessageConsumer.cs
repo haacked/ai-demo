@@ -42,7 +42,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
 
     public async Task Consume(ConsumeContext<AssistantMessageReceived> context)
     {
-        var (message, assistantName, assistantId, threadId) = context.Message;
+        var (message, author, assistantName, assistantId, threadId) = context.Message;
 
         if (assistantId is null || threadId is null)
         {
@@ -52,7 +52,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
             {
                 Messages =
                 {
-                    new ChatMessage(ChatRole.System, "You are a helpful assistant who is witty, pithy, and fun."),
+                    new ChatMessage(ChatRole.System, $"You are a helpful assistant who is witty, pithy, and fun. You are helping the user {author}."),
                 },
                 Functions = _dispatcher.GetFunctionDefinitions(),
             };
@@ -95,6 +95,8 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
 
                         response = await _client.GetChatCompletionsAsync(options, context.CancellationToken);
                         responseChoice = response.Value.Choices[0];
+                        await SendThought($"I got a summarized response. It should show up in chat:\n{result.Content}");
+
                     }
                     else
                     {
@@ -230,6 +232,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
             await _hubContext.Clients.All.SendAsync(
                 nameof(AssistantHub.Broadcast),
                 response,
+                "The Bot", // author
                 false, // isUser
                 assistantName,
                 assistantId,
