@@ -19,6 +19,7 @@
                         <td>Source</td>
                         <td>Justification</td>
                         <td>Embedding</td>
+                        <td></td>
                     </tr>
                     </thead>
                     <tbody>
@@ -32,6 +33,12 @@
                                     <details>
                                         @string.Join(",", fact.Embeddings)
                                     </details>
+                                </td>
+                                <td>
+                                    <form method="post">
+                                        <input type="hidden" asp-for="FactId" value="@fact.Id" />
+                                        <button type="submit">Delete Fact</button>
+                                    </form>
                                 </td>
                             </tr>
                         }
