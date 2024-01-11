@@ -23,7 +23,7 @@ public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
     }
 
     protected override string Name => "store_user_fact";
-    protected override string Description => "Stores information about a user when a user says a fact about themself.";
+    protected override string Description => "Stores information about a user when a user makes a declarative statement about themself.";
 
     protected override async Task<object?> InvokeAsync(
         UserFactArguments arguments,

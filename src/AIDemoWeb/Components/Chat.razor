@@ -114,7 +114,7 @@
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On<string, bool, string?, string?, string?, IReadOnlyList<Annotation>>(
+            _hubConnection.On<string, string, bool, string?, string?, string?, IReadOnlyList<Annotation>>(
                 nameof(AssistantHub.Broadcast),
                 BroadcastMessage);
 
@@ -132,6 +132,7 @@
 
     void BroadcastMessage(
         string message,
+        string author,
         bool isUser,
         string? assistantName,
         string? assistantId,
@@ -172,6 +173,7 @@
             await _hubConnection.SendAsync(
                 "Broadcast",
                 _newMessage,
+                Username,
                 true /*isUser*/,
                 AssistantName,
                 AssistantId,
