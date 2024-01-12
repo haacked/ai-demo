@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace OpenAIDemo.Hubs;
 
-public class ChatHub : Hub
+public class MultiUserChatHub : Hub
 {
     readonly IPublishEndpoint _publishEndpoint;
 
-    public ChatHub(IPublishEndpoint publishEndpoint)
+    public MultiUserChatHub(IPublishEndpoint publishEndpoint)
     {
         _publishEndpoint = publishEndpoint;
     }
@@ -22,7 +22,7 @@ public class ChatHub : Hub
     public async Task NewMessage(string username, string message)
     {
         await Clients.All.SendAsync("messageReceived", username, message);
-        await _publishEndpoint.Publish(new ChatMessageReceived(username, message));
+        await _publishEndpoint.Publish(new MultiUserChatMessageReceived(username, message));
     }
 
     /// <summary>
