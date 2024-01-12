@@ -17,9 +17,9 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
 {
     readonly AIDemoContext _db;
     readonly OpenAIClientAccessor _client;
-    readonly IHubContext<ChatHub> _hubContext;
+    readonly IHubContext<MultiUserChatHub> _hubContext;
 
-    public RetrieveUserFactFunction(AIDemoContext db, OpenAIClientAccessor client, IHubContext<ChatHub> hubContext)
+    public RetrieveUserFactFunction(AIDemoContext db, OpenAIClientAccessor client, IHubContext<MultiUserChatHub> hubContext)
     {
         _db = db;
         _client = client;

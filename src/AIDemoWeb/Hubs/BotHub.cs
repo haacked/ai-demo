@@ -1,37 +1,28 @@
 using AIDemoWeb.Entities.Eventing.Messages;
-using Haack.AIDemoWeb.Library.Clients;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 
 namespace OpenAIDemo.Hubs;
 
-public class AssistantHub : Hub
+public class BotHub : Hub
 {
     readonly IPublishEndpoint _publishEndpoint;
-    readonly ILogger<AssistantHub> _logger;
+    readonly ILogger<BotHub> _logger;
 
-    public AssistantHub(IPublishEndpoint publishEndpoint, ILogger<AssistantHub> logger)
+    public BotHub(IPublishEndpoint publishEndpoint, ILogger<BotHub> logger)
     {
         _publishEndpoint = publishEndpoint;
         _logger = logger;
     }
 
-    public async Task Broadcast(
-        string message,
-        bool isUser,
-        string assistantName,
-        string assistantId,
-        string threadId)
+    public async Task Broadcast(string message, string author, bool isUser)
     {
         await Clients.All.SendAsync(
             nameof(Broadcast),
             message,
-            isUser,
-            assistantName,
-            assistantId,
-            threadId,
-            Array.Empty<Annotation>());
-        await _publishEndpoint.Publish(new AssistantMessageReceived(message, assistantName, assistantId, threadId));
+            author,
+            isUser);
+        await _publishEndpoint.Publish(new BotMessageReceived(message, author));
     }
 
     /// <summary>
@@ -66,17 +57,17 @@ public class AssistantHub : Hub
     }
 }
 
-public static partial class AssistantHubLoggingExtensions
+public static partial class BotHubLoggingExtensions
 {
     [LoggerMessage(
         EventId = 1,
         Level = LogLevel.Information,
         Message = "{ConnectionId} connected")]
-    public static partial void Connected(this ILogger<AssistantHub> logger, string connectionId);
+    public static partial void Connected(this ILogger<BotHub> logger, string connectionId);
 
     [LoggerMessage(
         EventId = 2,
         Level = LogLevel.Information,
         Message = "{ConnectionId} disconnected")]
-    public static partial void Disconnected(this ILogger<AssistantHub> logger, Exception? exception, string connectionId);
+    public static partial void Disconnected(this ILogger<BotHub> logger, Exception? exception, string connectionId);
 }

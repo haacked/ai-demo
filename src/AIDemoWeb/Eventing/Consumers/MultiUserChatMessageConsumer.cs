@@ -8,17 +8,21 @@ using Serious.ChatFunctions;
 
 namespace AIDemoWeb.Entities.Eventing.Consumers;
 
-public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
+/// <summary>
+/// This consumer is used for the multi-user chat demo which is legacy
+/// and not one I use in talks.
+/// </summary>
+public class MultiUserChatMessageConsumer : IConsumer<MultiUserChatMessageReceived>
 {
-    readonly IHubContext<ChatHub> _hubContext;
+    readonly IHubContext<MultiUserChatHub> _hubContext;
     readonly OpenAIClientAccessor _client;
     readonly FunctionDispatcher _dispatcher;
 
     // We'll only maintain the last 20 messages in memory.
     static readonly LimitedQueue<ChatMessage> Messages = new(20);
 
-    public ChatMessageConsumer(
-        IHubContext<ChatHub> hubContext,
+    public MultiUserChatMessageConsumer(
+        IHubContext<MultiUserChatHub> hubContext,
         OpenAIClientAccessor client,
         FunctionDispatcher dispatcher)
     {
@@ -27,7 +31,7 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
         _dispatcher = dispatcher;
     }
 
-    public async Task Consume(ConsumeContext<ChatMessageReceived> context)
+    public async Task Consume(ConsumeContext<MultiUserChatMessageReceived> context)
     {
         var (author, message) = context.Message;
 
@@ -107,7 +111,7 @@ public class ChatMessageConsumer : IConsumer<ChatMessageReceived>
                 context.CancellationToken);
     }
 
-    async Task SendResponseAsync(ConsumeContext<ChatMessageReceived> context, string response)
+    async Task SendResponseAsync(ConsumeContext<MultiUserChatMessageReceived> context, string response)
     {
         await _hubContext.Clients.All.SendAsync(
             "messageReceived",

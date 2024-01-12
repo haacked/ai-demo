@@ -1,10 +1,10 @@
-@using Haack.AIDemoWeb.Library.Clients
+@using Serious
 @using Haack.AIDemoWeb.Library
+@using Haack.AIDemoWeb.Library.Clients
 @using Haack.AIDemoWeb.Startup.Config
-@using Microsoft.AspNetCore.SignalR.Client;
+@using Microsoft.AspNetCore.SignalR.Client
 @using Microsoft.Extensions.Options
 @using OpenAIDemo.Hubs
-@using Serious
 @inject NavigationManager NavigationManager
 @inject IOpenAIClient OpenAIClient
 @inject IOptions<OpenAIOptions> OpenAIOptions
@@ -13,7 +13,7 @@
 <div class="max-w-sm mx-auto">
     <div class="flex flex-row justify-between items-center py-2">
         <p class="text-md text-white bg-blue-500 px-2 py-1 font-semibold animate-pulse">
-            @(AssistantName ?? "Clippy")
+            @AssistantName
         </p>
     </div>
     <div class="bg-white border border-gray-200 rounded-lg shadow relative">
@@ -78,31 +78,28 @@
     HubConnection? _hubConnection;
 
     [Parameter]
-    public string? AssistantName { get; set; }
+    public string AssistantName { get; set; } = null!;
 
     [Parameter]
-    public string? AssistantId { get; set; }
+    public string AssistantId { get; set; } = null!;
 
     [Parameter]
-    public string? AssistantThreadId { get; set; }
+    public string AssistantThreadId { get; set; } = null!;
 
     [Parameter]
-    public string? Username { get; set; }
+    public string Username { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
-        if (AssistantId is not null && AssistantThreadId is not null)
-        {
-            // Load the chat history for the current assistant.
-            var apiToken = OpenAIOptions.Value.ApiKey.Require();
-            var history = await OpenAIClient.GetMessagesAsync(apiToken, AssistantThreadId, order: "asc");
+        // Load the chat history for the current assistant.
+        var apiToken = OpenAIOptions.Value.ApiKey.Require();
+        var history = await OpenAIClient.GetMessagesAsync(apiToken, AssistantThreadId, order: "asc");
 
-            _messages.Add(new BlazorMessage(
-                $"Hi, I’m the {AssistantName} bot. How can I help you?",
-                IsUser: false,
-                DateTime.Now.AddMinutes(-1)));
-            _messages.AddRange(history.Data.SelectMany(m => m.ToBlazorMessages()));
-        }
+        _messages.Add(new BlazorMessage(
+            $"Hi, I’m the {AssistantName} bot. How can I help you?",
+            IsUser: false,
+            DateTime.Now.AddMinutes(-1)));
+        _messages.AddRange(history.Data.SelectMany(m => m.ToBlazorMessages()));
 
         var baseUrl = NavigationManager.BaseUri;
         _hubUrl = baseUrl.TrimEnd('/') + "/assistant-hub";
@@ -114,7 +111,7 @@
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On<string, string, bool, string?, string?, string?, IReadOnlyList<Annotation>>(
+            _hubConnection.On<string, bool, string?, string?, string?, IReadOnlyList<Annotation>>(
                 nameof(AssistantHub.Broadcast),
                 BroadcastMessage);
 
@@ -129,10 +126,8 @@
         }
     }
 
-
     void BroadcastMessage(
         string message,
-        string author,
         bool isUser,
         string? assistantName,
         string? assistantId,
@@ -152,7 +147,7 @@
 
     void BroadcastFunctionCall(string name, string args)
     {
-        JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16:  \u2699\ufe0f %c{name}%c({args})", "font-size: 16px; font-family: Orbitron, Roboto, Courier");
+        JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16: \u2699\ufe0f %c{name}%c({args})", "font-size: 16px; font-family: Orbitron, Roboto, Courier");
     }
 
     async Task DisconnectAsync()
@@ -173,7 +168,6 @@
             await _hubConnection.SendAsync(
                 "Broadcast",
                 _newMessage,
-                Username,
                 true /*isUser*/,
                 AssistantName,
                 AssistantId,
