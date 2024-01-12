@@ -1,0 +1,152 @@
+@using Microsoft.AspNetCore.SignalR.Client
+@using OpenAIDemo.Hubs
+@using Haack.AIDemoWeb.Library
+@using Haack.AIDemoWeb.Library.Clients
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+
+<div class="max-w-sm mx-auto">
+    <div class="flex flex-row justify-between items-center py-2">
+        <p class="text-md text-white bg-blue-500 px-2 py-1 font-semibold animate-pulse">
+            Clippy
+        </p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-lg shadow relative">
+        <div class="border-b-2 border-b-gray-200 py-3 px-6 flex flex-row justify-between items-center">
+            <div class="flex flex-row items-center space-x-1.5">
+                <Avatar Username="@Username" />
+                <div class="flex flex-col">
+                    <p class="text-xs text-gray-600">@Username</p>
+                    <p class="text-xs text-gray-400">@_messages.Count.ToQuantity("message")</p>
+                </div>
+            </div>
+            <div class="space-x-1">
+            </div>
+        </div>
+        <div id="message-list" class="max-h-96 h-96 px-6 py-1 overflow-auto">
+            @foreach (var message in _messages) {
+                <div class="py-2 flex flex-row w-full @(message.IsUser ? "justify-end" : "justify-start")">
+                    <div class="@(message.IsUser ? "order-2" : "order-1")">
+                        <Avatar Username="@(message.IsUser ? Username : null)" />
+                    </div>
+                    <div class="px-2 w-fit py-3 flex flex-col rounded-lg text-white @(message.IsUser ? "order-1 mr-2 bg-blue-500" : "order-2 ml-2 bg-green-500")">
+                        <span class="text-xs text-gray-200">
+                            @(message.IsUser ? Username : "Clippy") &nbsp;-&nbsp;
+                            @message.Created.ToLocalTime()
+                        </span>
+                        <MessageContent Message="@message" />
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="px-6 py-3 bg-white w-100 overflow-hidden rounded-bl-xl rounded-br-xla">
+            <form @onsubmit="SubmitForm" class="flex flex-row items-center space-x-5">
+                <div class="relative w-full">
+                    <input
+                        type="text"
+                        @bind="@_newMessage"
+                        name="message"
+                        class="w-full block p-1.5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"/>
+                </div>
+                <button
+                    class="px-3 py-2 text-xs font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-blue-300 disabled:opacity-50">
+                    Send
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    ScrollLastMessageIntoView = () => {
+        const messages = document.getElementById("message-list");
+        const lastMessage = messages.lastElementChild;
+        if (lastMessage) {
+            lastMessage.scrollIntoView();
+        }
+    }
+</script>
+
+@code {
+    readonly List<BlazorMessage> _messages  = new();
+    string? _newMessage;
+    private string? _hubUrl;
+    HubConnection? _hubConnection;
+
+    [Parameter]
+    public string? Username { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var baseUrl = NavigationManager.BaseUri;
+        _hubUrl = baseUrl.TrimEnd('/') + "/bot-hub";
+
+        try
+        {
+            _hubConnection = new HubConnectionBuilder()
+                .WithUrl(_hubUrl)
+                .WithAutomaticReconnect()
+                .Build();
+
+            _hubConnection.On<string, string, bool>(
+                nameof(BotHub.Broadcast),
+                BroadcastMessage);
+
+            _hubConnection.On<string>(nameof(BotHub.BroadcastThought), BroadcastThought);
+            _hubConnection.On<string, string>(nameof(BotHub.BroadcastFunctionCall), BroadcastFunctionCall);
+
+            await _hubConnection.StartAsync();
+        }
+        catch (Exception e)
+        {
+            _newMessage = $"ERROR: Failed to start chat client: {e.Message}";
+        }
+    }
+
+    void BroadcastMessage(string message, string author, bool isUser)
+    {
+        _messages.Add(new BlazorMessage(message, isUser, DateTime.Now));
+
+        // Inform blazor the UI needs updating
+        InvokeAsync(StateHasChanged);
+    }
+
+    void BroadcastThought(string thought)
+    {
+        JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16: \ud83d\udcad %c{thought}", "`@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap'); font-size: 16px; font-family: Orbitron, Roboto, Courier");
+    }
+
+    void BroadcastFunctionCall(string name, string args)
+    {
+        JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16: \u2699\ufe0f %c{name}%c({args})", "font-size: 16px; font-family: Orbitron, Roboto, Courier");
+    }
+
+    async Task DisconnectAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.StopAsync();
+            await _hubConnection.DisposeAsync();
+        }
+
+        _hubConnection = null;
+    }
+
+    async Task SubmitForm()
+    {
+        if (!string.IsNullOrWhiteSpace(_newMessage) && _hubConnection is not null)
+        {
+            await _hubConnection.SendAsync(
+                nameof(BotHub.Broadcast),
+                _newMessage,
+                Username,
+                true /*isUser*/);
+
+            _newMessage = string.Empty;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JsRuntime.InvokeVoidAsync("ScrollLastMessageIntoView");
+    }
+}

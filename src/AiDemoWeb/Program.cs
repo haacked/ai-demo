@@ -59,5 +59,6 @@ app.MapGet("/logout", async ctx =>
 
 app.MapHub<MultiUserChatHub>("/chat-hub");
 app.MapHub<AssistantHub>("/assistant-hub");
+app.MapHub<BotHub>("/bot-hub");
 
 app.Run();
