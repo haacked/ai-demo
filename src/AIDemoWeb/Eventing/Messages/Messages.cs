@@ -7,4 +7,16 @@ namespace AIDemoWeb.Entities.Eventing.Messages;
 /// <param name="AssistantName">The name of the assistant.</param>
 /// <param name="AssistantId">The Id of the assistant.</param>
 /// <param name="ThreadId">The Id of the assistant thread this message should be added to.</param>
-public record AssistantMessageReceived(string Message, string Author, string? AssistantName, string? AssistantId, string? ThreadId);
+public record AssistantMessageReceived(
+    string Message,
+    string Author,
+    string? AssistantName,
+    string? AssistantId,
+    string? ThreadId);
+
+/// <summary>
+/// A new chat message.
+/// </summary>
+/// <param name="Author">The author of the message.</param>
+/// <param name="Message">The message text.</param>
+public record MultiUserChatMessageReceived(string Author, string Message);
