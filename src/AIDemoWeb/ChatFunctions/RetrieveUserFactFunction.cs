@@ -73,7 +73,7 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
 public record UserFactResult(string Fact);
 
 /// <summary>
-/// The arguments to the weather service.
+/// The arguments to the retrieve user fact function.
 /// </summary>
 public record RetrieveUserFactArguments(
     [property: Required]
