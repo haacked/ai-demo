@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Entities;
+using Haack.AIDemoWeb.Library;
 using Microsoft.EntityFrameworkCore;
 using Pgvector;
 
@@ -23,20 +24,46 @@ public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
     }
 
     protected override string Name => "store_user_fact";
-    protected override string Description => "Stores information about a user when a user makes a declarative statement about themself.";
+
+    protected override string Description =>
+        """
+        Stores information about a person when a user makes a declarative statement about another person or themself. 
+        This only responds to declarative statements.
+
+        For example, the statement \"@haacked's favorite color is blue\"
+
+        results in the fact \"favorite color is blue\" stored for the username \"haacked\".
+
+        If no username is specified, use the `retrieve_user_fact` function to retrieve the username.
+
+        For example, the statement \"My daughter likes to draw.\", first retrieve the username for the current user's daughter and store the fact using the daughter's username. If no username for the daughter is found, ask for it.";
+        """;
+
+    public int Order => 1; // Comes after the StoreUserRelationshipFunction
 
     protected override async Task<object?> InvokeAsync(
         UserFactArguments arguments,
         string source,
         CancellationToken cancellationToken)
     {
+        var username = arguments.Username.TrimLeadingCharacter('@');
+
         var user = await _db.Users
             .Include(u => u.Facts)
-            .FirstOrDefaultAsync(u => u.Name == arguments.Username, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Name == username, cancellationToken);
 
-        if (user is not null
+        if (user is null)
+        {
+            user = new User
+            {
+                Name = username,
+            };
+            await _db.Users.AddAsync(user, cancellationToken);
+        }
+
+        if (
             // Make sure it's not already stored verbatim.
-            && !user.Facts.Any(f => f.Content.Equals(arguments.Fact, StringComparison.OrdinalIgnoreCase)))
+            !user.Facts.Any(f => f.Content.Equals(arguments.Fact, StringComparison.OrdinalIgnoreCase)))
         {
             // Generate chat embedding for fact.
             var embeddings = await GetEmbeddingsAsync(arguments, cancellationToken);

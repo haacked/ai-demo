@@ -11,7 +11,13 @@
     @if (Model.Users.Any()) {
         foreach (var user in Model.Users) {
             <div class="p-2">
-                <h2>@user.Name</h2>
+                <h2>
+                    @user.Name
+                    <form method="post" asp-page-handler="DeleteUser" class="inline">
+                        <input type="hidden" asp-for="UserId" value="@user.Id" />
+                        <button type="submit" class="btn btn-danger">Delete User</button>
+                    </form>
+                </h2>
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>

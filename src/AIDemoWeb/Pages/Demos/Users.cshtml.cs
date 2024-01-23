@@ -14,6 +14,9 @@ public class UsersPageModel : PageModel
     [BindProperty]
     public int? FactId { get; set; }
 
+    [BindProperty]
+    public int? UserId { get; set; }
+
     public UsersPageModel(AIDemoContext db)
     {
         _db = db;
@@ -34,6 +37,21 @@ public class UsersPageModel : PageModel
             if (fact is not null)
             {
                 _db.UserFacts.Remove(fact);
+                await _db.SaveChangesAsync();
+            }
+        }
+
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostDeleteUserAsync()
+    {
+        if (UserId.HasValue)
+        {
+            var user = await _db.Users.FindAsync(UserId.Value);
+            if (user is not null)
+            {
+                _db.Users.Remove(user);
                 await _db.SaveChangesAsync();
             }
         }
