@@ -27,13 +27,23 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
     }
 
     protected override string Name => "retrieve_user_fact";
-    protected override string Description => "Retrieves information someone asks a question about user or themself.";
+
+    protected override string Description => "Retrieves information when a question is asked about a themself or another user. Sometimes the other user is specified by username such as @haacked. For example, \"What is my favorite color\" the username is the current user. \"What is @haacked's favorite color?\" the username is haacked. If someone says \"What is my son's favorite color\", we need to call this function with the current username to try and retrieve the username for the son.";
 
     protected override async Task<object?> InvokeAsync(
         RetrieveUserFactArguments arguments,
         string source,
         CancellationToken cancellationToken)
     {
+        var username = arguments.Username.TrimLeadingCharacter('@');
+
+        var user = await _db.Users
+            .FirstOrDefaultAsync(u => u.Name == username, cancellationToken);
+        if (user is null)
+        {
+            return new UserFactResult($"I don't know the user with the username {username}.");
+        }
+
         // Calculate the embedding for the question.
         var embeddings = await _client.GetEmbeddingsAsync(arguments.Question, cancellationToken);
 
@@ -44,7 +54,7 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
 
         // Cosine similarity == 1 - Cosine Distance.
         var facts = await _db.UserFacts
-            .Where(f => f.User.Name == arguments.Username)
+            .Where(f => f.User.Name == username)
             .Select(f => new
             {
                 Fact = f,
@@ -73,7 +83,7 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
 public record UserFactResult(string Fact);
 
 /// <summary>
-/// The arguments to the weather service.
+/// The arguments to the retrieve user fact function.
 /// </summary>
 public record RetrieveUserFactArguments(
     [property: Required]

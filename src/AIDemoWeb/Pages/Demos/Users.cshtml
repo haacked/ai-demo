@@ -11,33 +11,39 @@
     @if (Model.Users.Any()) {
         foreach (var user in Model.Users) {
             <div class="p-2">
-                <h2>@user.Name</h2>
-                <table class="table">
-                    <thead>
+                <h2>
+                    @user.Name
+                    <form method="post" asp-page-handler="DeleteUser" class="inline">
+                        <input type="hidden" asp-for="UserId" value="@user.Id" />
+                        <button type="submit" class="btn btn-danger">Delete User</button>
+                    </form>
+                </h2>
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
-                        <td>Fact</td>
-                        <td>Source</td>
-                        <td>Justification</td>
-                        <td>Embedding</td>
-                        <td></td>
+                        <th scope="col" class="px-6 py-3">Fact</th>
+                        <th scope="col" class="px-6 py-3">Source</th>
+                        <th scope="col" class="px-6 py-3">Justification</th>
+                        <th scope="col" class="px-6 py-3">Embedding</th>
+                        <th scope="col" class="px-6 py-3"></th>
                     </tr>
                     </thead>
                     <tbody>
                         @foreach (var fact in user.Facts) {
-                            <tr>
-                                <td>@fact.Content</td>
-                                <td>@fact.Source</td>
-                                <td>@fact.Justification</td>
-                                <td>
+                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                <td class="px-6 py-4">@fact.Content</td>
+                                <td class="px-6 py-4">@fact.Source</td>
+                                <td class="px-6 py-4">@fact.Justification</td>
+                                <td class="px-6 py-4">
                                     @fact.Embeddings.ToArray().Length
                                     <details>
                                         @string.Join(",", fact.Embeddings)
                                     </details>
                                 </td>
-                                <td>
+                                <td class="px-6 py-4">
                                     <form method="post">
                                         <input type="hidden" asp-for="FactId" value="@fact.Id" />
-                                        <button type="submit">Delete Fact</button>
+                                        <button type="submit" class="btn btn-danger">Delete Fact</button>
                                     </form>
                                 </td>
                             </tr>

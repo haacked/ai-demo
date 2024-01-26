@@ -40,7 +40,7 @@ public class BotMessageConsumer : IConsumer<BotMessageReceived>
         {
             Messages =
             {
-                new ChatMessage(ChatRole.System, $"You are a helpful assistant who is witty, pithy, and fun. You are helping the user {author}."),
+                new ChatMessage(ChatRole.System, $"You are a helpful assistant who is concise and to the point. You are helping the user {author}."),
             },
             Functions = _dispatcher.GetFunctionDefinitions(),
         };

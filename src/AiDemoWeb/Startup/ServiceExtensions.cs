@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Refit;
 using Serious;
-using Pgvector.EntityFrameworkCore;
+
 namespace Haack.AIDemoWeb.Startup;
 
 public static class ServiceExtensions
