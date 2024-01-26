@@ -22,9 +22,19 @@
         </p>
 
         <div class="mt-2">
+
+            @*------------------------------------------------------------
+            LOOKIE HERE!
+
+            Blazor component located in the /Components/Bot.razor file.
+
+            This is pretty much the starting point and important part
+            of this file. All the other stuff just makes it look pretty.
+            ------------------------------------------------------------*@
             <component type="typeof(Bot)"
                        render-mode="ServerPrerendered"
-                       param-Username="@Model.User.Identity?.Name" />
+                       param-Username="@Model.User.Identity?.Name"/>
+
         </div>
     </div>
 </section>

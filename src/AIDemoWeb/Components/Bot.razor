@@ -87,6 +87,7 @@
                 .WithAutomaticReconnect()
                 .Build();
 
+            // When user submits a message in the chat UI, send the "Broadcast" message to the SignalR Hub
             _hubConnection.On<string, string, bool>(
                 nameof(BotHub.Broadcast),
                 BroadcastMessage);
@@ -112,11 +113,15 @@
 
     void BroadcastThought(string thought)
     {
+        // What does this do? Glad you asked. It logs the thought into the browser's developer tools console.
+        // I even use a bit of color and a custom font to make it look nice.
         JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16: \ud83d\udcad %c{thought}", "`@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap'); font-size: 16px; font-family: Orbitron, Roboto, Courier");
     }
 
     void BroadcastFunctionCall(string name, string args)
     {
+        // What does this do? Glad you asked. It logs the function call info into the browser's developer tools console.
+        // I even use a bit of color and a custom font to make it look nice.
         JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16: \u2699\ufe0f %c{name}%c({args})", "font-size: 16px; font-family: Orbitron, Roboto, Courier");
     }
 
