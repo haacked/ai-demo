@@ -1,6 +1,6 @@
 using Haack.AIDemoWeb.Startup;
 using Haack.AIDemoWeb.Startup.Config;
-using Haack.AIDemoWeb.Components;
+using Haack.AIDemoWeb.Components; // Rider highlights this line for some reason, but it's legit. It compiles.
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using OpenAIDemo.Hubs;
@@ -16,14 +16,21 @@ builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
 builder.Services.AddClients();
 builder.Services.AddDatabase(builder.Configuration);
+
+// Registers my OpenAI client accessor and configures it.
 builder.Services.RegisterOpenAI(builder.Configuration);
 builder.Services.Configure<GitHubOptions>(builder.Configuration.GetSection(GitHubOptions.GitHub));
+builder.Services.Configure<WeatherOptions>(builder.Configuration.GetSection(WeatherOptions.Weather));
 builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddMigrationServices();
 builder.Services.AddSignalR();
 builder.Services.AddMassTransitConfig();
-builder.Services.Configure<WeatherOptions>(builder.Configuration.GetSection(WeatherOptions.Weather));
+
+// Register all the GPT functions in the specified assembly.
+// I wrote this to make calling GPT functions easier.
 builder.Services.AddFunctionDispatcher(typeof(WeatherOptions).Assembly.Require());
+
+
 
 var app = builder.Build();
 
@@ -44,7 +51,7 @@ app.UseAuthorization();
 app.UseAntiforgery();
 
 app.MapRazorPages().RequireAuthorization();
-app.MapRazorComponents<App>()
+app.MapRazorComponents<App>() // Rider highlights this line for some reason, but it's legit. It compiles.
     .AddInteractiveServerRenderMode();
 
 app.MapGet("/logout", async ctx =>
@@ -57,8 +64,12 @@ app.MapGet("/logout", async ctx =>
         });
 });
 
-app.MapHub<MultiUserChatHub>("/chat-hub");
+// The SignalR hubs used in my talks.
 app.MapHub<AssistantHub>("/assistant-hub");
 app.MapHub<BotHub>("/bot-hub");
+
+// A legacy SignalR Hub I don't use in my talk, but keep around for reference.
+app.MapHub<MultiUserChatHub>("/chat-hub");
+
 
 app.Run();

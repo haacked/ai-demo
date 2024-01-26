@@ -17,16 +17,20 @@ public class BotHub : Hub
 
     public async Task Broadcast(string message, string author, bool isUser)
     {
+        // TODO: This probably shouldn't be `Clients.All`
         await Clients.All.SendAsync(
             nameof(Broadcast),
             message,
             author,
             isUser);
+
+        // Publish the received message to the message bus, where the real action occurs.
         await _publishEndpoint.Publish(new BotMessageReceived(message, author));
     }
 
     /// <summary>
-    /// When the AI has thoughts about what it is doing, broadcast it to all clients.
+    /// When the AI has thoughts about what it is doing, broadcast it to all clients. This shows up in
+    /// the browser's developer tools console.
     /// </summary>
     /// <param name="message">The thought.</param>
     public async Task BroadcastThought(string message)

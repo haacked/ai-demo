@@ -1,3 +1,5 @@
+using AIDemoWeb.Entities.Eventing.Consumers;
+
 namespace AIDemoWeb.Entities.Eventing.Messages;
 
 /// <summary>
@@ -16,6 +18,11 @@ public record AssistantMessageReceived(
 /// <summary>
 /// A new message sent to a GPT chat bot.
 /// </summary>
+/// <remarks>
+/// This message is consumed by <see cref="BotMessageConsumer"/>. Normally I wouldn't mention this here because
+/// the message shouldn't have a reference to the consumer, it's the other way around. But for demonstration purposes,
+/// I mention it here so I can find the consumer easily.
+/// </remarks>
 /// <param name="Message">The message text.</param>
 /// <param name="Author">The author of the message.</param>
 public record BotMessageReceived(
