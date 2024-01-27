@@ -20,8 +20,8 @@ public record AssistantMessageReceived(
 /// </summary>
 /// <remarks>
 /// This message is consumed by <see cref="BotMessageConsumer"/>. Normally I wouldn't mention this here because
-/// the message shouldn't have a reference to the consumer, it's the other way around. But for demonstration purposes,
-/// I mention it here so I can find the consumer easily.
+/// messages shouldn't be coupled to consumers, it's the other way around. But for demonstration purposes,
+/// I mention it here so I can find the consumer for my demo more easily.
 /// </remarks>
 /// <param name="Message">The message text.</param>
 /// <param name="Author">The author of the message.</param>
