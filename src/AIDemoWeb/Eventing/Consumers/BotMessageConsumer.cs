@@ -12,36 +12,13 @@ namespace AIDemoWeb.Entities.Eventing.Consumers;
 public class BotMessageConsumer(
     IHubContext<BotHub> hubContext,
     OpenAIClientAccessor client,
-    FunctionDispatcher dispatcher,
+    //FunctionDispatcher dispatcher,
     ILogger<BotMessageConsumer> logger)
     : IConsumer<BotMessageReceived>
 {
-    // We'll only maintain the last 20 messages in memory.
-    //
-    // In a *real* app, we'd probably want to use a session-based store so messages are stored specific to a
-    // user's session. Not only that, we wouldn't just want to kick out the first messages. We might periodically
-    // summarize the existing messages and then kick out the older ones.
-    //
-    // But for this demo, we'll just use a static queue.
-    // TODO: Messages should be partitioned into connection id.
-    static readonly LimitedQueue<ChatRequestMessage> Messages = new(20);
-
     public async Task Consume(ConsumeContext<BotMessageReceived> context)
     {
         var (message, author, connectionId) = context.Message;
-
-        if (message is ".count")
-        {
-            await SendResponseAsync($"I have {Messages.Count} messages in my history.");
-            return;
-        }
-
-        if (message is ".clear" or ".clr")
-        {
-            Messages.Clear();
-            await SendResponseAsync($"I have {Messages.Count} messages in my history.");
-            return;
-        }
 
         await SendThought("The message addressed me! I'll try and respond.");
 
@@ -51,20 +28,10 @@ public class BotMessageConsumer(
             Messages =
             {
                 new ChatRequestSystemMessage($"You are a helpful assistant who is concise and to the point. You are helping the user {author}."),
+                new ChatRequestUserMessage(message),
             },
         };
-        options.Functions.AddRange(dispatcher.GetFunctionDefinitions());
-        foreach (var chatMessage in Messages)
-        {
-            options.Messages.Add(chatMessage);
-        }
 
-        // Add the new incoming message.
-        var newMessage = new ChatRequestUserMessage(message);
-        options.Messages.Add(newMessage);
-
-        // Store the new message in Messages:
-        Messages.Enqueue(newMessage);
 
         try
         {
@@ -77,7 +44,6 @@ public class BotMessageConsumer(
             await SendThought($"I got a response. It should show up in chat", responseChoice.Message.Content);
 
             var responseMessage = responseChoice.Message;
-            Messages.Enqueue(responseMessage.ToChatRequestMessage());
             await SendResponseAsync(responseMessage.Content);
         }
 #pragma warning disable CA1031
@@ -99,7 +65,7 @@ public class BotMessageConsumer(
 
 #pragma warning disable CS8321 // Local function is declared but never used
         async Task SendFunction(FunctionCall functionCall)
-            => await hubContext.Clients.Client(connectionId).SendAsync(
+            => await hubContext.Clients.Client(connectionId!).SendAsync(
                 nameof(BotHub.BroadcastFunctionCall),
                 functionCall.Name,
                 functionCall.Arguments,
