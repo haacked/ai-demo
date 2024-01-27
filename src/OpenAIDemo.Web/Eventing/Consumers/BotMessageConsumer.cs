@@ -75,19 +75,7 @@ public class BotMessageConsumer(
             // even if I did, I wouldn't have any reason to pick anything other than the first one.
             var responseChoice = response.Value.Choices[0];
 
-            // Here's where the magic happens in regards to calling functions.
-            if (responseChoice.FinishReason == CompletionsFinishReason.FunctionCall) // Don't allow infinite function call loops just. in. case.
-            {
-                await SendFunction(responseChoice.Message.FunctionCall);
-
-                responseChoice = await CallFunctionAsync(responseChoice);
-
-                if (responseChoice is null)
-                {
-                    return;
-                }
-            }
-            await SendThought("I got a response. It should show up in chat", responseChoice.Message.Content);
+            await SendThought($"I got a response. It should show up in chat", responseChoice.Message.Content);
 
             var responseMessage = responseChoice.Message;
             Messages.Enqueue(responseMessage.ToChatRequestMessage());
@@ -103,32 +91,6 @@ public class BotMessageConsumer(
 
         return;
 
-        // Call a GPT function and add the result to the chat history and the completion request options.
-        async Task<ChatChoice?> CallFunctionAsync(ChatChoice responseChoice)
-        {
-            var dispatchResult = await dispatcher.DispatchAsync(
-                responseChoice.Message.FunctionCall,
-                message,
-                context.CancellationToken);
-            if (dispatchResult is not null)
-            {
-                await SendThought("I got a function call result. I'll send it back to GPT to summarize", dispatchResult.Content);
-
-                // We got a function result. Now we send that result *back* to GPT so it can summarize it for the user.
-                options.Messages.Add(dispatchResult);
-
-                // And we store this as part of our chat history.
-                Messages.Enqueue(dispatchResult);
-
-                var response = await client.GetChatCompletionsAsync(options, context.CancellationToken);
-                return response.Value.Choices[0];
-            }
-
-            // If we're just storing data, there's nothing to respond with.
-            await SendResponseAsync("Ok, got it.");
-            return null;
-        }
-
         async Task SendThought(string thought, string? data = null)
             => await hubContext.Clients.Client(connectionId).SendAsync(
                 nameof(AssistantHub.BroadcastThought),
@@ -136,6 +98,7 @@ public class BotMessageConsumer(
                 data,
                 context.CancellationToken);
 
+#pragma warning disable CS8321 // Local function is declared but never used
         async Task SendFunction(FunctionCall functionCall)
             => await hubContext.Clients.Client(connectionId).SendAsync(
                 nameof(BotHub.BroadcastFunctionCall),
