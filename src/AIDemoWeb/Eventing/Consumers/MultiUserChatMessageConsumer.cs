@@ -1,5 +1,6 @@
 using AIDemoWeb.Entities.Eventing.Messages;
 using Azure.AI.OpenAI;
+using Haack.AIDemoWeb.Library;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using OpenAIDemo.Hubs;
@@ -68,8 +69,7 @@ public class MultiUserChatMessageConsumer : IConsumer<MultiUserChatMessageReceiv
                     context.CancellationToken);
                 if (result is not null)
                 {
-                    // TODO: Add a specific result function.
-                    await SendThought($"I got a result. I'll send it back to GPT to summarize:\n{result.Content}");
+                    await SendThought($"I got a result. I'll send it back to GPT to summarize", result.Content);
 
                     // We got a result, which we can send back to GPT so it can summarize it for the user.
                     options.Messages.Add(result);
@@ -97,11 +97,21 @@ public class MultiUserChatMessageConsumer : IConsumer<MultiUserChatMessageReceiv
 
         return;
 
-        async Task SendThought(string thought)
-            => await _hubContext.Clients.All.SendAsync(
+        async Task SendThought(string thought, string? data = null)
+        {
+            var thoughtMessage = thought;
+            if (data is not null && data.StartsWith("\"{", StringComparison.Ordinal) &&
+                                data.EndsWith("}\"", StringComparison.Ordinal))
+            {
+                var cleanData = data[1..^1].Replace(@"\u0022", "\"", StringComparison.Ordinal).JsonPrettify();
+                thoughtMessage = thought + ":\n" + cleanData;
+            }
+
+            await _hubContext.Clients.All.SendAsync(
                 nameof(AssistantHub.BroadcastThought),
-                thought,
+                thoughtMessage,
                 context.CancellationToken);
+        }
 
         async Task SendFunction(FunctionCall functionCall)
             => await _hubContext.Clients.All.SendAsync(

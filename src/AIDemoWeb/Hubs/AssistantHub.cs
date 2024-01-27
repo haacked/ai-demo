@@ -38,9 +38,10 @@ public class AssistantHub : Hub
     /// When the AI has thoughts about what it is doing, broadcast it to all clients.
     /// </summary>
     /// <param name="message">The thought.</param>
-    public async Task BroadcastThought(string message)
+    /// <param name="data">Any additional data to format.</param>
+    public async Task BroadcastThought(string message, string? data)
     {
-        await Clients.All.SendAsync(nameof(BroadcastThought), message);
+        await Clients.All.SendAsync(nameof(BroadcastThought), message, data);
     }
 
     /// <summary>

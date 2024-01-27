@@ -76,7 +76,6 @@ public class BotMessageConsumer : IConsumer<BotMessageReceived>
             while (responseChoice.FinishReason == CompletionsFinishReason.FunctionCall &&
                    chainedFunctions < 5) // Don't allow infinite function call loops just. in. case.
             {
-                await SendThought("I have a function that can help with this! I'll call it.");
                 await SendFunction(responseChoice.Message.FunctionCall);
 
                 responseChoice = await CallFunctionAsync(responseChoice);
@@ -88,6 +87,7 @@ public class BotMessageConsumer : IConsumer<BotMessageReceived>
 
                 chainedFunctions++;
             }
+            await SendThought($"I got a response. It should show up in chat", responseChoice.Message.Content);
 
             var responseMessage = responseChoice.Message;
             Messages.Enqueue(responseMessage);
@@ -112,7 +112,7 @@ public class BotMessageConsumer : IConsumer<BotMessageReceived>
                 context.CancellationToken);
             if (dispatchResult is not null)
             {
-                await SendThought($"I got a result. I'll send it back to GPT to summarize:\n{dispatchResult.Content}");
+                await SendThought("I got a function call result. I'll send it back to GPT to summarize", dispatchResult.Content);
 
                 // We got a function result. Now we send that result *back* to GPT so it can summarize it for the user.
                 options.Messages.Add(dispatchResult);
@@ -121,9 +121,7 @@ public class BotMessageConsumer : IConsumer<BotMessageReceived>
                 Messages.Enqueue(dispatchResult);
 
                 var response = await _client.GetChatCompletionsAsync(options, context.CancellationToken);
-                responseChoice = response.Value.Choices[0];
-                await SendThought($"I got a summarized response. It should show up in chat:\n{responseChoice.Message.Content}");
-                return responseChoice;
+                return response.Value.Choices[0];
             }
 
             // If we're just storing data, there's nothing to respond with.
@@ -131,10 +129,11 @@ public class BotMessageConsumer : IConsumer<BotMessageReceived>
             return null;
         }
 
-        async Task SendThought(string thought)
+        async Task SendThought(string thought, string? data = null)
             => await _hubContext.Clients.All.SendAsync(
-                nameof(BotHub.BroadcastThought),
+                nameof(AssistantHub.BroadcastThought),
                 thought,
+                data,
                 context.CancellationToken);
 
         async Task SendFunction(FunctionCall functionCall)

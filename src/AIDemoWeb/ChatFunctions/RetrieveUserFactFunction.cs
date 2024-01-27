@@ -75,8 +75,8 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
 
         return new UserFactResult("I do not know");
 
-        async Task SendThought(string thought)
-            => await _hubContext.Clients.All.SendAsync("thoughtReceived", thought, cancellationToken);
+        async Task SendThought(string thought, string? data = null)
+            => await _hubContext.Clients.All.SendAsync("thoughtReceived", thought, data, cancellationToken);
     }
 }
 

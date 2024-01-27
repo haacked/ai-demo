@@ -33,9 +33,10 @@ public class BotHub : Hub
     /// the browser's developer tools console.
     /// </summary>
     /// <param name="message">The thought.</param>
-    public async Task BroadcastThought(string message)
+    /// <param name="data">Any additional data that should be formatted.</param>
+    public async Task BroadcastThought(string message, string data)
     {
-        await Clients.All.SendAsync(nameof(BroadcastThought), message);
+        await Clients.All.SendAsync(nameof(BroadcastThought), message, data);
     }
 
     /// <summary>
