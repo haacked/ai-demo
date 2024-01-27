@@ -92,7 +92,7 @@
                 nameof(BotHub.Broadcast),
                 BroadcastMessage);
 
-            _hubConnection.On<string>(nameof(BotHub.BroadcastThought), BroadcastThought);
+            _hubConnection.On<string, string?>(nameof(BotHub.BroadcastThought), BroadcastThought);
             _hubConnection.On<string, string>(nameof(BotHub.BroadcastFunctionCall), BroadcastFunctionCall);
 
             await _hubConnection.StartAsync();
@@ -111,18 +111,43 @@
         InvokeAsync(StateHasChanged);
     }
 
-    void BroadcastThought(string thought)
-    {
+    const string CodeCss = "color: #121073; padding-top: 4px; font-size: 18px; font-family: 'Roboto', 'Courier'";
+    const string MessageCss = "font-size: 16px; font-family: system-ui; font-weight: normal;";
+
+    void BroadcastThought(string thought, string? data) {
+        if (data is not null)
+        {
+            if (data.StartsWith("\"{", StringComparison.Ordinal) &&
+                data.EndsWith("}\"", StringComparison.Ordinal))
+            {
+                data = data[1..^1].Replace(@"\u0022", "\"", StringComparison.Ordinal).JsonPrettify();
+            }
+
+            JsRuntime.InvokeVoidAsync(
+                "console.log",
+                $"\ud83e\udd16: \ud83d\udcad %c{thought}\n%c{data}",
+                MessageCss,
+                CodeCss);
+            return;
+        }
         // What does this do? Glad you asked. It logs the thought into the browser's developer tools console.
         // I even use a bit of color and a custom font to make it look nice.
-        JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16: \ud83d\udcad %c{thought}", "`@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap'); font-size: 16px; font-family: Orbitron, Roboto, Courier");
+        JsRuntime.InvokeVoidAsync(
+            "console.log",
+            $"\ud83e\udd16: \ud83d\udcad %c{thought}",
+            MessageCss);
     }
 
     void BroadcastFunctionCall(string name, string args)
     {
         // What does this do? Glad you asked. It logs the function call info into the browser's developer tools console.
         // I even use a bit of color and a custom font to make it look nice.
-        JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16: \u2699\ufe0f %c{name}%c({args})", "font-size: 16px; font-family: Orbitron, Roboto, Courier");
+        JsRuntime.InvokeVoidAsync(
+            "console.log",
+            $"%cI know a function that can help!\n\ud83e\udd16: \u2699\ufe0f %c{name}\n%c{args}\n",
+            MessageCss,
+            $"{MessageCss}; margin-top: 4px; font-weight: bold; color: #781f1f",
+            CodeCss);
     }
 
     async Task DisconnectAsync()

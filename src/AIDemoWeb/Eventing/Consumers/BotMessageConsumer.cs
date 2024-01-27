@@ -76,35 +76,18 @@ public class BotMessageConsumer : IConsumer<BotMessageReceived>
             while (responseChoice.FinishReason == CompletionsFinishReason.FunctionCall &&
                    chainedFunctions < 5) // Don't allow infinite function call loops just. in. case.
             {
-                await SendThought("I have a function that can help with this! I'll call it.");
                 await SendFunction(responseChoice.Message.FunctionCall);
 
-                var result = await _dispatcher.DispatchAsync(
-                    responseChoice.Message.FunctionCall,
-                    message,
-                    context.CancellationToken);
-                if (result is not null)
-                {
-                    // TODO: Add a specific result function.
-                    await SendThought($"I got a result. I'll send it back to GPT to summarize:\n{result.Content}");
+                responseChoice = await CallFunctionAsync(responseChoice);
 
-                    // We got a result, which we can send back to GPT so it can summarize it for the user.
-                    options.Messages.Add(result);
-                    Messages.Enqueue(result);
-
-                    response = await _client.GetChatCompletionsAsync(options, context.CancellationToken);
-                    responseChoice = response.Value.Choices[0];
-                    await SendThought($"I got a summarized response. It should show up in chat:\n{result.Content}");
-                }
-                else
+                if (responseChoice is null)
                 {
-                    // If we're just storing data, there's nothing to respond with.
-                    await SendResponseAsync("Ok, got it.");
                     return;
                 }
 
                 chainedFunctions++;
             }
+            await SendThought($"I got a response. It should show up in chat", responseChoice.Message.Content);
 
             var responseMessage = responseChoice.Message;
             Messages.Enqueue(responseMessage);
@@ -120,10 +103,37 @@ public class BotMessageConsumer : IConsumer<BotMessageReceived>
 
         return;
 
-        async Task SendThought(string thought)
+        // Call a GPT function and add the result to the chat history and the completion request options.
+        async Task<ChatChoice?> CallFunctionAsync(ChatChoice responseChoice)
+        {
+            var dispatchResult = await _dispatcher.DispatchAsync(
+                responseChoice.Message.FunctionCall,
+                message,
+                context.CancellationToken);
+            if (dispatchResult is not null)
+            {
+                await SendThought("I got a function call result. I'll send it back to GPT to summarize", dispatchResult.Content);
+
+                // We got a function result. Now we send that result *back* to GPT so it can summarize it for the user.
+                options.Messages.Add(dispatchResult);
+
+                // And we store this as part of our chat history.
+                Messages.Enqueue(dispatchResult);
+
+                var response = await _client.GetChatCompletionsAsync(options, context.CancellationToken);
+                return response.Value.Choices[0];
+            }
+
+            // If we're just storing data, there's nothing to respond with.
+            await SendResponseAsync("Ok, got it.");
+            return null;
+        }
+
+        async Task SendThought(string thought, string? data = null)
             => await _hubContext.Clients.All.SendAsync(
-                nameof(BotHub.BroadcastThought),
+                nameof(AssistantHub.BroadcastThought),
                 thought,
+                data,
                 context.CancellationToken);
 
         async Task SendFunction(FunctionCall functionCall)

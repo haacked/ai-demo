@@ -19,7 +19,7 @@ public class WeatherFunction : ChatFunction<WeatherArguments, WeatherResult>
 
     protected override string Name => "get_current_weather";
 
-    protected override string Description => "Get the current weather in a given location.";
+    protected override string Description => "Get the current weather in a given location. If given a city and state, use the full state name.";
 
     public int Order => 2; // Comes after the UserFactFunction
 
@@ -57,7 +57,7 @@ public class WeatherFunction : ChatFunction<WeatherArguments, WeatherResult>
 public record WeatherArguments(
     [property: Required]
     [property: JsonPropertyName("location")]
-    [property: Description("The city and state, e.g. San Francisco, CA")]
+    [property: Description("The city and state, e.g. San Francisco, California")]
     string Location,
 
     [property: JsonPropertyName("unit")]

@@ -126,10 +126,11 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
 
         return;
 
-        async Task SendThought(string thought)
+        async Task SendThought(string thought, string? data = null)
             => await _hubContext.Clients.All.SendAsync(
                 nameof(AssistantHub.BroadcastThought),
                 thought,
+                data,
                 context.CancellationToken);
 
         async Task SendFunction(FunctionCall functionCall)

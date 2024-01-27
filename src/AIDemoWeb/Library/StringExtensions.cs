@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Haack.AIDemoWeb.Library;
@@ -541,6 +542,21 @@ public static class StringExtensions
         {
             var count = strings.Count(s => s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
             return (double)count / strings.Count;
+        }
+    }
+
+    static readonly JsonSerializerOptions PrettifyJsonOptions = new JsonSerializerOptions { WriteIndented = true };
+
+    public static string JsonPrettify(this string json)
+    {
+        using var jDoc = JsonDocument.Parse(json);
+        try
+        {
+            return JsonSerializer.Serialize(jDoc, PrettifyJsonOptions);
+        }
+        catch(JsonException)
+        {
+            return json;
         }
     }
 }
