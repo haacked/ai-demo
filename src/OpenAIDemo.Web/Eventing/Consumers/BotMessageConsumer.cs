@@ -76,9 +76,7 @@ public class BotMessageConsumer(
             var responseChoice = response.Value.Choices[0];
 
             // Here's where the magic happens in regards to calling functions.
-            int chainedFunctions = 0;
-            while (responseChoice.FinishReason == CompletionsFinishReason.FunctionCall &&
-                   chainedFunctions < 5) // Don't allow infinite function call loops just. in. case.
+            if (responseChoice.FinishReason == CompletionsFinishReason.FunctionCall) // Don't allow infinite function call loops just. in. case.
             {
                 await SendFunction(responseChoice.Message.FunctionCall);
 
@@ -88,8 +86,6 @@ public class BotMessageConsumer(
                 {
                     return;
                 }
-
-                chainedFunctions++;
             }
             await SendThought("I got a response. It should show up in chat", responseChoice.Message.Content);
 
