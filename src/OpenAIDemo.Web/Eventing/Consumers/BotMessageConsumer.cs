@@ -24,7 +24,7 @@ public class BotMessageConsumer(
 
         await SendThought("The message addressed me! I'll try and respond.");
 
-
+        // This is where we need to sprinkle some AI on it.
         await SendResponseAsync("\ud83d\udca9");
 
         return;
