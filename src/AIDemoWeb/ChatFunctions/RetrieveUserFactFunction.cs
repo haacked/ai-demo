@@ -28,7 +28,38 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
 
     protected override string Name => "retrieve_user_fact";
 
-    protected override string Description => "Retrieves information when a question is asked about a themself or another user. Sometimes the other user is specified by username such as @haacked. For example, \"What is my favorite color\" the username is the current user. \"What is @haacked's favorite color?\" the username is haacked. If someone says \"What is my son's favorite color\", we need to call this function with the current username to try and retrieve the username for the son.";
+    protected override string Description =>
+        """"
+        Retrieves information when a person asks a question about their self or another user.
+        
+        Sometimes the other user is specified by username such as @haacked. 
+        
+        For example, in the question:
+        
+        """
+        What is my favorite color?
+        """
+        
+        The username is the current user.
+        
+        In the question:
+        
+        """
+        What is @haacked's favorite color?
+        """
+        
+        The username is haacked. 
+        
+        If someone asks
+        
+        """
+        What is my son's favorite color?
+        """
+        
+        We need to call this function with the current username to try and retrieve the username for the son.
+        
+        It may take more than one step to follow a set of connected facts in order to answer the question.
+        """";
 
     protected override async Task<object?> InvokeAsync(
         RetrieveUserFactArguments arguments,
