@@ -40,6 +40,19 @@ public class BotMessageConsumer : IConsumer<BotMessageReceived>
     {
         var (message, author) = context.Message;
 
+        if (message is ".count")
+        {
+            await SendResponseAsync($"I have {Messages.Count} messages in my history.");
+            return;
+        }
+
+        if (message is ".clear" or ".clr")
+        {
+            Messages.Clear();
+            await SendResponseAsync($"I have {Messages.Count} messages in my history.");
+            return;
+        }
+
         await SendThought("The message addressed me! I'll try and respond.");
 
         // Prepare the set of messages and options for the GPT call.
