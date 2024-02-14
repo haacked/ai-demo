@@ -61,7 +61,7 @@ public class OpenAIClientAccessor
     public async Task<Vector?> GetEmbeddingsAsync(string prompt, CancellationToken cancellationToken)
     {
         var response = await GetEmbeddingsAsync(
-            new EmbeddingsOptions { Input = new List<string> { prompt }},
+            new EmbeddingsOptions { Input = [ prompt ]},
             cancellationToken);
         if (response.HasValue)
         {
