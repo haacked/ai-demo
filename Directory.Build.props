@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <LangVersion>11.0</LangVersion>
+        <LangVersion>12.0</LangVersion>
         <Company>A Serious Business, Inc.</Company>
         <Copyright>Copyright © 2023</Copyright>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
