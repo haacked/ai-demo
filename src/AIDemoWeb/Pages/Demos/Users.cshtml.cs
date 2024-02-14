@@ -7,37 +7,30 @@ using Microsoft.EntityFrameworkCore;
 namespace AIDemoWeb.Demos.Pages;
 
 [AllowAnonymous]
-public class UsersPageModel : PageModel
+public class UsersPageModel(AIDemoContext db) : PageModel
 {
-    readonly AIDemoContext _db;
-
     [BindProperty]
     public int? FactId { get; set; }
 
     [BindProperty]
     public int? UserId { get; set; }
 
-    public UsersPageModel(AIDemoContext db)
-    {
-        _db = db;
-    }
-
     public IReadOnlyList<User> Users { get; private set; } = null!;
 
     public async Task OnGetAsync()
     {
-        Users = await _db.Users.Include(u => u.Facts).ToListAsync();
+        Users = await db.Users.Include(u => u.Facts).ToListAsync();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
         if (FactId.HasValue)
         {
-            var fact = await _db.UserFacts.FindAsync(FactId.Value);
+            var fact = await db.UserFacts.FindAsync(FactId.Value);
             if (fact is not null)
             {
-                _db.UserFacts.Remove(fact);
-                await _db.SaveChangesAsync();
+                db.UserFacts.Remove(fact);
+                await db.SaveChangesAsync();
             }
         }
 
@@ -48,11 +41,11 @@ public class UsersPageModel : PageModel
     {
         if (UserId.HasValue)
         {
-            var user = await _db.Users.FindAsync(UserId.Value);
+            var user = await db.Users.FindAsync(UserId.Value);
             if (user is not null)
             {
-                _db.Users.Remove(user);
-                await _db.SaveChangesAsync();
+                db.Users.Remove(user);
+                await db.SaveChangesAsync();
             }
         }
 

@@ -8,10 +8,10 @@ using File = Haack.AIDemoWeb.Library.Clients.File;
 
 namespace AIDemoWeb.Demos.Pages.Files;
 
-public class FilesIndexPageModel : PageModel
+public class FilesIndexPageModel(IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+    : PageModel
 {
-    readonly OpenAIOptions _options;
-    readonly IOpenAIClient _openAIClient;
+    readonly OpenAIOptions _options = options.Value;
 
     [TempData]
     public string? StatusMessage { get; set; }
@@ -21,21 +21,15 @@ public class FilesIndexPageModel : PageModel
 
     public IReadOnlyList<File> Files { get; private set; } = Array.Empty<File>();
 
-    public FilesIndexPageModel(IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
-    {
-        _options = options.Value;
-        _openAIClient = openAIClient;
-    }
-
     public async Task OnGetAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _openAIClient.GetFilesAsync(_options.ApiKey.Require(), cancellationToken: cancellationToken);
+        var response = await openAIClient.GetFilesAsync(_options.ApiKey.Require(), cancellationToken: cancellationToken);
         Files = response.Data;
     }
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _openAIClient.DeleteFileAsync(
+        var response = await openAIClient.DeleteFileAsync(
             _options.ApiKey.Require(),
             FileIdToDelete.Require(),
             cancellationToken);

@@ -13,24 +13,14 @@ namespace AIDemoWeb.Entities.Eventing.Consumers;
 /// This consumer is used for the multi-user chat demo which is legacy
 /// and not one I use in talks.
 /// </summary>
-public class MultiUserChatMessageConsumer : IConsumer<MultiUserChatMessageReceived>
+public class MultiUserChatMessageConsumer(
+    IHubContext<MultiUserChatHub> hubContext,
+    OpenAIClientAccessor client,
+    FunctionDispatcher dispatcher)
+    : IConsumer<MultiUserChatMessageReceived>
 {
-    readonly IHubContext<MultiUserChatHub> _hubContext;
-    readonly OpenAIClientAccessor _client;
-    readonly FunctionDispatcher _dispatcher;
-
     // We'll only maintain the last 20 messages in memory.
     static readonly LimitedQueue<ChatMessage> Messages = new(20);
-
-    public MultiUserChatMessageConsumer(
-        IHubContext<MultiUserChatHub> hubContext,
-        OpenAIClientAccessor client,
-        FunctionDispatcher dispatcher)
-    {
-        _hubContext = hubContext;
-        _client = client;
-        _dispatcher = dispatcher;
-    }
 
     public async Task Consume(ConsumeContext<MultiUserChatMessageReceived> context)
     {
@@ -47,14 +37,14 @@ public class MultiUserChatMessageConsumer : IConsumer<MultiUserChatMessageReceiv
                 {
                     new ChatMessage(ChatRole.System, "You are observing a conversation in a chat room with multiple participants. Each message starts with the participant's name which must not be altered. If you can be of assistance, please do chime in, otherwise stay quiet and let them speak."),
                 },
-                Functions = _dispatcher.GetFunctionDefinitions(),
+                Functions = dispatcher.GetFunctionDefinitions(),
             };
             foreach (var chatMessage in Messages)
             {
                 options.Messages.Add(chatMessage);
             }
 
-            var response = await _client.GetChatCompletionsAsync(options, context.CancellationToken);
+            var response = await client.GetChatCompletionsAsync(options, context.CancellationToken);
             var responseChoice = response.Value.Choices[0];
 
             int chainedFunctions = 0;
@@ -63,7 +53,7 @@ public class MultiUserChatMessageConsumer : IConsumer<MultiUserChatMessageReceiv
                 await SendThought("I have a function that can help with this! I'll call it.");
                 await SendFunction(responseChoice.Message.FunctionCall);
 
-                var result = await _dispatcher.DispatchAsync(
+                var result = await dispatcher.DispatchAsync(
                     responseChoice.Message.FunctionCall,
                     message,
                     context.CancellationToken);
@@ -75,7 +65,7 @@ public class MultiUserChatMessageConsumer : IConsumer<MultiUserChatMessageReceiv
                     options.Messages.Add(result);
                     Messages.Enqueue(result);
 
-                    response = await _client.GetChatCompletionsAsync(options, context.CancellationToken);
+                    response = await client.GetChatCompletionsAsync(options, context.CancellationToken);
                     responseChoice = response.Value.Choices[0];
                 }
                 else
@@ -107,14 +97,14 @@ public class MultiUserChatMessageConsumer : IConsumer<MultiUserChatMessageReceiv
                 thoughtMessage = thought + ":\n" + cleanData;
             }
 
-            await _hubContext.Clients.All.SendAsync(
+            await hubContext.Clients.All.SendAsync(
                 nameof(AssistantHub.BroadcastThought),
                 thoughtMessage,
                 context.CancellationToken);
         }
 
         async Task SendFunction(FunctionCall functionCall)
-            => await _hubContext.Clients.All.SendAsync(
+            => await hubContext.Clients.All.SendAsync(
                 nameof(AssistantHub.BroadcastFunctionCall),
                 functionCall.Name,
                 functionCall.Arguments,
@@ -123,7 +113,7 @@ public class MultiUserChatMessageConsumer : IConsumer<MultiUserChatMessageReceiv
 
     async Task SendResponseAsync(ConsumeContext<MultiUserChatMessageReceived> context, string response)
     {
-        await _hubContext.Clients.All.SendAsync(
+        await hubContext.Clients.All.SendAsync(
             "messageReceived",
             "The Bot",
             response,

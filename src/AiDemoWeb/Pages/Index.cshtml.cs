@@ -7,14 +7,9 @@ using Microsoft.Extensions.Options;
 namespace AIDemoWeb.Pages;
 
 [AllowAnonymous]
-public class HomePageModel : PageModel
+public class HomePageModel(IOptions<GitHubOptions> githubOptions) : PageModel
 {
-    readonly GitHubOptions _gitHubOptions;
-
-    public HomePageModel(IOptions<GitHubOptions> githubOptions)
-    {
-        _gitHubOptions = githubOptions.Value;
-    }
+    readonly GitHubOptions _gitHubOptions = githubOptions.Value;
 
     public IActionResult OnGet()
     {

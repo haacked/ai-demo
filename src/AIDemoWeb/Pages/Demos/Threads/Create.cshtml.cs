@@ -13,21 +13,13 @@ using AssistantThread = Haack.AIDemoWeb.Entities.AssistantThread;
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 
-public class CreateThreadPageModel : PageModel
+public class CreateThreadPageModel(AIDemoContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+    : PageModel
 {
-    readonly OpenAIOptions _options;
-    readonly AIDemoContext _db;
-    readonly IOpenAIClient _openAIClient;
+    readonly OpenAIOptions _options = options.Value;
 
     [TempData]
     public string? StatusMessage { get; set; }
-
-    public CreateThreadPageModel(AIDemoContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
-    {
-        _db = db;
-        _options = options.Value;
-        _openAIClient = openAIClient;
-    }
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
     {
@@ -38,7 +30,7 @@ public class CreateThreadPageModel : PageModel
 
         try
         {
-            var createdThread = await _openAIClient.CreateThreadAsync(
+            var createdThread = await openAIClient.CreateThreadAsync(
                 _options.ApiKey.Require(),
                 Array.Empty<MessageCreateBody>(),
                 cancellationToken);
@@ -46,7 +38,7 @@ public class CreateThreadPageModel : PageModel
             StatusMessage = $"Assistant {createdThread.Id} created.";
 
             var username = User.Identity?.Name;
-            var currentUser = await _db.Users.SingleOrDefaultAsync(u => u.Name == username, cancellationToken);
+            var currentUser = await db.Users.SingleOrDefaultAsync(u => u.Name == username, cancellationToken);
 
             if (currentUser is null)
             {
@@ -60,8 +52,8 @@ public class CreateThreadPageModel : PageModel
                 Creator = currentUser,
                 CreatorId = currentUser.Id,
             };
-            await _db.Threads.AddAsync(threadEntity, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
+            await db.Threads.AddAsync(threadEntity, cancellationToken);
+            await db.SaveChangesAsync(cancellationToken);
             return RedirectToPage("Index");
         }
         catch (ApiException e)

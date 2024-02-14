@@ -4,15 +4,8 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace OpenAIDemo.Hubs;
 
-public class MultiUserChatHub : Hub
+public class MultiUserChatHub(IPublishEndpoint publishEndpoint) : Hub
 {
-    readonly IPublishEndpoint _publishEndpoint;
-
-    public MultiUserChatHub(IPublishEndpoint publishEndpoint)
-    {
-        _publishEndpoint = publishEndpoint;
-    }
-
     /// <summary>
     /// When a new message is received, broadcast it to all clients and then send it to the AI to respond if
     /// necessary.
@@ -22,7 +15,7 @@ public class MultiUserChatHub : Hub
     public async Task NewMessage(string username, string message)
     {
         await Clients.All.SendAsync("messageReceived", username, message);
-        await _publishEndpoint.Publish(new MultiUserChatMessageReceived(username, message));
+        await publishEndpoint.Publish(new MultiUserChatMessageReceived(username, message));
     }
 
     /// <summary>

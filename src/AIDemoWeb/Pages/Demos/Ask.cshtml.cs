@@ -10,15 +10,8 @@ using Serious.ChatFunctions;
 
 namespace AIDemoWeb.Demos.Pages;
 
-public class AskPageModel : PageModel
+public class AskPageModel(OpenAIClientAccessor clientAccessor) : PageModel
 {
-    readonly OpenAIClientAccessor _client;
-
-    public AskPageModel(OpenAIClientAccessor clientAccessor)
-    {
-        _client = clientAccessor;
-    }
-
     [BindProperty]
     [Required]
     public string? Question { get; init; }
@@ -93,7 +86,7 @@ public class AskPageModel : PageModel
         }
         options.Messages.Add(new ChatMessage(ChatRole.User, Question));
 
-        var response = await _client.GetChatCompletionsAsync(options, cancellationToken);
+        var response = await clientAccessor.GetChatCompletionsAsync(options, cancellationToken);
 
         Answer = response switch
         {
@@ -137,7 +130,7 @@ public class AskPageModel : PageModel
                 Name = functionCall.Name,
             });
 
-            var newResponse = await _client.GetChatCompletionsAsync(options, cancellationToken);
+            var newResponse = await clientAccessor.GetChatCompletionsAsync(options, cancellationToken);
 
             var assistantMessage = newResponse.Value.Choices[0].Message;
             options.Messages.Add(assistantMessage);

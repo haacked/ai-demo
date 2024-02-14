@@ -5,17 +5,9 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace OpenAIDemo.Hubs;
 
-public class AssistantHub : Hub
+public class AssistantHub(IPublishEndpoint publishEndpoint, ILogger<AssistantHub> logger)
+    : Hub
 {
-    readonly IPublishEndpoint _publishEndpoint;
-    readonly ILogger<AssistantHub> _logger;
-
-    public AssistantHub(IPublishEndpoint publishEndpoint, ILogger<AssistantHub> logger)
-    {
-        _publishEndpoint = publishEndpoint;
-        _logger = logger;
-    }
-
     public async Task Broadcast(
         string message,
         bool isUser,
@@ -31,7 +23,7 @@ public class AssistantHub : Hub
             assistantId,
             threadId,
             Array.Empty<Annotation>());
-        await _publishEndpoint.Publish(new AssistantMessageReceived(message, assistantName, assistantId, threadId));
+        await publishEndpoint.Publish(new AssistantMessageReceived(message, assistantName, assistantId, threadId));
     }
 
     /// <summary>
@@ -56,13 +48,13 @@ public class AssistantHub : Hub
 
     public override Task OnConnectedAsync()
     {
-        _logger.Connected(Context.ConnectionId);
+        logger.Connected(Context.ConnectionId);
         return base.OnConnectedAsync();
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        _logger.Disconnected(exception, Context.ConnectionId);
+        logger.Disconnected(exception, Context.ConnectionId);
         await base.OnDisconnectedAsync(exception);
     }
 }

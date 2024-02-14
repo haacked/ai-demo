@@ -12,17 +12,9 @@ namespace Serious.ChatFunctions;
 /// <summary>
 /// Extends Chat GPT with a function that stores facts about a user.
 /// </summary>
-public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
+public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client)
+    : ChatFunction<UserFactArguments, object>
 {
-    readonly AIDemoContext _db;
-    readonly OpenAIClientAccessor _client;
-
-    public StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client)
-    {
-        _db = db;
-        _client = client;
-    }
-
     protected override string Name => "store_user_fact";
 
     protected override string Description =>
@@ -48,7 +40,7 @@ public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
     {
         var username = arguments.Username.TrimLeadingCharacter('@');
 
-        var user = await _db.Users
+        var user = await db.Users
             .Include(u => u.Facts)
             .FirstOrDefaultAsync(u => u.Name == username, cancellationToken);
 
@@ -58,7 +50,7 @@ public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
             {
                 Name = username,
             };
-            await _db.Users.AddAsync(user, cancellationToken);
+            await db.Users.AddAsync(user, cancellationToken);
         }
 
         if (
@@ -78,7 +70,7 @@ public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
                 Justification = arguments.Justification,
                 Source = source,
             });
-            await _db.SaveChangesAsync(cancellationToken);
+            await db.SaveChangesAsync(cancellationToken);
         }
 
         return null; // No need to respond.
@@ -88,7 +80,7 @@ public class StoreUserFactFunction : ChatFunction<UserFactArguments, object>
     {
         try
         {
-            var response = await _client.GetEmbeddingsAsync(
+            var response = await client.GetEmbeddingsAsync(
                 new EmbeddingsOptions { Input = new List<string> { arguments.Fact }},
                 cancellationToken);
             if (response.HasValue)

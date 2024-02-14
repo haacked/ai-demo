@@ -10,11 +10,10 @@ using AssistantThread = Haack.AIDemoWeb.Entities.AssistantThread;
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 
-public class ThreadsIndexPageModel : PageModel
+public class ThreadsIndexPageModel(AIDemoContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+    : PageModel
 {
-    readonly OpenAIOptions _options;
-    readonly AIDemoContext _db;
-    readonly IOpenAIClient _openAIClient;
+    readonly OpenAIOptions _options = options.Value;
 
     [TempData]
     public string? StatusMessage { get; set; }
@@ -24,21 +23,14 @@ public class ThreadsIndexPageModel : PageModel
 
     public IReadOnlyList<AssistantThread> Threads { get; private set; } = Array.Empty<AssistantThread>();
 
-    public ThreadsIndexPageModel(AIDemoContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
-    {
-        _db = db;
-        _options = options.Value;
-        _openAIClient = openAIClient;
-    }
-
     public async Task OnGetAsync(CancellationToken cancellationToken = default)
     {
-        Threads = await _db.Threads.Include(t => t.Creator).ToListAsync(cancellationToken);
+        Threads = await db.Threads.Include(t => t.Creator).ToListAsync(cancellationToken);
     }
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
     {
-        var threadToDelete = await _db.Threads.SingleOrDefaultAsync(
+        var threadToDelete = await db.Threads.SingleOrDefaultAsync(
             t => t.ThreadId == ThreadIdToDelete, cancellationToken);
 
         if (threadToDelete is null)
@@ -47,10 +39,10 @@ public class ThreadsIndexPageModel : PageModel
             return RedirectToPage();
         }
 
-        _db.Threads.Remove(threadToDelete);
-        await _db.SaveChangesAsync(cancellationToken);
+        db.Threads.Remove(threadToDelete);
+        await db.SaveChangesAsync(cancellationToken);
 
-        var response = await _openAIClient.DeleteThreadAsync(
+        var response = await openAIClient.DeleteThreadAsync(
             _options.ApiKey.Require(),
             ThreadIdToDelete.Require(),
             cancellationToken);

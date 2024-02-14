@@ -8,10 +8,10 @@ using Serious;
 
 namespace AIDemoWeb.Demos.Pages.Files;
 
-public class UploadPageModel : PageModel
+public class UploadPageModel(IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+    : PageModel
 {
-    readonly OpenAIOptions _options;
-    readonly IOpenAIClient _openAIClient;
+    readonly OpenAIOptions _options = options.Value;
 
     [BindProperty]
     public IFormFile Upload { get; set; } = null!;
@@ -22,12 +22,6 @@ public class UploadPageModel : PageModel
     [TempData]
     public string? StatusMessage { get; set; }
 
-    public UploadPageModel(IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
-    {
-        _options = options.Value;
-        _openAIClient = openAIClient;
-    }
-
     public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
@@ -36,7 +30,7 @@ public class UploadPageModel : PageModel
         }
 
         var streamPart = new StreamPart(Upload.OpenReadStream(), Upload.FileName);
-        var result = await _openAIClient.UploadFileAsync(_options.ApiKey.Require(), Purpose, streamPart);
+        var result = await openAIClient.UploadFileAsync(_options.ApiKey.Require(), Purpose, streamPart);
 
         StatusMessage = $"File {result.Id} uploaded.";
 

@@ -6,27 +6,20 @@ namespace Haack.AIDemoWeb.Startup;
 /// <summary>
 /// Service used to run EF Core database migrations.
 /// </summary>
-public class Migrator
+public class Migrator(AIDemoContext db)
 {
-    readonly AIDemoContext _db;
-
-    public Migrator(AIDemoContext db)
-    {
-        _db = db;
-    }
-
     /// <summary>
     /// Apply database migrations.
     /// </summary>
     public async Task ApplyMigrationsAsync()
     {
-        var pending = (await _db.Database.GetPendingMigrationsAsync()).ToList();
+        var pending = (await db.Database.GetPendingMigrationsAsync()).ToList();
         if (pending.Count is 0)
         {
             return;
         }
 
-        await _db.Database.MigrateAsync();
+        await db.Database.MigrateAsync();
     }
 }
 
