@@ -9,9 +9,6 @@ namespace Serious.ChatFunctions;
 
 public static class BinaryDataGenerator
 {
-    public static BinaryData GenerateBinaryData(Type type) => GetParametersDictionary(type).ToBinaryData();
-
-
     public static BinaryData ToBinaryData(this IReadOnlyDictionary<string, object> parameters)
     {
         return BinaryData.FromObjectAsJson(parameters, new JsonSerializerOptions
