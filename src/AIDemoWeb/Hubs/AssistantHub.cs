@@ -15,7 +15,7 @@ public class AssistantHub(IPublishEndpoint publishEndpoint, ILogger<AssistantHub
         string assistantId,
         string threadId)
     {
-        await Clients.All.SendAsync(
+        await Clients.Client(Context.ConnectionId).SendAsync(
             nameof(Broadcast),
             message,
             isUser,
@@ -23,7 +23,13 @@ public class AssistantHub(IPublishEndpoint publishEndpoint, ILogger<AssistantHub
             assistantId,
             threadId,
             Array.Empty<Annotation>());
-        await publishEndpoint.Publish(new AssistantMessageReceived(message, assistantName, assistantId, threadId));
+        await publishEndpoint.Publish(
+            new AssistantMessageReceived(
+                message,
+                assistantName,
+                assistantId,
+                threadId,
+                Context.ConnectionId));
     }
 
     /// <summary>
@@ -33,7 +39,7 @@ public class AssistantHub(IPublishEndpoint publishEndpoint, ILogger<AssistantHub
     /// <param name="data">Any additional data to format.</param>
     public async Task BroadcastThought(string message, string? data)
     {
-        await Clients.All.SendAsync(nameof(BroadcastThought), message, data);
+        await Clients.Client(Context.ConnectionId).SendAsync(nameof(BroadcastThought), message, data);
     }
 
     /// <summary>
@@ -43,7 +49,7 @@ public class AssistantHub(IPublishEndpoint publishEndpoint, ILogger<AssistantHub
     /// <param name="args">The arguments to the function.</param>
     public async Task BroadcastFunctionCall(string name, string args)
     {
-        await Clients.All.SendAsync(nameof(BroadcastFunctionCall), name, args);
+        await Clients.Client(Context.ConnectionId).SendAsync(nameof(BroadcastFunctionCall), name, args);
     }
 
     public override Task OnConnectedAsync()

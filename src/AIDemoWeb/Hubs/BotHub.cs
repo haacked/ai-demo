@@ -8,15 +8,14 @@ public class BotHub(IPublishEndpoint publishEndpoint, ILogger<BotHub> logger) : 
 {
     public async Task Broadcast(string message, string author, bool isUser)
     {
-        // TODO: This probably shouldn't be `Clients.All`
-        await Clients.All.SendAsync(
+        await Clients.Client(Context.ConnectionId).SendAsync(
             nameof(Broadcast),
             message,
             author,
             isUser);
 
         // Publish the received message to the message bus, where the real action occurs.
-        await publishEndpoint.Publish(new BotMessageReceived(message, author));
+        await publishEndpoint.Publish(new BotMessageReceived(message, author, Context.ConnectionId));
     }
 
     /// <summary>
@@ -27,7 +26,7 @@ public class BotHub(IPublishEndpoint publishEndpoint, ILogger<BotHub> logger) : 
     /// <param name="data">Any additional data that should be formatted.</param>
     public async Task BroadcastThought(string message, string data)
     {
-        await Clients.All.SendAsync(nameof(BroadcastThought), message, data);
+        await Clients.Client(Context.ConnectionId).SendAsync(nameof(BroadcastThought), message, data);
     }
 
     /// <summary>
@@ -37,7 +36,7 @@ public class BotHub(IPublishEndpoint publishEndpoint, ILogger<BotHub> logger) : 
     /// <param name="args">The arguments to the function.</param>
     public async Task BroadcastFunctionCall(string name, string args)
     {
-        await Clients.All.SendAsync(nameof(BroadcastFunctionCall), name, args);
+        await Clients.Client(Context.ConnectionId).SendAsync(nameof(BroadcastFunctionCall), name, args);
     }
 
     public override Task OnConnectedAsync()
