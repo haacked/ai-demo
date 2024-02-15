@@ -9,11 +9,13 @@ namespace AIDemoWeb.Entities.Eventing.Messages;
 /// <param name="AssistantName">The name of the assistant.</param>
 /// <param name="AssistantId">The Id of the assistant.</param>
 /// <param name="ThreadId">The Id of the assistant thread this message should be added to.</param>
+/// <param name="ConnectionId">The SignalR connection id</param>
 public record AssistantMessageReceived(
     string Message,
     string AssistantName,
     string AssistantId,
-    string ThreadId);
+    string ThreadId,
+    string ConnectionId);
 
 /// <summary>
 /// A new message sent to a GPT chat bot.
@@ -25,9 +27,11 @@ public record AssistantMessageReceived(
 /// </remarks>
 /// <param name="Message">The message text.</param>
 /// <param name="Author">The author of the message.</param>
+/// <param name="ConnectionId">The SignalR connection id</param>
 public record BotMessageReceived(
     string Message,
-    string Author);
+    string Author,
+    string ConnectionId);
 
 /// <summary>
 /// A new multi-user chat message.

@@ -23,7 +23,7 @@ public class AssistantMessageConsumer(
 
     public async Task Consume(ConsumeContext<AssistantMessageReceived> context)
     {
-        var (message, assistantName, assistantId, threadId) = context.Message;
+        var (message, assistantName, assistantId, threadId, connectionId) = context.Message;
 
         // Create a new message in the thread
         var newMessage = await openAIClient.CreateMessageAsync(
@@ -117,14 +117,14 @@ public class AssistantMessageConsumer(
         return;
 
         async Task SendThought(string thought, string? data = null)
-            => await hubContext.Clients.All.SendAsync(
+            => await hubContext.Clients.Client(connectionId).SendAsync(
                 nameof(AssistantHub.BroadcastThought),
                 thought,
                 data,
                 context.CancellationToken);
 
         async Task SendFunction(FunctionCall functionCall)
-            => await hubContext.Clients.All.SendAsync(
+            => await hubContext.Clients.Client(connectionId).SendAsync(
                 nameof(AssistantHub.BroadcastFunctionCall),
                 functionCall.Name,
                 functionCall.Arguments,
@@ -132,7 +132,7 @@ public class AssistantMessageConsumer(
 
         async Task SendResponseAsync(string response, IReadOnlyList<Annotation>? annotations = null)
         {
-            await hubContext.Clients.All.SendAsync(
+            await hubContext.Clients.Client(connectionId).SendAsync(
                 nameof(AssistantHub.Broadcast),
                 response,
                 false, // isUser

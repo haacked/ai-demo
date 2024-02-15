@@ -105,10 +105,10 @@
 
     void BroadcastMessage(string message, string author, bool isUser)
     {
-        _messages.Add(new BlazorMessage(message, isUser, DateTime.Now));
-
-        // Inform blazor the UI needs updating
-        InvokeAsync(StateHasChanged);
+        InvokeAsync(() => {
+            _messages.Add(new BlazorMessage(message, isUser, DateTime.Now));
+            StateHasChanged();
+        });
     }
 
     const string CodeCss = "color: #121073; padding-top: 4px; font-size: 18px; font-family: 'Roboto', 'Courier'";

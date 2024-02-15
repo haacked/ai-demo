@@ -22,11 +22,12 @@ public class BotMessageConsumer(
     // summarize the existing messages and then kick out the older ones.
     //
     // But for this demo, we'll just use a static queue.
+    // TODO: Messages should be partitioned into connection id.
     static readonly LimitedQueue<ChatMessage> Messages = new(20);
 
     public async Task Consume(ConsumeContext<BotMessageReceived> context)
     {
-        var (message, author) = context.Message;
+        var (message, author, connectionId) = context.Message;
 
         if (message is ".count")
         {
@@ -131,14 +132,14 @@ public class BotMessageConsumer(
         }
 
         async Task SendThought(string thought, string? data = null)
-            => await hubContext.Clients.All.SendAsync(
+            => await hubContext.Clients.Client(connectionId).SendAsync(
                 nameof(AssistantHub.BroadcastThought),
                 thought,
                 data,
                 context.CancellationToken);
 
         async Task SendFunction(FunctionCall functionCall)
-            => await hubContext.Clients.All.SendAsync(
+            => await hubContext.Clients.Client(connectionId).SendAsync(
                 nameof(BotHub.BroadcastFunctionCall),
                 functionCall.Name,
                 functionCall.Arguments,
@@ -146,7 +147,7 @@ public class BotMessageConsumer(
 
         async Task SendResponseAsync(string response)
         {
-            await hubContext.Clients.All.SendAsync(
+            await hubContext.Clients.Client(connectionId).SendAsync(
                 nameof(BotHub.Broadcast),
                 response,
                 "Clippy", // author
