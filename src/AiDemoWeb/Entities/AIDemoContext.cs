@@ -2,14 +2,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Haack.AIDemoWeb.Entities;
 
-public class AIDemoContext : DbContext
+public class AIDemoContext(DbContextOptions<AIDemoContext> options) : DbContext(options)
 {
     public const string ConnectionStringName = "AIDemoContext";
-
-    public AIDemoContext(DbContextOptions<AIDemoContext> options)
-        : base(options)
-    {
-    }
 
     public DbSet<User> Users { get; init; } = null!;
 

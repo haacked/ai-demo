@@ -13,19 +13,11 @@ namespace Serious.ChatFunctions;
 /// <summary>
 /// Extends Chat GPT with a function that stores facts about a user.
 /// </summary>
-public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, object>
+public class RetrieveUserFactFunction(
+    AIDemoContext db,
+    OpenAIClientAccessor client,
+    IHubContext<MultiUserChatHub> hubContext) : ChatFunction<RetrieveUserFactArguments, object>
 {
-    readonly AIDemoContext _db;
-    readonly OpenAIClientAccessor _client;
-    readonly IHubContext<MultiUserChatHub> _hubContext;
-
-    public RetrieveUserFactFunction(AIDemoContext db, OpenAIClientAccessor client, IHubContext<MultiUserChatHub> hubContext)
-    {
-        _db = db;
-        _client = client;
-        _hubContext = hubContext;
-    }
-
     protected override string Name => "retrieve_user_fact";
 
     protected override string Description =>
@@ -68,7 +60,7 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
     {
         var username = arguments.Username.TrimLeadingCharacter('@');
 
-        var user = await _db.Users
+        var user = await db.Users
             .FirstOrDefaultAsync(u => u.Name == username, cancellationToken);
         if (user is null)
         {
@@ -76,7 +68,7 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
         }
 
         // Calculate the embedding for the question.
-        var embeddings = await _client.GetEmbeddingsAsync(arguments.Question, cancellationToken);
+        var embeddings = await client.GetEmbeddingsAsync(arguments.Question, cancellationToken);
 
         if (embeddings is null)
         {
@@ -84,7 +76,7 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
         }
 
         // Cosine similarity == 1 - Cosine Distance.
-        var facts = await _db.UserFacts
+        var facts = await db.UserFacts
             .Where(f => f.User.Name == username)
             .Select(f => new
             {
@@ -107,7 +99,7 @@ public class RetrieveUserFactFunction : ChatFunction<RetrieveUserFactArguments, 
         return new UserFactResult("I do not know");
 
         async Task SendThought(string thought, string? data = null)
-            => await _hubContext.Clients.All.SendAsync("thoughtReceived", thought, data, cancellationToken);
+            => await hubContext.Clients.All.SendAsync("thoughtReceived", thought, data, cancellationToken);
     }
 }
 

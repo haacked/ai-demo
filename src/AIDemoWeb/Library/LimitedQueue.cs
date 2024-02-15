@@ -7,19 +7,14 @@ namespace Serious;
 /// <summary>
 /// A queue with a limit
 /// </summary>
-public class LimitedQueue<TItem> : IEnumerable<TItem>, IReadOnlyCollection<TItem>
+public class LimitedQueue<TItem>(int limit) : IReadOnlyCollection<TItem>
 {
     readonly Queue<TItem> _innerQueue = new();
-
-    public LimitedQueue(int limit)
-    {
-        Limit = limit;
-    }
 
     /// <summary>
     /// The maximum number of items that can be in the queue at any given time.
     /// </summary>
-    public int Limit { get; }
+    public int Limit { get; } = limit;
 
     /// <summary>
     /// Adds an item to the tail of the queue. If this item would push the queue past the limit,

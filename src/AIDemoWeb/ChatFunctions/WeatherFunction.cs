@@ -12,22 +12,16 @@ namespace Serious.ChatFunctions;
 /// <summary>
 /// Extends Chat GPT with a function that returns the current weather in a given location.
 /// </summary>
-public class WeatherFunction : ChatFunction<WeatherArguments, WeatherResult>
+public class WeatherFunction(IWeatherApiClient weatherApiClient, IOptions<WeatherOptions> weatherOptions)
+    : ChatFunction<WeatherArguments, WeatherResult>
 {
-    readonly IWeatherApiClient _weatherApiClient;
-    readonly string _apiKey;
+    readonly string _apiKey = weatherOptions.Value.ApiKey.Require();
 
     protected override string Name => "get_current_weather";
 
     protected override string Description => "Get the current weather in a given location. If given a city and state, use the full state name.";
 
     public int Order => 2; // Comes after the UserFactFunction
-
-    public WeatherFunction(IWeatherApiClient weatherApiClient, IOptions<WeatherOptions> weatherOptions)
-    {
-        _weatherApiClient = weatherApiClient;
-        _apiKey = weatherOptions.Value.ApiKey.Require();
-    }
 
     protected override async Task<WeatherResult?> InvokeAsync(
         WeatherArguments arguments,
@@ -41,7 +35,7 @@ public class WeatherFunction : ChatFunction<WeatherArguments, WeatherResult>
             _ => "standard"
         };
 
-        var response = await _weatherApiClient.GetWeatherAsync(_apiKey, arguments.Location, units, cancellationToken);
+        var response = await weatherApiClient.GetWeatherAsync(_apiKey, arguments.Location, units, cancellationToken);
 
         return response is not null
             ? new WeatherResult(response.Main.Temperature, arguments.Unit)

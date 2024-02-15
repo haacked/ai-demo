@@ -7,10 +7,10 @@ using Serious;
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 
-public class AssistantsIndexPageModel : PageModel
+public class AssistantsIndexPageModel(IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+    : PageModel
 {
-    readonly OpenAIOptions _options;
-    readonly IOpenAIClient _openAIClient;
+    readonly OpenAIOptions _options = options.Value;
 
     [TempData]
     public string? StatusMessage { get; set; }
@@ -20,21 +20,15 @@ public class AssistantsIndexPageModel : PageModel
 
     public IReadOnlyList<Assistant> Assistants { get; private set; } = Array.Empty<Assistant>();
 
-    public AssistantsIndexPageModel(IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
-    {
-        _options = options.Value;
-        _openAIClient = openAIClient;
-    }
-
     public async Task OnGetAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _openAIClient.GetAssistantsAsync(_options.ApiKey.Require(), cancellationToken);
+        var response = await openAIClient.GetAssistantsAsync(_options.ApiKey.Require(), cancellationToken);
         Assistants = response.Data;
     }
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _openAIClient.DeleteAssistantAsync(
+        var response = await openAIClient.DeleteAssistantAsync(
             _options.ApiKey.Require(),
             AssistantIdToDelete.Require(),
             cancellationToken);

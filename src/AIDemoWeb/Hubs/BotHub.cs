@@ -4,17 +4,8 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace OpenAIDemo.Hubs;
 
-public class BotHub : Hub
+public class BotHub(IPublishEndpoint publishEndpoint, ILogger<BotHub> logger) : Hub
 {
-    readonly IPublishEndpoint _publishEndpoint;
-    readonly ILogger<BotHub> _logger;
-
-    public BotHub(IPublishEndpoint publishEndpoint, ILogger<BotHub> logger)
-    {
-        _publishEndpoint = publishEndpoint;
-        _logger = logger;
-    }
-
     public async Task Broadcast(string message, string author, bool isUser)
     {
         // TODO: This probably shouldn't be `Clients.All`
@@ -25,7 +16,7 @@ public class BotHub : Hub
             isUser);
 
         // Publish the received message to the message bus, where the real action occurs.
-        await _publishEndpoint.Publish(new BotMessageReceived(message, author));
+        await publishEndpoint.Publish(new BotMessageReceived(message, author));
     }
 
     /// <summary>
@@ -51,13 +42,13 @@ public class BotHub : Hub
 
     public override Task OnConnectedAsync()
     {
-        _logger.Connected(Context.ConnectionId);
+        logger.Connected(Context.ConnectionId);
         return base.OnConnectedAsync();
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        _logger.Disconnected(exception, Context.ConnectionId);
+        logger.Disconnected(exception, Context.ConnectionId);
         await base.OnDisconnectedAsync(exception);
     }
 }

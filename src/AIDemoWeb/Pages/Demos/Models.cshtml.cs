@@ -6,25 +6,17 @@ using Serious;
 
 namespace AIDemoWeb.Demos.Pages;
 
-public class ModelsPageModel : PageModel
+public class ModelsPageModel(OpenAIClientAccessor clientAccessor, IOptions<OpenAIOptions> options)
+    : PageModel
 {
-    readonly OpenAIClientAccessor _client;
+    public string CompletionsModel { get; } = options.Value.Require().Model;
 
-    public ModelsPageModel(OpenAIClientAccessor clientAccessor, IOptions<OpenAIOptions> options)
-    {
-        _client = clientAccessor;
-        CompletionsModel = options.Value.Require().Model;
-        EmbeddingsModel = options.Value.Require().EmbeddingModel;
-    }
-
-    public string CompletionsModel { get; }
-
-    public string EmbeddingsModel { get; }
+    public string EmbeddingsModel { get; } = options.Value.Require().EmbeddingModel;
 
     public IReadOnlyList<OpenAIEntity> Models { get; private set; } = null!;
 
     public async Task OnGetAsync()
     {
-        Models = await _client.GetModelsAsync();
+        Models = await clientAccessor.GetModelsAsync();
     }
 }

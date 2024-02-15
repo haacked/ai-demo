@@ -12,31 +12,21 @@ using Serious.ChatFunctions;
 
 namespace AIDemoWeb.Entities.Eventing.Consumers;
 
-public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
+public class AssistantMessageConsumer(
+    IHubContext<AssistantHub> hubContext,
+    FunctionDispatcher dispatcher,
+    IOpenAIClient openAIClient,
+    IOptions<OpenAIOptions> options)
+    : IConsumer<AssistantMessageReceived>
 {
-    readonly IHubContext<AssistantHub> _hubContext;
-    readonly FunctionDispatcher _dispatcher;
-    readonly IOpenAIClient _openAIClient;
-    readonly OpenAIOptions _options;
-
-    public AssistantMessageConsumer(
-        IHubContext<AssistantHub> hubContext,
-        FunctionDispatcher dispatcher,
-        IOpenAIClient openAIClient,
-        IOptions<OpenAIOptions> options)
-    {
-        _hubContext = hubContext;
-        _dispatcher = dispatcher;
-        _openAIClient = openAIClient;
-        _options = options.Value;
-    }
+    readonly OpenAIOptions _options = options.Value;
 
     public async Task Consume(ConsumeContext<AssistantMessageReceived> context)
     {
         var (message, assistantName, assistantId, threadId) = context.Message;
 
         // Create a new message in the thread
-        var newMessage = await _openAIClient.CreateMessageAsync(
+        var newMessage = await openAIClient.CreateMessageAsync(
             _options.ApiKey.Require(),
             threadId.Require(),
             new MessageCreateBody { Content = message },
@@ -45,7 +35,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
         var runCreateDate = DateTime.UtcNow;
 
         // Create a run for the thread.
-        var run = await _openAIClient.CreateRunAsync(
+        var run = await openAIClient.CreateRunAsync(
             _options.ApiKey.Require(),
             threadId,
             new ThreadRunCreateBody
@@ -67,7 +57,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
             }
 
             await Task.Delay(1000, context.CancellationToken);
-            run = await _openAIClient.GetRunAsync(
+            run = await openAIClient.GetRunAsync(
                 _options.ApiKey.Require(),
                 run.Id,
                 threadId,
@@ -84,7 +74,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
                 {
                     await SendFunction(toolCall.Function);
 
-                    var result = await _dispatcher.DispatchAsync(
+                    var result = await dispatcher.DispatchAsync(
                         toolCall.Function,
                         message,
                         context.CancellationToken);
@@ -95,7 +85,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
                     }
                 }
 
-                run = await _openAIClient.SubmitToolOutputs(
+                run = await openAIClient.SubmitToolOutputs(
                     _options.ApiKey,
                     threadId,
                     run.Id,
@@ -107,7 +97,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
         if (run.Status is "completed")
         {
             // Grab the messages added by the assistant.
-            var response = await _openAIClient.GetMessagesAsync(
+            var response = await openAIClient.GetMessagesAsync(
                 _options.ApiKey.Require(),
                 threadId,
                 order: "asc",
@@ -127,14 +117,14 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
         return;
 
         async Task SendThought(string thought, string? data = null)
-            => await _hubContext.Clients.All.SendAsync(
+            => await hubContext.Clients.All.SendAsync(
                 nameof(AssistantHub.BroadcastThought),
                 thought,
                 data,
                 context.CancellationToken);
 
         async Task SendFunction(FunctionCall functionCall)
-            => await _hubContext.Clients.All.SendAsync(
+            => await hubContext.Clients.All.SendAsync(
                 nameof(AssistantHub.BroadcastFunctionCall),
                 functionCall.Name,
                 functionCall.Arguments,
@@ -142,7 +132,7 @@ public class AssistantMessageConsumer : IConsumer<AssistantMessageReceived>
 
         async Task SendResponseAsync(string response, IReadOnlyList<Annotation>? annotations = null)
         {
-            await _hubContext.Clients.All.SendAsync(
+            await hubContext.Clients.All.SendAsync(
                 nameof(AssistantHub.Broadcast),
                 response,
                 false, // isUser
