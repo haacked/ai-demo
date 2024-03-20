@@ -81,7 +81,7 @@ public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client
         try
         {
             var response = await client.GetEmbeddingsAsync(
-                new EmbeddingsOptions { Input = [arguments.Fact] },
+                new EmbeddingsOptions { Input = { arguments.Fact } },
                 cancellationToken);
             if (response.HasValue)
             {

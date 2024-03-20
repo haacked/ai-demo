@@ -1,5 +1,6 @@
 using Azure;
 using Azure.AI.OpenAI;
+using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
@@ -30,15 +31,15 @@ public class OpenAIClientAccessor
     /// <param name="cancellationToken">The cancellation token to use.</param>
     public async Task<Response<ChatCompletions>> GetChatCompletionsAsync(
         ChatCompletionsOptions chatCompletionsOptions,
-        CancellationToken cancellationToken = default) =>
-        await Client.GetChatCompletionsAsync(
-            new ChatCompletionsOptions(_options.Model, chatCompletionsOptions.Messages)
-            {
-                // HACK: This is ugly. I have to copy everything.
-                // I filed an issue and am crossing my fingers: https://github.com/Azure/azure-sdk-for-net/issues/40002
-                Functions = chatCompletionsOptions.Functions,
-            },
-            cancellationToken);
+        CancellationToken cancellationToken = default)
+    {
+        var options = new ChatCompletionsOptions(_options.Model, chatCompletionsOptions.Messages);
+
+        // NOTE: This is ugly. I have to copy everything.
+        // I filed an issue and am crossing my fingers: https://github.com/Azure/azure-sdk-for-net/issues/40002
+        options.Functions.AddRange(chatCompletionsOptions.Functions);
+        return await Client.GetChatCompletionsAsync(options, cancellationToken);
+    }
 
     /// <summary>
     /// Return the computed embeddings for a given prompt.
@@ -60,9 +61,7 @@ public class OpenAIClientAccessor
     /// <param name="cancellationToken">The cancellation token to use.</param>
     public async Task<Vector?> GetEmbeddingsAsync(string prompt, CancellationToken cancellationToken)
     {
-        var response = await GetEmbeddingsAsync(
-            new EmbeddingsOptions { Input = [ prompt ]},
-            cancellationToken);
+        var response = await GetEmbeddingsAsync(new EmbeddingsOptions { Input = { prompt } }, cancellationToken);
         if (response.HasValue)
         {
             var embedding = response.Value.Data;

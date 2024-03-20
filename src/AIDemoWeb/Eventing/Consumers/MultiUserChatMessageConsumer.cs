@@ -20,13 +20,13 @@ public class MultiUserChatMessageConsumer(
     : IConsumer<MultiUserChatMessageReceived>
 {
     // We'll only maintain the last 20 messages in memory.
-    static readonly LimitedQueue<ChatMessage> Messages = new(20);
+    static readonly LimitedQueue<ChatRequestMessage> Messages = new(20);
 
     public async Task Consume(ConsumeContext<MultiUserChatMessageReceived> context)
     {
         var (author, message) = context.Message;
 
-        Messages.Enqueue(new ChatMessage(ChatRole.User, $"{author}:{message}"));
+        Messages.Enqueue(new ChatRequestUserMessage($"{author}:{message}"));
 
         if (message.StartsWith("Hey bot", StringComparison.OrdinalIgnoreCase))
         {
@@ -35,10 +35,10 @@ public class MultiUserChatMessageConsumer(
             {
                 Messages =
                 {
-                    new ChatMessage(ChatRole.System, "You are observing a conversation in a chat room with multiple participants. Each message starts with the participant's name which must not be altered. If you can be of assistance, please do chime in, otherwise stay quiet and let them speak."),
+                    new ChatRequestSystemMessage("You are observing a conversation in a chat room with multiple participants. Each message starts with the participant's name which must not be altered. If you can be of assistance, please do chime in, otherwise stay quiet and let them speak."),
                 },
-                Functions = dispatcher.GetFunctionDefinitions(),
             };
+            options.Functions.AddRange(dispatcher.GetFunctionDefinitions());
             foreach (var chatMessage in Messages)
             {
                 options.Messages.Add(chatMessage);
@@ -118,6 +118,6 @@ public class MultiUserChatMessageConsumer(
             "The Bot",
             response,
             context.CancellationToken);
-        Messages.Enqueue(new ChatMessage(ChatRole.Assistant, response));
+        Messages.Enqueue(new ChatRequestAssistantMessage(response));
     }
 }

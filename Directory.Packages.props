@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="8.0.0" />
-    <PackageVersion Include="Azure.AI.OpenAI" Version="1.0.0-beta.9" />
+    <PackageVersion Include="Azure.AI.OpenAI" Version="1.0.0-beta.15" />
     <PackageVersion Include="MassTransit" Version="8.1.3" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.1" />
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.1" />

@@ -19,13 +19,13 @@ public class FunctionDispatcher
 
     /// <summary>
     /// Dispatches a function call to the appropriate function and returns the embedded as a
-    /// <see cref="ChatMessage"/> with the <see cref="ChatRole"/> of <see cref="ChatRole.Function"/>. This
+    /// <see cref="ChatRequestMessage"/> with the <see cref="ChatRole"/> of <see cref="ChatRole.Function"/>. This
     /// message can be passed back to GPT to be summarized and returned to the user.
     /// </summary>
     /// <param name="functionCall">A <see cref="FunctionCall"/> as returned by Chat GPT.</param>
     /// <param name="source">The source message that caused the function to be invoked.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
-    public async Task<ChatMessage?> DispatchAsync(
+    public async Task<ChatRequestFunctionMessage?> DispatchAsync(
         FunctionCall functionCall,
         string source,
         CancellationToken cancellationToken)
@@ -48,10 +48,7 @@ public class FunctionDispatcher
             result,
             JsonSerialization.Options);
 
-        return new ChatMessage(ChatRole.Function, content)
-        {
-            Name = functionCall.Name,
-        };
+        return new ChatRequestFunctionMessage(functionCall.Name, content);
     }
 
     /// <summary>
