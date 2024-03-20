@@ -1,42 +1,32 @@
-using System.Text.Json;
 using Azure.AI.OpenAI;
 
 namespace Haack.AIDemoWeb.Library;
 
 public static class ChatMessageExtensions
 {
-    public static IEnumerable<ChatMessage> FromSerializedJson(string? json)
+    public static ChatRequestMessage ToChatRequestMessage(this ChatResponseMessage responseMessage)
     {
-        if (json is null)
+        if (responseMessage.Role == ChatRole.System)
         {
-            return Array.Empty<ChatMessage>();
+            return new ChatRequestSystemMessage(responseMessage.Content);
         }
-        return (JsonSerializer.Deserialize<SerializedChatMessage[]>(json) ?? Array.Empty<SerializedChatMessage>())
-            .Select(m => m.FromSerializedChatMessage())
-            .ToList();
-    }
-
-    public static string ToJson(this IEnumerable<ChatMessage> chatMessages)
-    {
-        return JsonSerializer.Serialize(chatMessages.Select(m => m.ToSerializedChatMessage()));
-    }
-
-    static SerializedChatMessage ToSerializedChatMessage(this ChatMessage message)
-    {
-        return new SerializedChatMessage(
-            message.Role.ToString() ?? throw new InvalidOperationException($"Unknown role {message.Role}"),
-            message.Content,
-            message.Name,
-            message.FunctionCall);
-    }
-
-    static ChatMessage FromSerializedChatMessage(this SerializedChatMessage message)
-    {
-        return new ChatMessage(message.Role, message.Content)
+        if (responseMessage.Role == ChatRole.Assistant)
         {
-            Name = message.Name,
-            FunctionCall = message.FunctionCall,
-        };
+            var assistantMessage = new ChatRequestAssistantMessage(responseMessage.Content);
+            assistantMessage.ToolCalls.AddRange(responseMessage.ToolCalls);
+            assistantMessage.FunctionCall = responseMessage.FunctionCall;
+            return assistantMessage;
+        }
+        if (responseMessage.Role == ChatRole.User)
+        {
+            return new ChatRequestUserMessage(responseMessage.Content);
+        }
+        if (responseMessage.Role == ChatRole.Function)
+        {
+            return new ChatRequestFunctionMessage(responseMessage.FunctionCall.Name, responseMessage.Content);
+        }
+
+        throw new InvalidOperationException($"Unexpected role `{responseMessage.Role}` in response message.");
     }
 }
 

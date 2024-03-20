@@ -1,5 +1,6 @@
 using AIDemoWeb.Entities.Eventing.Messages;
 using Azure.AI.OpenAI;
+using Haack.AIDemoWeb.Library;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using OpenAIDemo.Hubs;
@@ -23,7 +24,7 @@ public class BotMessageConsumer(
     //
     // But for this demo, we'll just use a static queue.
     // TODO: Messages should be partitioned into connection id.
-    static readonly LimitedQueue<ChatMessage> Messages = new(20);
+    static readonly LimitedQueue<ChatRequestMessage> Messages = new(20);
 
     public async Task Consume(ConsumeContext<BotMessageReceived> context)
     {
@@ -49,17 +50,17 @@ public class BotMessageConsumer(
         {
             Messages =
             {
-                new ChatMessage(ChatRole.System, $"You are a helpful assistant who is concise and to the point. You are helping the user {author}."),
+                new ChatRequestSystemMessage($"You are a helpful assistant who is concise and to the point. You are helping the user {author}."),
             },
-            Functions = dispatcher.GetFunctionDefinitions(),
         };
+        options.Functions.AddRange(dispatcher.GetFunctionDefinitions());
         foreach (var chatMessage in Messages)
         {
             options.Messages.Add(chatMessage);
         }
 
         // Add the new incoming message.
-        var newMessage = new ChatMessage(ChatRole.User, message);
+        var newMessage = new ChatRequestUserMessage(message);
         options.Messages.Add(newMessage);
 
         // Store the new message in Messages:
@@ -89,10 +90,10 @@ public class BotMessageConsumer(
 
                 chainedFunctions++;
             }
-            await SendThought($"I got a response. It should show up in chat", responseChoice.Message.Content);
+            await SendThought("I got a response. It should show up in chat", responseChoice.Message.Content);
 
             var responseMessage = responseChoice.Message;
-            Messages.Enqueue(responseMessage);
+            Messages.Enqueue(responseMessage.ToChatRequestMessage());
             await SendResponseAsync(responseMessage.Content);
         }
 #pragma warning disable CA1031
