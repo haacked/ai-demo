@@ -16,7 +16,7 @@ namespace Serious.ChatFunctions;
 public class RetrieveUserFactFunction(
     AIDemoContext db,
     OpenAIClientAccessor client,
-    IHubContext<MultiUserChatHub> hubContext) : ChatFunction<RetrieveUserFactArguments, object>
+    IHubContext<BotHub> hubContext) : ChatFunction<RetrieveUserFactArguments, object>
 {
     protected override string Name => "retrieve_user_fact";
 
