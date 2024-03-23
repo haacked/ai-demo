@@ -125,6 +125,13 @@ public static class ServiceExtensions
                 PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
                 PropertyNameCaseInsensitive = true,
             });
+        services.AddRefitClient<IGoogleGeocodeClient>(
+            IGoogleGeocodeClient.BaseAddress,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                PropertyNameCaseInsensitive = true,
+            });
         services.AddRefitClient<IWeatherApiClient>(IWeatherApiClient.BaseAddress);
     }
 
