@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 
 namespace Haack.AIDemoWeb.Entities;
 
@@ -46,4 +47,20 @@ public class User
     /// The threads started by this user.
     /// </summary>
     public EntityList<AssistantThread> Threads { get; }
+
+    /// <summary>
+    /// The NetTopologySuite location of the user.
+    /// </summary>
+    [Column(TypeName = "geometry (point)")]
+    public Point? Location { get; set; }
+
+    /// <summary>
+    /// The formatted address from the geo code service for the user.
+    /// </summary>
+    public string? FormattedAddress { get; set; }
+
+    /// <summary>
+    /// The IANA Time Zone identifier for the member.
+    /// </summary>
+    public string? TimeZoneId { get; set; }
 }
