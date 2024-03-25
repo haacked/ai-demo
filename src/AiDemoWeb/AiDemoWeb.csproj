@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <RootNamespace>Haack.AIDemoWeb</RootNamespace>
+    <AssemblyName>AIDemoWeb</AssemblyName>
     <RazorLangVersion>latest</RazorLangVersion>
     <IsPackable>false</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
