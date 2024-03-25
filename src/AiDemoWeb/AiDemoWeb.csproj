@@ -44,6 +44,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" />
     <PackageReference Include="OctoKit" />
     <PackageReference Include="Pgvector.EntityFrameworkCore" />
     <PackageReference Include="refit" />
