@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Npgsql;
 using Refit;
 using Serious;
 
@@ -40,11 +41,18 @@ public static class ServiceExtensions
         options.EnableSensitiveDataLogging();
         options.EnableDetailedErrors();
 #endif
+
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+        dataSourceBuilder.UseNetTopologySuite();
+        dataSourceBuilder.UseVector();
+        var dataSource = dataSourceBuilder.Build();
+
         options.ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
 
-        options.UseNpgsql(connectionString, o =>
+        options.UseNpgsql(dataSource, o =>
         {
             o.UseVector();
+            o.UseNetTopologySuite();
             o.MigrationsAssembly("AIDemoWeb");
         });
     }

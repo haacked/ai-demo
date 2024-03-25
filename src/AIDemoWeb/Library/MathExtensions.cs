@@ -39,19 +39,19 @@ public static class MathExtensions
     {
         var result = arguments switch
         {
-            { Operation: Operation.Add } => arguments.Left + arguments.Right,
-            { Operation: Operation.Subtract } => arguments.Left - arguments.Right,
-            { Operation: Operation.Multiply } => arguments.Left * arguments.Right,
-            { Operation: Operation.Divide } => arguments.Left / arguments.Right,
+            { ArithmeticOperation: ArithmeticOperation.Add } => arguments.Left + arguments.Right,
+            { ArithmeticOperation: ArithmeticOperation.Subtract } => arguments.Left - arguments.Right,
+            { ArithmeticOperation: ArithmeticOperation.Multiply } => arguments.Left * arguments.Right,
+            { ArithmeticOperation: ArithmeticOperation.Divide } => arguments.Left / arguments.Right,
             _ => throw new InvalidOperationException("Unknown operation.")
         };
         return result;
     }
 }
 
-public record ArithmeticArguments(long Left, Operation Operation, long Right, long? Answer = null);
+public record ArithmeticArguments(long Left, ArithmeticOperation ArithmeticOperation, long Right, long? Answer = null);
 
-public enum Operation
+public enum ArithmeticOperation
 {
     Add,
     Subtract,
