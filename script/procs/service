@@ -28,9 +28,9 @@ if [ -z $service ]; then
 fi
 
 if ! docker-compose ps --services --filter "status=running" | grep $service >/dev/null 2>&1; then
-    echo "Starting $service ..."
+    echo "Starting $service…"
     docker-compose up --no-log-prefix $service
 else
-    echo "Attaching to $service..."
+    echo "Attaching to $service…"
     docker-compose logs -f --no-log-prefix $service
 fi
