@@ -102,7 +102,7 @@ public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client
 }
 
 /// <summary>
-/// The arguments to the weather service.
+/// The arguments to the store user fact function.
 /// </summary>
 public record UserFactArguments(
     [property: Required]

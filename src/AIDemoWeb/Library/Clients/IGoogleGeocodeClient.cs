@@ -4,7 +4,7 @@ namespace Haack.AIDemoWeb.Library.Clients;
 
 public interface IGoogleGeocodeClient
 {
-    public static Uri BaseAddress => new("https://maps.googleapis.com/maps/api/");
+    public static Uri BaseAddress => new("https://maps.googleapis.com/maps/api");
 
     [Get("/geocode/json?key={apiKey}&address={address}")]
     Task<GoogleGeoCodingResponse> GeoCodeAsync(string apiKey, string address);
