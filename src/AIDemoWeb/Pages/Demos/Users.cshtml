@@ -13,6 +13,17 @@
             <div class="p-2">
                 <h2>
                     @user.Name
+
+                    @if (user.FormattedAddress is { } address) {
+                        <span class="text-xs text-gray-500 dark:text-gray-400">(@address)</span>
+                    }
+                    @if (user.Location is { } location) {
+                        <span class="text-xs text-gray-500 dark:text-gray-400">(@location.X, @location.Y)</span>
+                    }
+                    @if (user.TimeZoneId is { } timeZoneId) {
+                        <span class="text-xs text-gray-500 dark:text-gray-400">(TZ: @timeZoneId)</span>
+                    }
+
                     <form method="post" asp-page-handler="DeleteUser" class="inline">
                         <input type="hidden" asp-for="UserId" value="@user.Id" />
                         <button type="submit" class="btn btn-danger">Delete User</button>

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Haack.AIDemoWeb.Entities;
+using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.Library.Clients;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -126,6 +127,7 @@ public static class ServiceExtensions
     public static void AddClients(this IServiceCollection services)
     {
         services.AddTransient<LoggingHttpMessageHandler>();
+        services.AddTransient<GeocodeClient>();
         services.AddRefitClient<IOpenAIClient>(
             IOpenAIClient.BaseAddress,
             new JsonSerializerOptions

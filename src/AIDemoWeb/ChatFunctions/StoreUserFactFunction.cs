@@ -5,6 +5,7 @@ using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using Pgvector;
 
 namespace Serious.ChatFunctions;
@@ -12,7 +13,7 @@ namespace Serious.ChatFunctions;
 /// <summary>
 /// Extends Chat GPT with a function that stores facts about a user.
 /// </summary>
-public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client)
+public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client, GeocodeClient geocodeClient)
     : ChatFunction<UserFactArguments, object>
 {
     protected override string Name => "store_user_fact";
@@ -59,6 +60,18 @@ public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client
         {
             // Generate chat embedding for fact.
             var embeddings = await GetEmbeddingsAsync(arguments, cancellationToken);
+
+            if (arguments.Location is { } location)
+            {
+                user.Location = new Point(location.Coordinate.Latitude, location.Coordinate.Longitude);
+                user.FormattedAddress = location.FormattedAddress;
+
+                if (await geocodeClient.GetTimeZoneAsync(location.Coordinate.Latitude, location.Coordinate.Longitude)
+                    is { } timeZoneId)
+                {
+                    user.TimeZoneId = timeZoneId;
+                }
+            }
 
             // TODO: Let's ask GPT if this fact is already known or changes an existing fact.
             user.Facts.Add(new UserFact
@@ -114,6 +127,11 @@ public record UserFactArguments(
     [property: JsonPropertyName("fact")]
     [property: Description("The fact to store about the user.")]
     string Fact,
+
+    [property: Required]
+    [property: JsonPropertyName("location")]
+    [property: Description("The location where the user lives if the fact is about the user's location.")]
+    UserLocation? Location,
 
     [property: Required]
     [property: JsonPropertyName("justification")]

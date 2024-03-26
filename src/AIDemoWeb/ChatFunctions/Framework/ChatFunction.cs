@@ -31,7 +31,7 @@ public abstract class ChatFunction<TArguments, TResult> : IChatFunction where TA
                 $"Could not deserialize arguments: `{unvalidatedArguments}` into {typeof(TArguments).Name}.");
         }
 
-        // Actually call the weather service API.
+        // Actually call the function.
         var result = await InvokeAsync(arguments, source, cancellationToken);
 
         if (result is null)
