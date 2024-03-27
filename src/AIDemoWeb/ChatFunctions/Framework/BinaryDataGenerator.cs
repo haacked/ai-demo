@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AIDemoWeb.Library;
+
 #pragma warning disable CA1308
 
 namespace Serious.ChatFunctions;
@@ -26,10 +28,11 @@ public static class BinaryDataGenerator
         {
             var propertyName = propertyInfo.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? propertyInfo.Name;
             var propertyType = GetPropertyType(propertyInfo);
+            var gptType = GetGptType(propertyType);
 
             var propertyData = new Dictionary<string, object>
             {
-                { "type", GetGptType(propertyType) }
+                { "type", gptType.Type }
             };
 
             if (propertyType.IsEnum)
@@ -41,6 +44,14 @@ public static class BinaryDataGenerator
             if (!string.IsNullOrEmpty(propertyDescription))
             {
                 propertyData["description"] = propertyDescription;
+            }
+
+            if (gptType.ElementType is not null)
+            {
+                propertyData["items"] = new Dictionary<string, object>
+                {
+                    { "type", GetGptType(gptType.ElementType).Type }
+                };
             }
 
             properties[propertyName] = propertyData;
@@ -70,9 +81,27 @@ public static class BinaryDataGenerator
         return propertyInfo.PropertyType;
     }
 
-    static string GetGptType(Type propertyType)
+    static GptType GetGptType(Type propertyType)
     {
-        return propertyType == typeof(int) || propertyType == typeof(double) ? "int" : "string";
+        if (propertyType == typeof(int) || propertyType == typeof(double))
+        {
+            return new GptType("int", null);
+        }
+
+        if (propertyType == typeof(string) || propertyType.IsEnum)
+        {
+            return new GptType("string", null);
+        }
+
+        var elementType = propertyType.GetCollectionElementType();
+        if (elementType is not null)
+        {
+            return new GptType("array", elementType);
+        }
+
+        return new GptType("object", null);
     }
 }
+
+public record GptType(string Type, Type? ElementType);
 
