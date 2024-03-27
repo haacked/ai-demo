@@ -43,6 +43,51 @@ public class BinaryDataGeneratorTests
         }
 
         [Fact]
+        public void WithComplexArgumentsReturnsExpectedDictionary()
+        {
+            // Arrange
+            var expected = new Dictionary<string, object>
+            {
+                { "type", "object" },
+                { "properties", new Dictionary<string, object>
+                    {
+                        { "args", new Dictionary<string, object>
+                            {
+                                { "type", "object" },
+                                { "description", "The arguments."},
+                                { "properties", new Dictionary<string, object>
+                                    {
+                                        { "name", new Dictionary<string, object>
+                                        {
+                                            { "type", "string" },
+                                            { "description", "The name of the person." }
+                                        } },
+                                        { "Age", new Dictionary<string, object> { { "type", "int" } } },
+                                        { "FavoriteColor", new Dictionary<string, object>
+                                            {
+                                                { "type", "string" },
+                                                { "enum", new[] { "Red", "Green", "Blue" } }
+                                            }
+                                        }
+                                    }
+                                },
+                                { "required", new[] { "name", "Age" } }
+                            }
+                        },
+                        { "Justification", new Dictionary<string, object> { { "type", "string" } } }
+                    }
+                },
+                { "required", new[] { "args" } }
+            };
+
+            // Act
+            var actual = BinaryDataGenerator.GetParametersDictionary(typeof(ComplexArguments));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void WithArrayArgumentReturnsExpectedDictionary()
         {
             // Arrange
@@ -96,6 +141,14 @@ public record SimpleArguments(
     int Age,
 
     Colors? FavoriteColor);
+
+public record ComplexArguments(
+    [property: Required]
+    [property: Description("The arguments.")]
+    [property: JsonPropertyName("args")]
+    SimpleArguments Arguments,
+
+    string? Justification);
 
 public enum Colors
 {

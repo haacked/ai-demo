@@ -20,7 +20,7 @@ public static class BinaryDataGenerator
         });
     }
 
-    public static IReadOnlyDictionary<string, object> GetParametersDictionary(Type type)
+    public static IReadOnlyDictionary<string, object> GetParametersDictionary(Type type, string? description = null)
     {
         var properties = new Dictionary<string, object>();
 
@@ -29,6 +29,13 @@ public static class BinaryDataGenerator
             var propertyName = propertyInfo.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? propertyInfo.Name;
             var propertyType = GetPropertyType(propertyInfo);
             var gptType = GetGptType(propertyType);
+            var propertyDescription = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description;
+
+            if (gptType.Type == "object")
+            {
+                properties[propertyName] = GetParametersDictionary(propertyType, propertyDescription);
+                continue;
+            }
 
             var propertyData = new Dictionary<string, object>
             {
@@ -40,8 +47,7 @@ public static class BinaryDataGenerator
                 propertyData["enum"] = Enum.GetNames(propertyType);
             }
 
-            var propertyDescription = propertyInfo.GetCustomAttribute<DescriptionAttribute>()?.Description;
-            if (!string.IsNullOrEmpty(propertyDescription))
+            if (propertyDescription is not null or [])
             {
                 propertyData["description"] = propertyDescription;
             }
@@ -62,12 +68,19 @@ public static class BinaryDataGenerator
             .Select(p => p.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? p.Name)
             .ToArray();
 
-        return new Dictionary<string, object>
+        var result = new Dictionary<string, object>
         {
             { "type", "object" },
             { "properties", properties },
             { "required", requiredProperties }
         };
+
+        if (description is not null or [])
+        {
+            result["description"] = description;
+        }
+
+        return result;
     }
 
     static Type GetPropertyType(PropertyInfo propertyInfo)
