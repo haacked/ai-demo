@@ -177,6 +177,33 @@ public class BinaryDataGeneratorTests
             // Assert
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void DoesNotStackOverflow()
+        {
+            // Arrange
+            var expected = new Dictionary<string, object>
+            {
+                { "type", "object" },
+                { "properties", new Dictionary<string, object>
+                    {
+                        { "Args", new Dictionary<string, object>
+                            {
+                                { "type", "array" },
+                                { "items", new Dictionary<string, object>() }
+                            }
+                        }
+                    }
+                },
+                { "required", Array.Empty<object>() }
+            };
+
+            // Act
+            var actual = BinaryDataGenerator.GetParametersDictionary(typeof(StackOverflowArguments));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
     }
 }
 
@@ -219,3 +246,5 @@ public record ComplexArrayArguments(
     [property: Description("The args.")]
     [property: JsonPropertyName("args")]
     IReadOnlyList<SimpleArguments> Args);
+
+public record StackOverflowArguments(IReadOnlyList<StackOverflowArguments> Args);

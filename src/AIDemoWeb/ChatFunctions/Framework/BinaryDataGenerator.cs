@@ -20,9 +20,37 @@ public static class BinaryDataGenerator
         });
     }
 
-    public static IReadOnlyDictionary<string, object> GetParametersDictionary(Type type, string? description = null)
+    public static IReadOnlyDictionary<string, object> GetParametersDictionary(Type type)
+        => GetParametersDictionaryCore(type, null, new HashSet<Type>());
+
+    public static IReadOnlyDictionary<string, object> GetParametersDictionaryCore(
+        Type type,
+        string? description,
+        HashSet<Type> seenComplexTypes)
     {
         var properties = new Dictionary<string, object>();
+        var requiredProperties = type.GetProperties()
+            .Where(p => p.GetCustomAttribute<RequiredAttribute>() != null)
+            .Select(p => p.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? p.Name)
+            .ToArray();
+
+        var result = new Dictionary<string, object>
+        {
+            { "type", "object" },
+            { "properties", properties },
+            { "required", requiredProperties }
+        };
+
+        if (description is not null or [])
+        {
+            result["description"] = description;
+        }
+
+        // If we've already seen this complex type, we don't want to recurse infinitely.
+        if (!seenComplexTypes.Add(type))
+        {
+            return properties;
+        }
 
         foreach (var propertyInfo in type.GetProperties())
         {
@@ -33,7 +61,7 @@ public static class BinaryDataGenerator
 
             if (gptType.Type == "object")
             {
-                properties[propertyName] = GetParametersDictionary(propertyType, propertyDescription);
+                properties[propertyName] = GetParametersDictionaryCore(propertyType, propertyDescription, seenComplexTypes);
                 continue;
             }
 
@@ -65,28 +93,11 @@ public static class BinaryDataGenerator
                 }
                 else
                 {
-                    propertyData["items"] = GetParametersDictionary(gptType.ElementType);
+                    propertyData["items"] = GetParametersDictionaryCore(gptType.ElementType, null, seenComplexTypes);
                 }
             }
 
             properties[propertyName] = propertyData;
-        }
-
-        var requiredProperties = type.GetProperties()
-            .Where(p => p.GetCustomAttribute<RequiredAttribute>() != null)
-            .Select(p => p.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? p.Name)
-            .ToArray();
-
-        var result = new Dictionary<string, object>
-        {
-            { "type", "object" },
-            { "properties", properties },
-            { "required", requiredProperties }
-        };
-
-        if (description is not null or [])
-        {
-            result["description"] = description;
         }
 
         return result;
