@@ -1,12 +1,13 @@
 using Haack.AIDemoWeb.Entities;
+using Haack.AIDemoWeb.Library;
 
 namespace Serious.ChatFunctions;
 
 /// <summary>
 /// Extends Chat GPT with a function that stores facts about a user.
 /// </summary>
-public class StoreUserRelationshipFunction(AIDemoContext db, OpenAIClientAccessor client)
-    : StoreUserFactFunction(db, client)
+public class StoreUserRelationshipFunction(AIDemoContext db, OpenAIClientAccessor client, GeocodeClient geocodeClient)
+    : StoreUserFactFunction(db, client, geocodeClient)
 {
     protected override string Name => "store_user_relationship";
 

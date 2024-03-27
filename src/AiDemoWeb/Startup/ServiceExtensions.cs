@@ -1,11 +1,13 @@
 using System.Text.Json;
 using Haack.AIDemoWeb.Entities;
+using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.Library.Clients;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Npgsql;
 using Refit;
 using Serious;
 
@@ -40,11 +42,18 @@ public static class ServiceExtensions
         options.EnableSensitiveDataLogging();
         options.EnableDetailedErrors();
 #endif
+
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+        dataSourceBuilder.UseNetTopologySuite();
+        dataSourceBuilder.UseVector();
+        var dataSource = dataSourceBuilder.Build();
+
         options.ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
 
-        options.UseNpgsql(connectionString, o =>
+        options.UseNpgsql(dataSource, o =>
         {
             o.UseVector();
+            o.UseNetTopologySuite();
             o.MigrationsAssembly("AIDemoWeb");
         });
     }
@@ -118,8 +127,16 @@ public static class ServiceExtensions
     public static void AddClients(this IServiceCollection services)
     {
         services.AddTransient<LoggingHttpMessageHandler>();
+        services.AddTransient<GeocodeClient>();
         services.AddRefitClient<IOpenAIClient>(
             IOpenAIClient.BaseAddress,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                PropertyNameCaseInsensitive = true,
+            });
+        services.AddRefitClient<IGoogleGeocodeClient>(
+            IGoogleGeocodeClient.BaseAddress,
             new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,

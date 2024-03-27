@@ -20,6 +20,7 @@ builder.Services.AddDatabase(builder.Configuration);
 // Registers my OpenAI client accessor and configures it.
 builder.Services.RegisterOpenAI(builder.Configuration);
 builder.Services.Configure<GitHubOptions>(builder.Configuration.GetSection(GitHubOptions.GitHub));
+builder.Services.Configure<GoogleOptions>(builder.Configuration.GetSection(GoogleOptions.Google));
 builder.Services.Configure<WeatherOptions>(builder.Configuration.GetSection(WeatherOptions.Weather));
 builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddMigrationServices();

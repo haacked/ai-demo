@@ -21,6 +21,7 @@ public class AIDemoContext(DbContextOptions<AIDemoContext> options) : DbContext(
 
         modelBuilder.HasPostgresExtension("citext"); // case insensitive text
         modelBuilder.HasPostgresExtension("vector"); // pgvector for vector similarity support.
+        modelBuilder.HasPostgresExtension("postgis");
 
         // User names must be unique.
         modelBuilder.Entity<User>()

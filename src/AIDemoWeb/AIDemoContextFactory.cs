@@ -24,6 +24,7 @@ public class AIDemoContextFactory : IDesignTimeDbContextFactory<AIDemoContext>
                 options =>
                 {
                     options.UseVector();
+                    options.UseNetTopologySuite();
                     options.MigrationsAssembly("AIDemoWeb");
                 });
         return new AIDemoContext(optionsBuilder.Options);
