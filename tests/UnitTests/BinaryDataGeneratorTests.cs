@@ -128,6 +128,55 @@ public class BinaryDataGeneratorTests
             // Assert
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void WithComplexArrayArgumentReturnsExpectedDictionary()
+        {
+            // Arrange
+            var expected = new Dictionary<string, object>
+            {
+                { "type", "object" },
+                { "properties", new Dictionary<string, object>
+                    {
+                        { "args", new Dictionary<string, object>
+                            {
+                                { "type", "array" },
+                                { "description", "The args." },
+                                { "items", new Dictionary<string, object>
+                                    {
+                                        { "type", "object" },
+                                        { "properties", new Dictionary<string, object>
+                                            {
+                                                { "name", new Dictionary<string, object>
+                                                {
+                                                    { "type", "string" },
+                                                    { "description", "The name of the person." }
+                                                } },
+                                                { "Age", new Dictionary<string, object> { { "type", "int" } } },
+                                                { "FavoriteColor", new Dictionary<string, object>
+                                                    {
+                                                        { "type", "string" },
+                                                        { "enum", new[] { "Red", "Green", "Blue" } }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        { "required", new[] { "name", "Age" } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                { "required", new[] { "args" } }
+            };
+
+            // Act
+            var actual = BinaryDataGenerator.GetParametersDictionary(typeof(ComplexArrayArguments));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
     }
 }
 
@@ -164,3 +213,9 @@ public record ArrayArguments(
     IReadOnlyList<string> Names,
 
     IReadOnlyList<int> Ages);
+
+public record ComplexArrayArguments(
+    [property: Required]
+    [property: Description("The args.")]
+    [property: JsonPropertyName("args")]
+    IReadOnlyList<SimpleArguments> Args);

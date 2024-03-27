@@ -54,10 +54,19 @@ public static class BinaryDataGenerator
 
             if (gptType.ElementType is not null)
             {
-                propertyData["items"] = new Dictionary<string, object>
+                var subType = GetGptType(gptType.ElementType);
+
+                if (subType.Type != "object")
                 {
-                    { "type", GetGptType(gptType.ElementType).Type }
-                };
+                    propertyData["items"] = new Dictionary<string, object>
+                    {
+                        { "type", GetGptType(gptType.ElementType).Type }
+                    };
+                }
+                else
+                {
+                    propertyData["items"] = GetParametersDictionary(gptType.ElementType);
+                }
             }
 
             properties[propertyName] = propertyData;
