@@ -118,7 +118,7 @@ public static class BinaryDataGenerator
     {
         if (propertyType == typeof(int) || propertyType == typeof(double))
         {
-            return new GptType("int", null);
+            return new GptType("integer", null);
         }
 
         if (propertyType == typeof(string) || propertyType.IsEnum)
