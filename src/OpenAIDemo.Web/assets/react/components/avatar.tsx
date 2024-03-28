@@ -21,4 +21,4 @@ export default function Avatar(props:{username: string | null}) {
             )}
         </div>
     );
-};
+}

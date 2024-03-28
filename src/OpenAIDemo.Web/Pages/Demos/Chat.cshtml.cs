@@ -6,6 +6,6 @@ public class ChatPageModel : PageModel
 {
     public void OnGet()
     {
-        
+
     }
 }

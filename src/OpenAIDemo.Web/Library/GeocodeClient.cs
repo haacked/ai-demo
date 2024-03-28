@@ -7,7 +7,7 @@ namespace Haack.AIDemoWeb.Library;
 
 public class GeocodeClient(IGoogleGeocodeClient geocodeClient, IOptions<GoogleOptions> geocodeOptions)
 {
-    public  async Task<UserLocation?> GetLocationInformationAsync(string location)
+    public async Task<UserLocation?> GetLocationInformationAsync(string location)
     {
         var apiKey = geocodeOptions.Value.Require().GeolocationApiKey.Require();
         var response = await geocodeClient.GeoCodeAsync(apiKey, location);
