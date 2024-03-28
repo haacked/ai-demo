@@ -127,12 +127,9 @@ public static class BinaryDataGenerator
         }
 
         var elementType = propertyType.GetCollectionElementType();
-        if (elementType is not null)
-        {
-            return new GptType("array", elementType);
-        }
-
-        return new GptType("object", null);
+        return elementType is not null
+            ? new GptType("array", elementType)
+            : new GptType("object", null);
     }
 }
 
