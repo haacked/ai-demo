@@ -8,7 +8,6 @@ const appElement = document.getElementById("assistant-root");
 if (!appElement) throw new Error("Could not find #react-root element!");
 const assistantName = appElement.dataset.assistantName;
 const username = appElement.dataset.username;
-const threadId = appElement.dataset.threadId;
 const root = createRoot(appElement!);
 
 root.render(
