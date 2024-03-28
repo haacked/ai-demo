@@ -23,7 +23,7 @@ public class BinaryDataGeneratorTests
                             { "type", "string" },
                             { "description", "The name of the person." }
                         } },
-                        { "Age", new Dictionary<string, object> { { "type", "int" } } },
+                        { "Age", new Dictionary<string, object> { { "type", "integer" } } },
                         { "FavoriteColor", new Dictionary<string, object>
                             {
                                 { "type", "string" },
@@ -62,7 +62,7 @@ public class BinaryDataGeneratorTests
                                             { "type", "string" },
                                             { "description", "The name of the person." }
                                         } },
-                                        { "Age", new Dictionary<string, object> { { "type", "int" } } },
+                                        { "Age", new Dictionary<string, object> { { "type", "integer" } } },
                                         { "FavoriteColor", new Dictionary<string, object>
                                             {
                                                 { "type", "string" },
@@ -112,7 +112,7 @@ public class BinaryDataGeneratorTests
                                 { "type", "array" },
                                 { "items", new Dictionary<string, object>
                                     {
-                                        { "type", "int" }
+                                        { "type", "integer" }
                                     }
                                 }
                             }
@@ -152,7 +152,7 @@ public class BinaryDataGeneratorTests
                                                     { "type", "string" },
                                                     { "description", "The name of the person." }
                                                 } },
-                                                { "Age", new Dictionary<string, object> { { "type", "int" } } },
+                                                { "Age", new Dictionary<string, object> { { "type", "integer" } } },
                                                 { "FavoriteColor", new Dictionary<string, object>
                                                     {
                                                         { "type", "string" },
