@@ -10,7 +10,7 @@ cd $root_dir
 source script/helpers/_utils.sh
 
 SOLUTION_FILE="OpenAIDemo.sln"
-PROJECT_DIR="./src/AIDemoWeb"
+PROJECT_DIR="./src/OpenAIDemo.Web"
 
 check=false
 
