@@ -20,7 +20,7 @@ public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client
 
     protected override string Description =>
         """
-        Stores information about a person when a user makes a declarative statement about another person or themself. 
+        Stores information about a person when a user makes a declarative statement or statements about another person or themself. 
         This only responds to declarative statements.
 
         For example, the statement \"@haacked's favorite color is blue\"
@@ -54,47 +54,51 @@ public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client
             await db.Users.AddAsync(user, cancellationToken);
         }
 
-        if (
-            // Make sure it's not already stored verbatim.
-            !user.Facts.Any(f => f.Content.Equals(arguments.Fact, StringComparison.OrdinalIgnoreCase)))
+        foreach (var fact in arguments.Facts)
         {
-            // Generate chat embedding for fact.
-            var embeddings = await GetEmbeddingsAsync(arguments, cancellationToken);
-
-            if (arguments.Location is { } location)
+            if (
+                // Make sure it's not already stored verbatim.
+                !user.Facts.Any(f => f.Content.Equals(fact, StringComparison.OrdinalIgnoreCase)))
             {
-                user.Location = new Point(location.Coordinate.Latitude, location.Coordinate.Longitude);
-                user.FormattedAddress = location.FormattedAddress;
+                // Generate chat embedding for fact.
+                var embeddings = await GetEmbeddingsAsync(fact, cancellationToken);
 
-                if (await geocodeClient.GetTimeZoneAsync(location.Coordinate.Latitude, location.Coordinate.Longitude)
-                    is { } timeZoneId)
+                if (arguments.Location is { } location)
                 {
-                    user.TimeZoneId = timeZoneId;
-                }
-            }
+                    user.Location = new Point(location.Coordinate.Latitude, location.Coordinate.Longitude);
+                    user.FormattedAddress = location.FormattedAddress;
 
-            // TODO: Let's ask GPT if this fact is already known or changes an existing fact.
-            user.Facts.Add(new UserFact
-            {
-                User = user,
-                UserId = user.Id,
-                Content = arguments.Fact,
-                Embeddings = new Vector(embeddings),
-                Justification = arguments.Justification,
-                Source = source,
-            });
-            await db.SaveChangesAsync(cancellationToken);
+                    if (await geocodeClient.GetTimeZoneAsync(location.Coordinate.Latitude,
+                            location.Coordinate.Longitude)
+                        is { } timeZoneId)
+                    {
+                        user.TimeZoneId = timeZoneId;
+                    }
+                }
+
+                // TODO: Let's ask GPT if this fact is already known or changes an existing fact.
+                user.Facts.Add(new UserFact
+                {
+                    User = user,
+                    UserId = user.Id,
+                    Content = fact,
+                    Embeddings = new Vector(embeddings),
+                    Justification = arguments.Justification,
+                    Source = source,
+                });
+                await db.SaveChangesAsync(cancellationToken);
+            }
         }
 
         return null; // No need to respond.
     }
 
-    async Task<float[]> GetEmbeddingsAsync(UserFactArguments arguments, CancellationToken cancellationToken)
+    async Task<float[]> GetEmbeddingsAsync(string fact, CancellationToken cancellationToken)
     {
         try
         {
             var response = await client.GetEmbeddingsAsync(
-                new EmbeddingsOptions { Input = { arguments.Fact } },
+                new EmbeddingsOptions { Input = { fact } },
                 cancellationToken);
             if (response.HasValue)
             {
@@ -124,9 +128,9 @@ public record UserFactArguments(
     string Username,
 
     [property: Required]
-    [property: JsonPropertyName("fact")]
-    [property: Description("The fact to store about the user.")]
-    string Fact,
+    [property: JsonPropertyName("facts")]
+    [property: Description("The facts to store about the user.")]
+    IReadOnlyList<string> Facts,
 
     [property: Required]
     [property: JsonPropertyName("location")]
