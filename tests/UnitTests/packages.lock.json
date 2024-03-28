@@ -1554,7 +1554,7 @@
           "xunit.extensibility.core": "[2.5.3]"
         }
       },
-      "aidemoweb": {
+      "openaidemo.web": {
         "type": "Project",
         "dependencies": {
           "AspNet.Security.OAuth.GitHub": "[8.0.0, )",

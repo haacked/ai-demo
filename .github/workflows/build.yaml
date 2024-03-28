@@ -1,0 +1,105 @@
+name: Build OpenAIDemo
+
+on:
+  push:
+    branches:
+      - main
+
+  # Run on pull requests.
+  pull_request:
+
+  # Run when a merge group is updated.
+  # https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#triggering-merge-group-checks-with-github-actions
+  merge_group:
+
+permissions:
+  checks: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v3.0.3
+        with:
+          dotnet-version: |
+            8.0.x
+
+      - name: Restore NuGet Packages
+        run: dotnet restore OpenAIDemo.sln --locked-mode
+
+      - name: Build
+        run: dotnet build OpenAIDemo.sln --configuration Release --no-restore --nologo
+
+      - name: Run Tests
+        run: dotnet test OpenAIDemo.sln --logger "trx;LogFileName=test-results.trx" --configuration Release --no-build --nologo
+
+      - name: Collect Test Results
+        uses: dorny/test-reporter@v1
+        with:
+          name: "xUnit Tests"
+          path: "tests/*/TestResults/test-results.trx"
+          reporter: 'dotnet-trx'
+
+      - name: Upload Test Snapshots
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: verify-test-results
+          path: |
+            **/*.received.*
+
+  build_js:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout main branch
+      uses: actions/checkout@v3.1.0
+
+    - name: Setup Node.js 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+
+    - name: OpenAIDemo.Web - npm install
+      working-directory: src/OpenAIDemo.Web
+      run: npm ci
+
+    - name: OpenAIDemo.Web - npm run release
+      working-directory: src/OpenAIDemo.Web
+      run: npm run release
+
+  format:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout main branch
+      uses: actions/checkout@v3.1.0
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v3.0.3
+      with:
+        dotnet-version: |
+          8.0.x
+
+    - name: Restore NuGet Packages
+      run: dotnet restore ${{ env.APP_SOLUTION }} --locked-mode
+
+    - name: Set up dotnet-format problem matcher
+      run: echo "::add-matcher::$GITHUB_WORKSPACE/.github/problemMatchers/dotnet-format.json"
+
+    - name: Setup Node.js 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+
+    - name: Set up eslint-compact problem matcher
+      run: echo "::add-matcher::$GITHUB_WORKSPACE/.github/problemMatchers/eslint-compact.json"
+
+    - name: Format!
+      run: script/fmt --check

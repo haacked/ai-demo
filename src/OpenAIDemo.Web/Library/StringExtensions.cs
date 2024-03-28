@@ -299,7 +299,7 @@ public static class StringExtensions
         };
     }
 
-    static readonly char[] WordBoundaryCharacters = {'_', '-', ' '};
+    static readonly char[] WordBoundaryCharacters = { '_', '-', ' ' };
 
     /// <summary>
     /// Split a string into contingent parts. Especially useful for case conversions.
@@ -554,7 +554,7 @@ public static class StringExtensions
         {
             return JsonSerializer.Serialize(jDoc, PrettifyJsonOptions);
         }
-        catch(JsonException)
+        catch (JsonException)
         {
             return json;
         }

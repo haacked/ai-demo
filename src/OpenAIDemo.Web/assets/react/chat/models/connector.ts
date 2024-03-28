@@ -33,15 +33,15 @@ class Connector {
         };
     }
     public newMessage = (username: string, messages: string) => {
-        this.connection.send("newMessage", username, messages).then(_ => console.debug("message sent"));
+        this.connection.send("newMessage", username, messages).then(() => console.debug("message sent"));
     }
 
     public newThought = (messages: string) => {
-        this.connection.send("newThought", messages).then(_ => console.debug("thought sent"));
+        this.connection.send("newThought", messages).then(() => console.debug("thought sent"));
     }
 
     public newFunction = (name: string, args: string) => {
-        this.connection.send("newFunction", name, args).then(_ => console.debug("function sent"));
+        this.connection.send("newFunction", name, args).then(() => console.debug("function sent"));
     }
     public static getInstance(): Connector {
         if (!Connector.instance)

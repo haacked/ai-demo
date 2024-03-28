@@ -36,4 +36,4 @@ export default function ChatInputBox({onMessageSubmit}: ChatInputProps) {
       </div>
     </form>
   );
-};
+}

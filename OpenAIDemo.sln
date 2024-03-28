@@ -43,6 +43,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{8BFD7B
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 		src\Directory.Packages.props = src\Directory.Packages.props
+		.github\problemMatchers\dotnet-format.json = .github\problemMatchers\dotnet-format.json
+		.github\problemMatchers\eslint-compact.json = .github\problemMatchers\eslint-compact.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_meta", "_meta", "{7C657BF1-2A3D-4AED-80A6-843396D4B979}"
@@ -65,6 +67,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "postgres", "postgres", "{83
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{E5AB31CE-B06A-4F6B-BFFF-21E432626739}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{BB18D9A3-E174-4A28-B8E9-B465C766317D}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yaml = .github\workflows\build.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,5 +96,6 @@ Global
 		{40ECE3A6-C6C1-4D83-84D8-C817FB61E8F1} = {7FCDD3F2-5976-443D-B5C2-AC71C062C0FB}
 		{BA660592-A554-4992-8D98-5080909A35E2} = {4D2B04F8-77C3-45CD-831B-2028AD6466A2}
 		{834773C4-A198-48B6-90E1-3E2EB6FB4347} = {BA660592-A554-4992-8D98-5080909A35E2}
+		{BB18D9A3-E174-4A28-B8E9-B465C766317D} = {8BFD7B1C-87A2-44FC-B09C-277F7B49EE8B}
 	EndGlobalSection
 EndGlobal

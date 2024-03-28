@@ -118,7 +118,8 @@ public static class ServiceExtensions
             configurator.AddConsumers(typeof(ServiceExtensions).Assembly);
             configurator.SetKebabCaseEndpointNameFormatter();
 
-            configurator.UsingInMemory((context, cfg) => {
+            configurator.UsingInMemory((context, cfg) =>
+            {
                 cfg.ConfigureEndpoints(context);
             });
         });
@@ -161,9 +162,9 @@ public static class ServiceExtensions
         JsonSerializerOptions serializerOptions) where T : class
     {
         return services.AddRefitClient<T>(new RefitSettings
-            {
-                ContentSerializer = new SystemTextJsonContentSerializer(serializerOptions),
-            })
+        {
+            ContentSerializer = new SystemTextJsonContentSerializer(serializerOptions),
+        })
             .ConfigureHttpClient(c => c.BaseAddress = baseAddress)
 #if DEBUG
             .AddHttpMessageHandler<LoggingHttpMessageHandler>()

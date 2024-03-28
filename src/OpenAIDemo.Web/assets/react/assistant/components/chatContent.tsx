@@ -38,4 +38,4 @@ export default function ChatContent({ messages }: ChatContentProps) {
             ))}
         </div>
     );
-};
+}

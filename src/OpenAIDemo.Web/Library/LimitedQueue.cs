@@ -41,7 +41,7 @@ public class LimitedQueue<TItem>(int limit) : IReadOnlyCollection<TItem>
     /// </summary>
     /// <param name="result">The dequeued item.</param>
     /// <returns><c>true</c> if there was an item to dequeue.</returns>
-    public bool TryDequeue([MaybeNullWhen(false)]out TItem result) => _innerQueue.TryDequeue(out result);
+    public bool TryDequeue([MaybeNullWhen(false)] out TItem result) => _innerQueue.TryDequeue(out result);
 
     /// <summary>
     /// Returns the object at the head of the queue. The object remains in the

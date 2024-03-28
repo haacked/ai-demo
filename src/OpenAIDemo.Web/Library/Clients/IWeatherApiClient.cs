@@ -82,7 +82,7 @@ public record Wind(
     double Gust);
 
 public record Clouds(
-    [property: JsonPropertyName("all")]int All);
+    [property: JsonPropertyName("all")] int All);
 
 public record Sys(
     [property: JsonPropertyName("type")]

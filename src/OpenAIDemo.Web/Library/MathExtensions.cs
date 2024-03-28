@@ -34,7 +34,7 @@ public static class MathExtensions
         // Calculate cosine similarity
         return dotProduct / (magnitude1 * magnitude2);
     }
-    
+
     public static long DoArithmetic(ArithmeticArguments arguments)
     {
         var result = arguments switch

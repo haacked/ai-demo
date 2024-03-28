@@ -24,10 +24,10 @@ public class UserFact
     /// <remarks>
     /// The output dimensions for text-embedding-ada-002 is 1536.
     /// </remarks>
-    #pragma warning disable CA1002
+#pragma warning disable CA1002
     [Column(TypeName = "vector(1536 )")]
     public required Vector Embeddings { get; init; }
-    #pragma warning restore CA1002
+#pragma warning restore CA1002
 
     /// <summary>
     /// The justification for why the fact was added.

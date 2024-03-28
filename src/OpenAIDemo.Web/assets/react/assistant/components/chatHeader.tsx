@@ -24,4 +24,4 @@ export default function ChatHeader({name, numberOfMessages = 0}: ChatHeaderProps
             </div>
         </div>
     );
-};
+}
