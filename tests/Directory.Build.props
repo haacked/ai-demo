@@ -1,0 +1,27 @@
+<Project>
+    <!-- Global Warning Suppressions -->
+    <PropertyGroup>
+        <!--
+        Validate arguments of public methods:
+
+        This is just a demo site. We'll rely on nullability constraints.
+        -->
+        <NoWarn>CA1062;$(NoWarn)</NoWarn>
+
+        <!--
+        ConfigureAwait only has effects on code running in the context of a SynchronizationContext
+        which ASP.NET Core doesn't have.
+        -->
+        <NoWarn>CA2007;$(NoWarn)</NoWarn>
+
+        <!--
+        Every test class is a "static holder" class.
+        -->
+        <NoWarn>CA1052;$(NoWarn)</NoWarn>
+
+        <!--
+        I like nested classes for tests.
+        -->
+        <NoWarn>CA1034;$(NoWarn)</NoWarn>
+    </PropertyGroup>
+</Project>

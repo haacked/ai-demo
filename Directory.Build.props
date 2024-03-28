@@ -18,7 +18,6 @@
         <BaseIntermediateOutputPath>$(RepoObjPath)$(MSBuildProjectName)\</BaseIntermediateOutputPath>
         <BaseOutputPath Condition=" '$(BaseOutputPath)' == '' ">$(RepoBinPath)$(MSBuildProjectName)\</BaseOutputPath>
         <PackageOutputPath>$(RepoBuildPath)nuget\$(Configuration)\</PackageOutputPath>
-        <RuntimeIdentifiers>win10-x86;linux-x64</RuntimeIdentifiers>
         <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
     </PropertyGroup>
 

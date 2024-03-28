@@ -53,7 +53,7 @@ public class BotMessageConsumer(
                 new ChatRequestSystemMessage($"You are a helpful assistant who is concise and to the point. You are helping the user {author}."),
             },
         };
-        options.Functions.AddRange(dispatcher.GetFunctionDefinitions());
+        options.Functions.AddRange(dispatcher.EnumerateFunctionDefinitions());
         foreach (var chatMessage in Messages)
         {
             options.Messages.Add(chatMessage);

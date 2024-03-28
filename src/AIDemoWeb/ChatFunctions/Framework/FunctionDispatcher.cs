@@ -54,7 +54,7 @@ public class FunctionDispatcher
     /// <summary>
     /// Returns a list of function definitions.
     /// </summary>
-    public IList<FunctionDefinition> GetFunctionDefinitions() => _functions
+    public IEnumerable<FunctionDefinition> EnumerateFunctionDefinitions() => _functions
         .Values
         .OrderBy(f => f.Order)
         .Select(f => f.Definition)
@@ -63,8 +63,7 @@ public class FunctionDispatcher
             Name = d.Name,
             Description = d.Description,
             Parameters = d.Parameters.ToBinaryData(),
-        })
-        .ToList();
+        });
 }
 
 public static class FunctionDispatcherServiceExtensions

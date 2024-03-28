@@ -38,7 +38,7 @@ public class MultiUserChatMessageConsumer(
                     new ChatRequestSystemMessage("You are observing a conversation in a chat room with multiple participants. Each message starts with the participant's name which must not be altered. If you can be of assistance, please do chime in, otherwise stay quiet and let them speak."),
                 },
             };
-            options.Functions.AddRange(dispatcher.GetFunctionDefinitions());
+            options.Functions.AddRange(dispatcher.EnumerateFunctionDefinitions());
             foreach (var chatMessage in Messages)
             {
                 options.Messages.Add(chatMessage);
