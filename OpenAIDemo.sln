@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDemoWeb", "src\AIDemoWeb\AIDemoWeb.csproj", "{C368B277-F8C5-425D-8BB9-8869D90627E4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenAIDemo.Web", "src\OpenAIDemo.Web\OpenAIDemo.Web.csproj", "{C368B277-F8C5-425D-8BB9-8869D90627E4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_scripts", "_scripts", "{7FCDD3F2-5976-443D-B5C2-AC71C062C0FB}"
 	ProjectSection(SolutionItems) = preProject
