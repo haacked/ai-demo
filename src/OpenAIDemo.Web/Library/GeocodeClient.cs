@@ -1,7 +1,9 @@
+using System.Text.Json.Serialization;
 using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
 using Serious;
+using Serious.ChatFunctions;
 
 namespace Haack.AIDemoWeb.Library;
 
@@ -31,8 +33,9 @@ public class GeocodeClient(IGoogleGeocodeClient geocodeClient, IOptions<GoogleOp
     }
 }
 
-public record Coordinate(double Latitude, double Longitude);
+public record Coordinate(
+    [property: JsonPropertyName("latitude")]
+    double Latitude,
 
-public record UserLocation(
-    Coordinate Coordinate,
-    string FormattedAddress);
+    [property: JsonPropertyName("longitude")]
+    double Longitude);
