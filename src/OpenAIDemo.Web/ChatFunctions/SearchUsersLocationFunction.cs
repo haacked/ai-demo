@@ -38,10 +38,14 @@ public class SearchUsersLocationFunction(
             SRID = 4326
         };
 
-        var users = await db.Users
+        var noUsernames = arguments.Usernames is null or [];
+
+        var usersQuery = db.Users
             .Select(u => new { u.Name, u.Location, Distance = u.Location!.Distance(point) })
-            .OrderBy(u => u.Distance)
-            .ToListAsync(cancellationToken);
+            .Where(u => noUsernames || arguments.Usernames!.Contains(u.Name))
+            .OrderBy(u => u.Distance);
+
+        var users = await usersQuery.ToListAsync(cancellationToken);
 
         if (users.Count > 0)
         {
@@ -91,10 +95,14 @@ public record SearchUsersLocationArguments(
 
     [property: Required]
     [property: JsonPropertyName("distance")]
-    [property: Description("The distance in kilometers from the coordinate. If not specified, use 10 if the user is asking for nearby users. Otherwise use 1000. If the user specifies miles, convert to kilometers.")]
+    [property: Description("The distance in kilometers from the coordinate. If not specified, use 10 if the user is asking for nearby users. Otherwise use 1000. If the user specifies miles, convert to kilometers using the `unit_converter` function first.")]
     Measurement Distance,
 
-    [property: Required]
+    [property: JsonPropertyName("usernames")]
+    [property: Description("If specified, limit the results to these users.")]
+    IReadOnlyList<string>? Usernames,
+
+[property: Required]
     [property: JsonPropertyName("justification")]
     [property: Description("Describe why you decided to call this function.")]
     string Justification);
