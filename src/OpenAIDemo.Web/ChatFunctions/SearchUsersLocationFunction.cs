@@ -38,10 +38,8 @@ public class SearchUsersLocationFunction(
             SRID = 4326
         };
 
-        const double degreesToKilometersRoughApproximation = 111.32;
-
         var users = await db.Users
-            .Select(u => new { u.Name, Distance = u.Location!.Distance(point) })
+            .Select(u => new { u.Name, u.Location, Distance = u.Location!.Distance(point) })
             .OrderBy(u => u.Distance)
             .ToListAsync(cancellationToken);
 
@@ -49,7 +47,19 @@ public class SearchUsersLocationFunction(
         {
             await SendThought($"I found {users.Count.ToQuantity("users")} near {arguments.Coordinate}.");
 
-            return new SearchUsersLocationResult(users.Select(u => new UserDistance(u.Name, new TheDistance(u.Distance * degreesToKilometersRoughApproximation))).ToList());
+            var userDistances = users.Select(
+                    u => new UserDistance(
+                        u.Name,
+                        new Measurement(
+                            DistanceCalculator.CalculateDistance(
+                                point.Coordinate.X,
+                                point.Coordinate.Y,
+                                u.Location!.X,
+                                u.Location.Y), DistanceUnit.Kilometers)))
+                .Where(u => u.Distance.Value <= arguments.Distance.Value)
+                .ToList();
+
+            return new SearchUsersLocationResult(userDistances);
         }
 
         return new SearchUsersLocationResult(Array.Empty<UserDistance>());
@@ -68,7 +78,7 @@ public record UserDistance(
     string Name,
 
     [property: JsonPropertyName("distance")]
-    TheDistance Distance);
+    Measurement Distance);
 
 /// <summary>
 /// The arguments to the retrieve user fact function.
@@ -81,13 +91,11 @@ public record SearchUsersLocationArguments(
 
     [property: Required]
     [property: JsonPropertyName("distance")]
-    [property: Description("The distance in meters from the coordinate. If not specified, use 1.")]
-    TheDistance TheDistance,
+    [property: Description("The distance in kilometers from the coordinate. If not specified, use 10 if the user is asking for nearby users. Otherwise use 1000. If the user specifies miles, convert to kilometers.")]
+    Measurement Distance,
 
     [property: Required]
     [property: JsonPropertyName("justification")]
     [property: Description("Describe why you decided to call this function.")]
     string Justification);
 
-public record TheDistance(
-    [property: JsonPropertyName("kilometers")] double Kilometers);
