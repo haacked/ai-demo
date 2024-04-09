@@ -39,7 +39,7 @@ public class LocationFunction(
             // Maybe the address was a username. Look up the user's location.
             var user = await db.Users
                 .FirstOrDefaultAsync(u => u.Name == username, cancellationToken);
-            return user is { Location: {} location, FormattedAddress: {} formattedAddress }
+            return user is { Location: { } location, FormattedAddress: { } formattedAddress }
                 ? new UserLocation(new Coordinate(location.Coordinate.X, location.Coordinate.Y), formattedAddress)
                 : new UserLocation(new Coordinate(0, 0), "Unknown");
         }

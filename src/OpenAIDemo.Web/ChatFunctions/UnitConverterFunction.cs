@@ -26,7 +26,8 @@ public class UnitConverterFunction : ChatFunction<ConverterArguments, ConverterR
     {
         foreach (var conversion in arguments.Conversions)
         {
-            yield return conversion.SourceUnit switch {
+            yield return conversion.SourceUnit switch
+            {
                 DistanceUnit.Kilometers when conversion.TargetUnit == DistanceUnit.Miles
                     => new Measurement(conversion.Value * KilometersToMiles, DistanceUnit.Miles),
                 DistanceUnit.Miles when conversion.TargetUnit == DistanceUnit.Kilometers

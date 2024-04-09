@@ -63,7 +63,7 @@ public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client
                 // Generate chat embedding for fact.
                 var embeddings = await GetEmbeddingsAsync(fact, cancellationToken);
 
-                if (arguments.Location is { Coordinate: {} coordinate} location)
+                if (arguments.Location is { Coordinate: { } coordinate } location)
                 {
                     user.Location = new Point(coordinate.Latitude, coordinate.Longitude)
                     {
