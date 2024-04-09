@@ -51,6 +51,8 @@ public class RetrieveUserFactFunction(
         We need to call this function with the current username to try and retrieve the username for the son.
         
         It may take more than one step to follow a set of connected facts in order to answer the question.
+        
+        If returning no results, just say you don't know.
         """";
 
     protected override async Task<object?> InvokeAsync(
@@ -58,13 +60,19 @@ public class RetrieveUserFactFunction(
         string source,
         CancellationToken cancellationToken)
     {
-        var username = arguments.Username.TrimLeadingCharacter('@');
 
-        var user = await db.Users
-            .FirstOrDefaultAsync(u => u.Name == username, cancellationToken);
-        if (user is null)
+
+        var usernames = arguments.Usernames.Select(u => u.TrimLeadingCharacter('@')).ToList();
+
+        // Query the database for the user(s).
+        var users = await db.Users
+            .Include(u => u.Facts)
+            .Where(u => usernames.Contains(u.Name))
+            .ToListAsync(cancellationToken);
+
+        if (users is [])
         {
-            return new UserFactResult($"I don't know the user with the username {username}.");
+            return new UserFactResults(Array.Empty<UserFactResult>());
         }
 
         // Calculate the embedding for the question.
@@ -77,9 +85,10 @@ public class RetrieveUserFactFunction(
 
         // Cosine similarity == 1 - Cosine Distance.
         var facts = await db.UserFacts
-            .Where(f => f.User.Name == username)
+            .Where(f => usernames.Contains(f.User.Name))
             .Select(f => new
             {
+                Username = f.User.Name,
                 Fact = f,
                 Distance = f.Embeddings.CosineDistance(embeddings),
             })
@@ -92,31 +101,32 @@ public class RetrieveUserFactFunction(
             var factSummary = string.Join("\n", facts.Select(f => $"Similarity: {1.0 - f.Distance} Fact: {f.Fact.Content} Justification: {f.Fact.Justification} Source: {f.Fact.Source}"));
 
             await SendThought($"I have {facts.Count.ToQuantity("answer")} to that question\n\n{factSummary}");
-            var answer = string.Join("\n", facts.Select(a => a.Fact.Content));
-            return new UserFactResult(answer);
+            return new UserFactResults(facts.Select(f => new UserFactResult(f.Username, f.Fact.Content)).ToList());
         }
 
-        return new UserFactResult("I do not know");
+        return new UserFactResults(Array.Empty<UserFactResult>());
 
         async Task SendThought(string thought, string? data = null)
             => await hubContext.Clients.All.SendAsync("thoughtReceived", thought, data, cancellationToken);
     }
 }
 
-public record UserFactResult(string Fact);
+public record UserFactResults(IReadOnlyList<UserFactResult> UserFacts);
+
+public record UserFactResult(string Username, string Fact);
 
 /// <summary>
 /// The arguments to the retrieve user fact function.
 /// </summary>
 public record RetrieveUserFactArguments(
     [property: Required]
-    [property: JsonPropertyName("username")]
-    [property: Description("The username used to uniquely identify a user.")]
-    string Username,
+    [property: JsonPropertyName("usernames")]
+    [property: Description("The username or usernames who we want to retrieve facts for.")]
+    IReadOnlyList<string> Usernames,
 
     [property: Required]
     [property: JsonPropertyName("question")]
-    [property: Description("The question being asked about a user.")]
+    [property: Description("The question being asked about a user or users.")]
     string Question,
 
     [property: Required]

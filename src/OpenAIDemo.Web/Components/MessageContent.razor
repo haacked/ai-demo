@@ -16,7 +16,11 @@
 
         startIndex = annotation.EndIndex;
     }
-    <span>@Message.Text[startIndex..]</span>
+    <span>
+        @if (Message is { Text.Length: > 0 } && startIndex < Message.Text.Length) {
+            @Message.Text[startIndex..]
+        }
+    </span>
 </span>
 
 @code{

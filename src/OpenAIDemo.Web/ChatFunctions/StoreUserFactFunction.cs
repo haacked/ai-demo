@@ -32,7 +32,7 @@ public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client
         For example, the statement \"My daughter likes to draw.\", first retrieve the username for the current user's daughter and store the fact using the daughter's username. If no username for the daughter is found, ask for it.";
         """;
 
-    public int Order => 1; // Comes after the StoreUserRelationshipFunction
+    public int Order => 2; // Comes after the StoreUserRelationshipFunction
 
     protected override async Task<object?> InvokeAsync(
         UserFactArguments arguments,
@@ -63,13 +63,18 @@ public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client
                 // Generate chat embedding for fact.
                 var embeddings = await GetEmbeddingsAsync(fact, cancellationToken);
 
-                if (arguments.Location is { } location)
+                if (arguments.Location is { Coordinate: { } coordinate } location)
                 {
-                    user.Location = new Point(location.Coordinate.Latitude, location.Coordinate.Longitude);
+                    user.Location = new Point(coordinate.Latitude, coordinate.Longitude)
+                    {
+                        // 4326 is the SRID for the WGS84 spatial reference system, which is commonly used for latitude
+                        // and longitude coordinates.
+                        SRID = 4326
+                    };
                     user.FormattedAddress = location.FormattedAddress;
 
-                    if (await geocodeClient.GetTimeZoneAsync(location.Coordinate.Latitude,
-                            location.Coordinate.Longitude)
+                    if (await geocodeClient.GetTimeZoneAsync(coordinate.Latitude,
+                            coordinate.Longitude)
                         is { } timeZoneId)
                     {
                         user.TimeZoneId = timeZoneId;
@@ -134,7 +139,7 @@ public record UserFactArguments(
 
     [property: Required]
     [property: JsonPropertyName("location")]
-    [property: Description("The location where the user lives if the fact is about the user's location.")]
+    [property: Description("The location where the user lives if the fact is about the user's location. The `location_info` can be used to get this.")]
     UserLocation? Location,
 
     [property: Required]
