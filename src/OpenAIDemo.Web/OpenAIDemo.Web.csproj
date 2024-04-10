@@ -37,6 +37,7 @@
     <PackageReference Include="Azure.AI.OpenAI" />
     <PackageReference Include="Google.Apis.PeopleService.v1" />
     <PackageReference Include="MassTransit" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />

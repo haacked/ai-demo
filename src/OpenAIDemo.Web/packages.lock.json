@@ -48,6 +48,12 @@
           "System.Threading.Channels": "8.0.0"
         }
       },
+      "Microsoft.AspNetCore.Authentication.Google": {
+        "type": "Direct",
+        "requested": "[8.0.4, )",
+        "resolved": "8.0.4",
+        "contentHash": "SuTduxuUHX+1wU3ZXSmfdpuVfii4O1n3yUXFyqJ84rE+hvPXAJazqv8+WuzTLEyJWUJcw7jcgZfXnHkMOWtEEQ=="
+      },
       "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation": {
         "type": "Direct",
         "requested": "[8.0.3, )",
