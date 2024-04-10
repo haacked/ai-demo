@@ -12,6 +12,9 @@
 
             <button class="btn btn-lg btn-success m-1" type="submit">
                 Sign in using @scheme.DisplayName
+                @if (Model.IsAuthenticatedForScheme(scheme)) {
+                    <span class="text-success">✔</span>
+                }
             </button>
         </form>
     }

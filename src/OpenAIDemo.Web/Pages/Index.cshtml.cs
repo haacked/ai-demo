@@ -11,6 +11,8 @@ public class HomePageModel(IOptions<GitHubOptions> githubOptions) : PageModel
 {
     readonly GitHubOptions _gitHubOptions = githubOptions.Value;
 
+    public Uri? AvatarUrl { get; private set; }
+
     public IActionResult OnGet()
     {
         // This is just here to make it easier to test the site locally.
@@ -18,6 +20,9 @@ public class HomePageModel(IOptions<GitHubOptions> githubOptions) : PageModel
         {
             return Redirect($"https://{_gitHubOptions.Host}/");
         }
+
+        var avatar = User.Claims.FirstOrDefault(c => c.Type == "image")?.Value ?? "https://github.com/ghost.png";
+        AvatarUrl = new Uri(avatar);
 
         return Page();
     }
