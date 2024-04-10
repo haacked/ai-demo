@@ -1,6 +1,6 @@
 <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full">
-    @if (Username is not null and not "The Bot") {
-        <img src="https://github.com/@(Username).png" alt="avatar" />
+    @if (AvatarUrl is not null && Username is not "The Bot") {
+        <img src="@AvatarUrl" alt="avatar" />
     } else {
         <svg
             className="absolute w-12 h-12 text-gray-400 -left-1"
@@ -20,4 +20,7 @@
 @code {
     [Parameter]
     public string? Username { get; set; }
+
+    [Parameter]
+    public Uri? AvatarUrl { get; set; }
 }

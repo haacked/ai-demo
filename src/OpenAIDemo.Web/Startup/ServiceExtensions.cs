@@ -77,15 +77,20 @@ public static class ServiceExtensions
                 o.ClientId = configuration["Google:OAuthClientId"].Require();
                 o.ClientSecret = configuration["Google:OAuthClientSecret"].Require();
                 o.Scope.Add("https://www.googleapis.com/auth/contacts.readonly");
+                o.Scope.Add("profile"); // Request access to the user's profile information
                 o.SaveTokens = true;
 
                 o.Events = new OAuthEvents
                 {
                     OnCreatingTicket = async context =>
                     {
+                        var identity = context.Identity.Require();
+
+                        identity.AddClaim(new Claim("image", context.User.GetProperty("picture").ToString()));
+
                         var serviceProvider = context.HttpContext.RequestServices;
                         // Grab the email claim from the identity.
-                        if (context.Identity?.FindFirst(ClaimTypes.Email)?.Value is { Length: > 0 } email)
+                        if (identity.FindFirst(ClaimTypes.Email)?.Value is { Length: > 0 } email)
                         {
                             // Parse the username part from the email
                             var username = email.LeftBefore('@');

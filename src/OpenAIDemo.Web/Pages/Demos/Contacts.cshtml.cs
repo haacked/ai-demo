@@ -31,7 +31,7 @@ public class ContactsPageModel : PageModel
 
         // Retrieve the user's contacts
         var request = service.People.Connections.List("people/me");
-        request.PersonFields = "names,emailAddresses,addresses";
+        request.PersonFields = "names,emailAddresses,addresses,nicknames,userDefined,birthdays,phoneNumbers,metadata,photos";
         // Set the next page token if it's provided
         if (!string.IsNullOrEmpty(next))
         {

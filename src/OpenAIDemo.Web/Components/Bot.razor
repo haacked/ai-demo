@@ -14,7 +14,7 @@
     <div class="bg-white border border-gray-200 rounded-lg shadow relative">
         <div class="border-b-2 border-b-gray-200 py-3 px-6 flex flex-row justify-between items-center">
             <div class="flex flex-row items-center space-x-1.5">
-                <Avatar Username="@Username" />
+                <Avatar Username="@Username" AvatarUrl="@AvatarUrl" />
                 <div class="flex flex-col">
                     <p class="text-xs text-gray-600">@Username</p>
                     <p class="text-xs text-gray-400">@_messages.Count.ToQuantity("message")</p>
@@ -74,6 +74,9 @@
 
     [Parameter]
     public string? Username { get; set; }
+
+    [Parameter]
+    public Uri? AvatarUrl { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

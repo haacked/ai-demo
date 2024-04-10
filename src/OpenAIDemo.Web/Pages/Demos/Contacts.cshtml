@@ -11,20 +11,31 @@
         foreach (var contact in Model.Contacts) {
             <div class="p-2">
                 <h2>
-                    @if (contact.Names is not null) {
-                        foreach (var name in contact.Names) {
+                    @if (contact.Photos is not null) {
+                        foreach (var photo in contact.Photos) {
+                            <img src="@photo.Url" alt="Contact photo" class="w-12 h-12 rounded-full" />
+                        }
+                    }
+
+                    @if (contact.Names is not null)
+                    {
+                        foreach (var name in contact.Names)
+                        {
                             <span class="text-lg font-semibold">@name.DisplayName</span>
                         }
                     }
-                    else {
+                    else
+                    {
                         <span>Contact has no name</span>
                     }
 
-                    @if (contact.Nicknames is not null) {
+                    @if (contact.Nicknames is not null)
+                    {
                         <span> AKA </span>
-                        foreach (var name in contact.Nicknames) {
-                        <span class="text-lg font-semibold">(@name.Value)</span>
-                    }
+                        foreach (var name in contact.Nicknames)
+                        {
+                            <span class="text-lg font-semibold">(@name.Value)</span>
+                        }
                     }
 
                 </h2>
