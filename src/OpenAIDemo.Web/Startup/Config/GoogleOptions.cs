@@ -8,4 +8,14 @@ public class GoogleOptions
     /// The API Key for the Google geolocation service.
     /// </summary>
     public string? GeolocationApiKey { get; init; }
+
+    /// <summary>
+    /// The OAuth Client Id
+    /// </summary>
+    public string? OAuthClientId { get; init; }
+
+    /// <summary>
+    /// The OAuth Client Secret
+    /// </summary>
+    public string? OAuthClientSecret { get; init; }
 }
