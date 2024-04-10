@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text.Json;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
@@ -71,23 +72,24 @@ public static class ServiceExtensions
                 // set the path for the sign out
                 o.LogoutPath = "/Logout";
             })
-            .AddGitHub(o =>
+            .AddGoogle(o =>
             {
-                o.ClientId = configuration["GitHub:ClientId"].Require();
-                o.ClientSecret = configuration["GitHub:ClientSecret"].Require();
-                o.CallbackPath = "/signin-github";
-
-                // Grants access to read a user's profile data.
-                // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
-                o.Scope.Add("read:user");
+                o.ClientId = configuration["Google:OAuthClientId"].Require();
+                o.ClientSecret = configuration["Google:OAuthClientSecret"].Require();
+                o.Scope.Add("https://www.googleapis.com/auth/contacts.readonly");
+                o.SaveTokens = true;
 
                 o.Events = new OAuthEvents
                 {
                     OnCreatingTicket = async context =>
                     {
                         var serviceProvider = context.HttpContext.RequestServices;
-                        if (context.Identity is { Name: { } username })
+                        // Grab the email claim from the identity.
+                        if (context.Identity?.FindFirst(ClaimTypes.Email)?.Value is { Length: > 0 } email)
                         {
+                            // Parse the username part from the email
+                            var username = email.LeftBefore('@');
+
                             var dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<AIDemoContext>>();
                             await using var dbContext = await dbContextFactory.CreateDbContextAsync();
                             var user = await dbContext.Users
@@ -98,9 +100,9 @@ public static class ServiceExtensions
                                 {
                                     Name = username,
                                 });
+
                                 await dbContext.SaveChangesAsync();
                             }
-
                         }
                     }
                 };

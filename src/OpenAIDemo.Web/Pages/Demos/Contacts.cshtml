@@ -1,0 +1,54 @@
+@page
+@model AIDemoWeb.Demos.Pages.ContactsPageModel
+
+@{
+    ViewData["Title"] = "Contacts";
+}
+
+<section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
+    <h1 class="text-lg font-semibold leading-tight">Contacts</h1>
+    @if (Model.Contacts.Any()) {
+        foreach (var contact in Model.Contacts) {
+            <div class="p-2">
+                <h2>
+                    @if (contact.Names is not null) {
+                        foreach (var name in contact.Names) {
+                            <span class="text-lg font-semibold">@name.DisplayName</span>
+                        }
+                    }
+                    else {
+                        <span>Contact has no name</span>
+                    }
+
+                    @if (contact.Nicknames is not null) {
+                        <span> AKA </span>
+                        foreach (var name in contact.Nicknames) {
+                        <span class="text-lg font-semibold">(@name.Value)</span>
+                    }
+                    }
+
+                </h2>
+                <div>
+                    @if (contact is { Addresses: { } addresses }) {
+                        foreach (var address in addresses) {
+                            <div>
+                                <strong class="text-xs text-gray-300 dark:text-gray-100">@address.Type</strong>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">@address.FormattedValue</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+
+        if (Model.NextPageToken is not null)
+        {
+            <a asp-route-next="@Model.NextPageToken" class="btn btn-primary">Next Page</a>
+        }
+
+    } else {
+        <div class="m-4 p-4">
+            No contacts.
+        </div>
+    }
+</section>

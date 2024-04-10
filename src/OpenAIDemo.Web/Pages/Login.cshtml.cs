@@ -19,6 +19,13 @@ public class LoginPageModel : PageModel
         Schemes = await GetExternalProvidersAsync(HttpContext);
     }
 
+    public bool IsAuthenticatedForScheme(AuthenticationScheme scheme)
+    {
+        // Return true if the user is authenticated for this scheme.
+        return User.Identity?.IsAuthenticated is true
+            && User.Identities.Any(i => i.AuthenticationType == scheme.Name);
+    }
+
     public async Task<IActionResult> OnPost([FromForm] string provider)
     {
         if (string.IsNullOrWhiteSpace(provider))
