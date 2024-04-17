@@ -8,6 +8,8 @@ public class AIDemoContext(DbContextOptions<AIDemoContext> options) : DbContext(
 
     public DbSet<User> Users { get; init; } = null!;
 
+    public DbSet<Contact> Contacts { get; init; } = null!;
+
     public DbSet<AssistantThread> Threads { get; init; } = null!;
 
     public DbSet<UserFact> UserFacts { get; init; } = null!;
@@ -31,5 +33,35 @@ public class AIDemoContext(DbContextOptions<AIDemoContext> options) : DbContext(
         modelBuilder.Entity<UserFact>()
             .HasIndex(i => new { i.UserId, i.Content })
             .IsUnique();
+
+        modelBuilder.Entity<Contact>()
+            .OwnsMany(
+                c => c.EmailAddresses,
+                c =>
+                {
+                    c.WithOwner().HasForeignKey("ContactId");
+                    c.Property<int>("Id");
+                    c.HasKey("Id");
+                });
+
+        modelBuilder.Entity<Contact>()
+            .OwnsMany(
+                c => c.Addresses,
+                c =>
+                {
+                    c.WithOwner().HasForeignKey("ContactId");
+                    c.Property<int>("Id");
+                    c.HasKey("Id");
+                });
+
+        modelBuilder.Entity<Contact>()
+            .OwnsMany(
+                c => c.Names,
+                c =>
+                {
+                    c.WithOwner().HasForeignKey("ContactId");
+                    c.Property<int>("Id");
+                    c.HasKey("Id");
+                });
     }
 }
