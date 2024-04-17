@@ -75,7 +75,7 @@ public record ContactAddress(
     [property: Column(TypeName = "geometry (point)")]
     Point? Location)
 {
-    public static ContactAddress FromGoogleContactAddress(Address address) =>
+    public static ContactAddress FromGoogleContactAddress(Address address, Point? location) =>
         new(
             address.FormattedValue,
             address.Type,
@@ -87,6 +87,6 @@ public record ContactAddress(
             address.PostalCode,
             address.Country,
             address.CountryCode,
-            null);
+            location);
 };
 

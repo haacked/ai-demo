@@ -2,10 +2,14 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.PeopleService.v1;
 using Google.Apis.PeopleService.v1.Data;
 using Google.Apis.Services;
+using Haack.AIDemoWeb.Library.Clients;
+using Haack.AIDemoWeb.Startup.Config;
+using Microsoft.Extensions.Options;
+using Serious;
 
 namespace Haack.AIDemoWeb.Library;
 
-public class GoogleApiClient
+public class GoogleApiClient(IGoogleGeocodeClient geocodeClient, IOptions<GoogleOptions> geocodeOptions)
 {
     static readonly IEnumerable<string> ContactsScopes = new[] { "https://www.googleapis.com/auth/contacts.readonly" };
 
@@ -32,5 +36,14 @@ public class GoogleApiClient
         request.SortOrder = PeopleResource.ConnectionsResource.ListRequest.SortOrderEnum.LASTMODIFIEDDESCENDING;
 
         return await request.ExecuteAsync();
+    }
+
+    public async Task<GoogleGeoCodeResult?> GetLocationAsync(string address)
+    {
+        var apiKey = geocodeOptions.Value.Require().GeolocationApiKey.Require();
+        var response = await geocodeClient.GeoCodeAsync(apiKey, address);
+        return response.Results is [] or null
+            ? null
+            : response.Results[0];
     }
 }
