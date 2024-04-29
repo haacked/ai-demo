@@ -27,7 +27,7 @@ public class AIDemoContext(DbContextOptions<AIDemoContext> options) : DbContext(
 
         // User names must be unique.
         modelBuilder.Entity<User>()
-            .HasIndex(i => new { i.Name })
+            .HasIndex(i => new { Name = i.NameIdentifier })
             .IsUnique();
 
         modelBuilder.Entity<UserFact>()

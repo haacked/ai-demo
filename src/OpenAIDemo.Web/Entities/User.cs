@@ -29,14 +29,10 @@ public class User
     public int Id { get; init; }
 
     /// <summary>
-    /// The user name of the user.
+    /// The external identifier for this user. This is usually provided in the NameIdentifier claim.
     /// </summary>
-    /// <remarks>
-    /// User names must be unique in a case insensitive manner. That's what
-    /// the `citext` ensures, that case doesn't matter.
-    /// </remarks>
     [Column(TypeName = "citext")]
-    public required string Name { get; set; }
+    public required string NameIdentifier { get; set; }
 
     /// <summary>
     /// Facts about the user.

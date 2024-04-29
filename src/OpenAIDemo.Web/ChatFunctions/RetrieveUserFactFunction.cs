@@ -67,7 +67,7 @@ public class RetrieveUserFactFunction(
         // Query the database for the user(s).
         var users = await db.Users
             .Include(u => u.Facts)
-            .Where(u => usernames.Contains(u.Name))
+            .Where(u => usernames.Contains(u.NameIdentifier))
             .ToListAsync(cancellationToken);
 
         if (users is [])
@@ -85,10 +85,10 @@ public class RetrieveUserFactFunction(
 
         // Cosine similarity == 1 - Cosine Distance.
         var facts = await db.UserFacts
-            .Where(f => usernames.Contains(f.User.Name))
+            .Where(f => usernames.Contains(f.User.NameIdentifier))
             .Select(f => new
             {
-                Username = f.User.Name,
+                Username = f.User.NameIdentifier,
                 Fact = f,
                 Distance = f.Embeddings.CosineDistance(embeddings),
             })

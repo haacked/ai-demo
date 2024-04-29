@@ -38,7 +38,7 @@ public class CreateThreadPageModel(AIDemoContext db, IOptions<OpenAIOptions> opt
             StatusMessage = $"Assistant {createdThread.Id} created.";
 
             var username = User.Identity?.Name;
-            var currentUser = await db.Users.SingleOrDefaultAsync(u => u.Name == username, cancellationToken);
+            var currentUser = await db.Users.SingleOrDefaultAsync(u => u.NameIdentifier == username, cancellationToken);
 
             if (currentUser is null)
             {

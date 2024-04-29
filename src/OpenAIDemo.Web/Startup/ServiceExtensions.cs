@@ -89,21 +89,19 @@ public static class ServiceExtensions
                         identity.AddClaim(new Claim("image", context.User.GetProperty("picture").ToString()));
 
                         var serviceProvider = context.HttpContext.RequestServices;
-                        // Grab the email claim from the identity.
-                        if (identity.FindFirst(ClaimTypes.Email)?.Value is { Length: > 0 } email)
-                        {
-                            // Parse the username part from the email
-                            var username = email.LeftBefore('@');
 
+                        // Look up or create user based on NameIdentifier.
+                        if (identity.FindFirst(ClaimTypes.NameIdentifier)?.Value is { Length: > 0 } nameIdentifier)
+                        {
                             var dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<AIDemoContext>>();
                             await using var dbContext = await dbContextFactory.CreateDbContextAsync();
                             var user = await dbContext.Users
-                                .FirstOrDefaultAsync(u => u.Name == username);
+                                .FirstOrDefaultAsync(u => u.NameIdentifier == nameIdentifier);
                             if (user is null)
                             {
                                 await dbContext.Users.AddAsync(new User
                                 {
-                                    Name = username,
+                                    NameIdentifier = nameIdentifier,
                                 });
 
                                 await dbContext.SaveChangesAsync();
