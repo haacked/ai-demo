@@ -24,13 +24,17 @@ public class ContactsPageModel(
 
     public int TotalImportedContactsWithAddressLocations { get; private set; }
 
+    public int TotalImportedContactsWithFacts { get; private set; }
+
+
     public string? NextPageToken { get; private set; }
 
     public async Task OnGetAsync(string? next)
     {
-        var contacts = await db.Contacts.ToListAsync();
+        var contacts = await db.Contacts.Include(c => c.Facts).ToListAsync();
         TotalImportedContacts = contacts.Count;
         TotalImportedContactsWithAddresses = contacts.Count(c => c.Addresses.Count != 0);
+        TotalImportedContactsWithFacts = contacts.Count(c => c.Facts.Count != 0);
         TotalImportedContactsWithAddressLocations = contacts.Count(c => c.Addresses.Any(a => a.Location is not null));
 
         var authenticateResult = await HttpContext.AuthenticateAsync("Google");
