@@ -43,13 +43,13 @@ public class StoreUserFactFunction(AIDemoContext db, OpenAIClientAccessor client
 
         var user = await db.Users
             .Include(u => u.Facts)
-            .FirstOrDefaultAsync(u => u.Name == username, cancellationToken);
+            .FirstOrDefaultAsync(u => u.NameIdentifier == username, cancellationToken);
 
         if (user is null)
         {
             user = new User
             {
-                Name = username,
+                NameIdentifier = username,
             };
             await db.Users.AddAsync(user, cancellationToken);
         }

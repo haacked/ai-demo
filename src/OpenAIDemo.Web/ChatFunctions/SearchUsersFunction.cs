@@ -57,7 +57,7 @@ public class SearchUsersFunction(
             var users = facts.Select(f => f.Fact.User).Distinct().ToList();
             await SendThought($"I found {users.Count.ToQuantity("users")} that answer the question.\n\n{searchSummary}");
 
-            return new SearchUsersResult(users.Select(u => u.Name).ToList());
+            return new SearchUsersResult(users.Select(u => u.NameIdentifier).ToList());
         }
 
         return new SearchUsersResult(Array.Empty<string>());

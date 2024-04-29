@@ -49,7 +49,7 @@ public class ThreadDetailsPageModel(AIDemoContext db, IOptions<OpenAIOptions> op
 
         var apiKey = _options.ApiKey.Require();
         var username = User.Identity?.Name;
-        var currentUser = await db.Users.SingleOrDefaultAsync(u => u.Name == username, cancellationToken);
+        var currentUser = await db.Users.SingleOrDefaultAsync(u => u.NameIdentifier == username, cancellationToken);
 
         if (currentUser is null || threadEntity.CreatorId != currentUser.Id)
         {

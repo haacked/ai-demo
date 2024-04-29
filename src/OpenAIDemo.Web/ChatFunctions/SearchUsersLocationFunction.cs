@@ -41,7 +41,7 @@ public class SearchUsersLocationFunction(
         var noUsernames = arguments.Usernames is null or [];
 
         var usersQuery = db.Users
-            .Select(u => new { u.Name, u.Location, Distance = u.Location!.Distance(point) })
+            .Select(u => new { Name = u.NameIdentifier, u.Location, Distance = u.Location!.Distance(point) })
             .Where(u => noUsernames || arguments.Usernames!.Contains(u.Name))
             .OrderBy(u => u.Distance);
 

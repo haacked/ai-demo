@@ -98,12 +98,12 @@ public static class ServiceExtensions
                             var dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<AIDemoContext>>();
                             await using var dbContext = await dbContextFactory.CreateDbContextAsync();
                             var user = await dbContext.Users
-                                .FirstOrDefaultAsync(u => u.Name == username);
+                                .FirstOrDefaultAsync(u => u.NameIdentifier == username);
                             if (user is null)
                             {
                                 await dbContext.Users.AddAsync(new User
                                 {
-                                    Name = username,
+                                    NameIdentifier = username,
                                 });
 
                                 await dbContext.SaveChangesAsync();

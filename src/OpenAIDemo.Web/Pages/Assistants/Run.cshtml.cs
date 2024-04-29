@@ -24,7 +24,7 @@ public class RunAssistantPageModel(AIDemoContext db, IOptions<OpenAIOptions> opt
 
         // Let's see if the current user has a thread for this assistant.
         var username = User.Identity?.Name;
-        var currentUser = await db.Users.SingleOrDefaultAsync(u => u.Name == username, cancellationToken);
+        var currentUser = await db.Users.SingleOrDefaultAsync(u => u.NameIdentifier == username, cancellationToken);
 
         var threadEntity = await db.Threads
             .Where(t => t.AssistantId == id)
@@ -58,7 +58,7 @@ public class RunAssistantPageModel(AIDemoContext db, IOptions<OpenAIOptions> opt
     {
         // Delete any thread entities associated with this user...
         var username = User.Identity?.Name;
-        var currentUser = await db.Users.SingleOrDefaultAsync(u => u.Name == username, cancellationToken);
+        var currentUser = await db.Users.SingleOrDefaultAsync(u => u.NameIdentifier == username, cancellationToken);
         var threads = await db.Threads
             .Where(t => t.Creator == currentUser && t.AssistantId == id)
             .ToListAsync(cancellationToken);
