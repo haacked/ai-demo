@@ -14,6 +14,8 @@ public class AIDemoContext(DbContextOptions<AIDemoContext> options) : DbContext(
 
     public DbSet<UserFact> UserFacts { get; init; } = null!;
 
+    public DbSet<ContactFact> ContactFacts { get; init; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -32,6 +34,10 @@ public class AIDemoContext(DbContextOptions<AIDemoContext> options) : DbContext(
 
         modelBuilder.Entity<UserFact>()
             .HasIndex(i => new { i.UserId, i.Content })
+            .IsUnique();
+
+        modelBuilder.Entity<ContactFact>()
+            .HasIndex(i => new { i.ContactId, i.Content })
             .IsUnique();
 
         modelBuilder.Entity<Contact>()
