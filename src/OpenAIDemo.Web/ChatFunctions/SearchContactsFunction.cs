@@ -7,26 +7,28 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using OpenAIDemo.Hubs;
 using Pgvector.EntityFrameworkCore;
+using Serious;
+using Serious.ChatFunctions;
 
-namespace Serious.ChatFunctions;
+namespace Haack.AIDemoWeb.ChatFunctions;
 
 /// <summary>
 /// Extends Chat GPT with a function that searches for users who meet a condition.
 /// </summary>
-public class SearchUsersFunction(
+public class SearchContactsFunction(
     AIDemoContext db,
     OpenAIClientAccessor client,
-    IHubContext<BotHub> hubContext) : ChatFunction<SearchUsersArguments, object>
+    IHubContext<BotHub> hubContext) : ChatFunction<SearchContactsArguments, object>
 {
-    protected override string Name => "search_users";
+    protected override string Name => "search_contacts";
 
     protected override string Description =>
         """"
-        When asking about all users that meet a criteria, this searches for users that match the criteria.
+        When asking about all contacts that meet a criteria, this searches for contacts that match the criteria.
         """";
 
     protected override async Task<object?> InvokeAsync(
-        SearchUsersArguments arguments,
+        SearchContactsArguments arguments,
         string source,
         CancellationToken cancellationToken)
     {
@@ -39,8 +41,8 @@ public class SearchUsersFunction(
         }
 
         // Cosine similarity == 1 - Cosine Distance.
-        var facts = await db.UserFacts
-            .Include(f => f.User)
+        var facts = await db.ContactFacts
+            .Include(f => f.Contact)
             .Select(f => new
             {
                 Fact = f,
@@ -48,34 +50,35 @@ public class SearchUsersFunction(
             })
             .Where(x => x.Distance <= 0.18)
             .OrderBy(x => x.Distance)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        if (facts.Count > 0)
+        if (facts is [])
         {
-            var searchSummary = string.Join("\n", facts.Select(f => $"Similarity: {1.0 - f.Distance} Fact: {f.Fact.Content} Justification: {f.Fact.Justification} Source: {f.Fact.Source}"));
-
-            var users = facts.Select(f => f.Fact.User).Distinct().ToList();
-            await SendThought($"I found {users.Count.ToQuantity("users")} that answer the question.\n\n{searchSummary}");
-
-            return new SearchUsersResult(users.Select(u => u.NameIdentifier).ToList());
+            return new SearchContactsResult(Array.Empty<string>());
         }
 
-        return new SearchUsersResult(Array.Empty<string>());
+        var searchSummary = string.Join("\n", facts.Select(f => $"Similarity: {1.0 - f.Distance} Fact: {f.Fact.Content} Justification: {f.Fact.Justification} Source: {f.Fact.Source}"));
+
+        var contacts = facts.Select(f => f.Fact.Contact).Distinct().ToList();
+        await SendThought($"I found {contacts.Count.ToQuantity("users")} that answer the question.\n\n{searchSummary}");
+
+        return new SearchContactsResult(contacts.Select(u => u.Names.FirstOrDefault()?.UnstructuredName ?? "Unknown").ToList());
 
         async Task SendThought(string thought, string? data = null)
             => await hubContext.Clients.All.SendAsync("thoughtReceived", thought, data, cancellationToken);
     }
 }
 
-public record SearchUsersResult(IReadOnlyList<string> Users);
+public record SearchContactsResult(IReadOnlyList<string> Contacts);
 
 /// <summary>
 /// The arguments to the retrieve user fact function.
 /// </summary>
-public record SearchUsersArguments(
+public record SearchContactsArguments(
     [property: Required]
     [property: JsonPropertyName("question")]
-    [property: Description("The question being asked about a user.")]
+    [property: Description("The question being asked about a contact.")]
     string Question,
 
     [property: Required]

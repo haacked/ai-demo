@@ -7,8 +7,10 @@ using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Serious;
+using Serious.ChatFunctions;
 
-namespace Serious.ChatFunctions;
+namespace Haack.AIDemoWeb.ChatFunctions;
 
 /// <summary>
 /// Extends GPT with a function that can retrieve location or address information.
@@ -17,7 +19,7 @@ public class LocationFunction(
     IGoogleGeocodeClient geocodeClient,
     AIDemoContext db,
     IOptions<GoogleOptions> geocodeOptions)
-    : ChatFunction<UserLocationArguments, UserLocation>
+    : ChatFunction<ContactLocationArguments, ContactLocation>
 {
     protected override string Name => "location_info";
 
@@ -25,8 +27,8 @@ public class LocationFunction(
 
     public int Order => 1;
 
-    protected override async Task<UserLocation?> InvokeAsync(
-        UserLocationArguments arguments,
+    protected override async Task<ContactLocation?> InvokeAsync(
+        ContactLocationArguments arguments,
         string source,
         CancellationToken cancellationToken)
     {
@@ -37,21 +39,21 @@ public class LocationFunction(
             var username = arguments.Address.StartsWith('@') ? arguments.Address.TrimStart('@') : arguments.Address;
 
             // Maybe the address was a username. Look up the user's location.
-            var user = await db.Users
+            var contacts = await db.Users
                 .FirstOrDefaultAsync(u => u.NameIdentifier == username, cancellationToken);
-            return user is { Location: { } location, FormattedAddress: { } formattedAddress }
-                ? new UserLocation(new Coordinate(location.Coordinate.X, location.Coordinate.Y), formattedAddress)
-                : new UserLocation(new Coordinate(0, 0), "Unknown");
+            return contacts is { Location: { } location, FormattedAddress: { } formattedAddress }
+                ? new ContactLocation(new Coordinate(location.Coordinate.Y, location.Coordinate.X), formattedAddress)
+                : new ContactLocation(new Coordinate(0, 0), "Unknown");
         }
         var result = response.Results[0];
 
-        return new UserLocation(
+        return new ContactLocation(
             new(result.Geometry.Location.Lat, result.Geometry.Location.Lng),
             result.FormattedAddress);
     }
 }
 
-public record UserLocationArguments(
+public record ContactLocationArguments(
     [property: Required]
     [property: JsonPropertyName("address")]
     [property: Description("The address or location.")]
@@ -59,7 +61,7 @@ public record UserLocationArguments(
 
 
 
-public record UserLocation(
+public record ContactLocation(
     [property: JsonPropertyName("coordinate")]
     Coordinate Coordinate,
 
