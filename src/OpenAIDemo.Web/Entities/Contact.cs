@@ -9,6 +9,18 @@ namespace Haack.AIDemoWeb.Entities;
 
 public class Contact
 {
+    public Contact()
+    {
+        Facts = new EntityList<ContactFact>();
+    }
+
+    // Special constructor called by EF Core.
+    // ReSharper disable once UnusedMember.Local
+    public Contact(DbContext db)
+    {
+        Facts = new EntityList<ContactFact>(db, this, nameof(Facts));
+    }
+
     public int Id { get; set; }
 
     /// <summary>
@@ -21,6 +33,11 @@ public class Contact
     public List<ContactEmailAddress> EmailAddresses { get; init; } = new();
 
     public List<ContactAddress> Addresses { get; init; } = new();
+
+    /// <summary>
+    /// Facts about the user.
+    /// </summary>
+    public EntityList<ContactFact> Facts { get; }
 }
 
 public record ContactName(

@@ -16,7 +16,9 @@ public class ContactsPageModel(
     AIDemoContext db,
     IPublishEndpoint publishEndpoint) : PageModel
 {
-    public IReadOnlyList<Person> Contacts { get; private set; } = null!;
+    public IReadOnlyList<Person> ApiContacts { get; private set; } = new List<Person>();
+
+    public IReadOnlyList<Contact> Contacts { get; private set; } = null!;
 
     public int TotalImportedContacts { get; private set; }
 
@@ -24,25 +26,41 @@ public class ContactsPageModel(
 
     public int TotalImportedContactsWithAddressLocations { get; private set; }
 
+    public int TotalImportedContactsWithFacts { get; private set; }
+
+
     public string? NextPageToken { get; private set; }
 
-    public async Task OnGetAsync(string? next)
+    public async Task OnGetAsync(bool showAll = false)
     {
-        var contacts = await db.Contacts.ToListAsync();
+        var contacts = await db
+            .Contacts
+            .Include(c => c.Facts)
+            .Where(c => showAll || c.Addresses.Count > 0)
+            .OrderByDescending(c => c.Facts.Count)
+            .AsNoTracking()
+            .ToListAsync();
+
         TotalImportedContacts = contacts.Count;
         TotalImportedContactsWithAddresses = contacts.Count(c => c.Addresses.Count != 0);
+        TotalImportedContactsWithFacts = contacts.Count(c => c.Facts.Count != 0);
         TotalImportedContactsWithAddressLocations = contacts.Count(c => c.Addresses.Any(a => a.Location is not null));
 
+        Contacts = contacts;
+    }
+
+    public async Task<IActionResult> OnPostAsync(string? next)
+    {
         var authenticateResult = await HttpContext.AuthenticateAsync("Google");
         var accessToken = authenticateResult.Properties.Require().GetTokenValue("access_token").Require();
 
         var connectionsResponse = await googleApiClient.GetContactsAsync(accessToken, next);
-        Contacts = connectionsResponse.Connections.ToList();
+        ApiContacts = connectionsResponse.Connections.ToList();
 
-        NextPageToken = connectionsResponse.NextPageToken;
+        return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostImportAsync()
     {
         var authenticateResult = await HttpContext.AuthenticateAsync("Google");
         var accessToken = authenticateResult.Properties.Require().GetTokenValue("access_token").Require();

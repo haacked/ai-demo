@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Haack.AIDemoWeb.ChatFunctions;
 using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
@@ -9,7 +10,7 @@ namespace Haack.AIDemoWeb.Library;
 
 public class GeocodeClient(IGoogleGeocodeClient geocodeClient, IOptions<GoogleOptions> geocodeOptions)
 {
-    public async Task<UserLocation?> GetLocationInformationAsync(string location)
+    public async Task<ContactLocation?> GetLocationInformationAsync(string location)
     {
         var apiKey = geocodeOptions.Value.Require().GeolocationApiKey.Require();
         var response = await geocodeClient.GeoCodeAsync(apiKey, location);
@@ -19,7 +20,7 @@ public class GeocodeClient(IGoogleGeocodeClient geocodeClient, IOptions<GoogleOp
         }
         var result = response.Results[0];
 
-        return new UserLocation(
+        return new ContactLocation(
             new(result.Geometry.Location.Lat, result.Geometry.Location.Lng),
             result.FormattedAddress);
     }

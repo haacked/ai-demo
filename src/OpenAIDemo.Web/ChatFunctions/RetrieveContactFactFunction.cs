@@ -7,40 +7,32 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using OpenAIDemo.Hubs;
 using Pgvector.EntityFrameworkCore;
+using Serious;
+using Serious.ChatFunctions;
 
-namespace Serious.ChatFunctions;
+namespace Haack.AIDemoWeb.ChatFunctions;
 
 /// <summary>
 /// Extends Chat GPT with a function that stores facts about a user.
 /// </summary>
-public class RetrieveUserFactFunction(
+public class RetrieveContactFactFunction(
     AIDemoContext db,
     OpenAIClientAccessor client,
-    IHubContext<BotHub> hubContext) : ChatFunction<RetrieveUserFactArguments, object>
+    IHubContext<BotHub> hubContext) : ChatFunction<RetrieveContactFactArguments, object>
 {
-    protected override string Name => "retrieve_user_fact";
+    protected override string Name => "retrieve_contact_fact";
 
     protected override string Description =>
         """"
-        Retrieves information when a person asks a question about their self or another user.
-        
-        Sometimes the other user is specified by username such as @haacked. 
+        Retrieves information when a person asks a question about a contact.
         
         For example, in the question:
         
         """
-        What is my favorite color?
+        What is Tyrion Lannister's favorite color?
         """
         
-        The username is the current user.
-        
-        In the question:
-        
-        """
-        What is @haacked's favorite color?
-        """
-        
-        The username is haacked. 
+        The contact_name is Tyrion Lannister. 
         
         If someone asks
         
@@ -56,23 +48,22 @@ public class RetrieveUserFactFunction(
         """";
 
     protected override async Task<object?> InvokeAsync(
-        RetrieveUserFactArguments arguments,
+        RetrieveContactFactArguments arguments,
         string source,
         CancellationToken cancellationToken)
     {
+        var contactNames = arguments.ContactNames;
 
-
-        var usernames = arguments.Usernames.Select(u => u.TrimLeadingCharacter('@')).ToList();
-
-        // Query the database for the user(s).
-        var users = await db.Users
+        // Query the database for the contacts(s).
+        var contacts = await db.Contacts
             .Include(u => u.Facts)
-            .Where(u => usernames.Contains(u.NameIdentifier))
+            .Where(c => c.Names.Any(n => contactNames.Any(cn => EF.Functions.ILike(n.UnstructuredName, cn))))
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        if (users is [])
+        if (contacts is [])
         {
-            return new UserFactResults(Array.Empty<UserFactResult>());
+            return new ContactFactResults(Array.Empty<ContactFactResult>());
         }
 
         // Calculate the embedding for the question.
@@ -83,17 +74,20 @@ public class RetrieveUserFactFunction(
             return null;
         }
 
+        var contactNameIdentifiers = contacts.Select(c => c.ResourceName).ToList();
+
         // Cosine similarity == 1 - Cosine Distance.
-        var facts = await db.UserFacts
-            .Where(f => usernames.Contains(f.User.NameIdentifier))
+        var facts = await db.ContactFacts
+            .Where(f => contactNameIdentifiers.Contains(f.Contact.ResourceName))
             .Select(f => new
             {
-                Username = f.User.NameIdentifier,
+                Name = f.Contact.Names.FirstOrDefault(),
                 Fact = f,
                 Distance = f.Embeddings.CosineDistance(embeddings),
             })
             .Where(x => x.Distance <= 0.25)
             .OrderBy(x => x.Distance)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
         if (facts.Count > 0)
@@ -101,32 +95,32 @@ public class RetrieveUserFactFunction(
             var factSummary = string.Join("\n", facts.Select(f => $"Similarity: {1.0 - f.Distance} Fact: {f.Fact.Content} Justification: {f.Fact.Justification} Source: {f.Fact.Source}"));
 
             await SendThought($"I have {facts.Count.ToQuantity("answer")} to that question\n\n{factSummary}");
-            return new UserFactResults(facts.Select(f => new UserFactResult(f.Username, f.Fact.Content)).ToList());
+            return new ContactFactResults(facts.Select(f => new ContactFactResult(f.Name?.UnstructuredName ?? "Unknown", f.Fact.Content)).ToList());
         }
 
-        return new UserFactResults(Array.Empty<UserFactResult>());
+        return new ContactFactResults(Array.Empty<ContactFactResult>());
 
         async Task SendThought(string thought, string? data = null)
             => await hubContext.Clients.All.SendAsync("thoughtReceived", thought, data, cancellationToken);
     }
 }
 
-public record UserFactResults(IReadOnlyList<UserFactResult> UserFacts);
+public record ContactFactResults(IReadOnlyList<ContactFactResult> ContactFacts);
 
-public record UserFactResult(string Username, string Fact);
+public record ContactFactResult(string ContactName, string Fact);
 
 /// <summary>
 /// The arguments to the retrieve user fact function.
 /// </summary>
-public record RetrieveUserFactArguments(
+public record RetrieveContactFactArguments(
     [property: Required]
-    [property: JsonPropertyName("usernames")]
-    [property: Description("The username or usernames who we want to retrieve facts for.")]
-    IReadOnlyList<string> Usernames,
+    [property: JsonPropertyName("contact_names")]
+    [property: Description("The name or names of contacts we want to retrieve facts for.")]
+    IReadOnlyList<string> ContactNames,
 
     [property: Required]
     [property: JsonPropertyName("question")]
-    [property: Description("The question being asked about a user or users.")]
+    [property: Description("The question being asked about a contact or set of contacts.")]
     string Question,
 
     [property: Required]
