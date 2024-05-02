@@ -121,6 +121,11 @@ public static class BinaryDataGenerator
             return new GptType("integer", null);
         }
 
+        if (propertyType == typeof(bool))
+        {
+            return new GptType("boolean", null);
+        }
+
         if (propertyType == typeof(string) || propertyType.IsEnum)
         {
             return new GptType("string", null);

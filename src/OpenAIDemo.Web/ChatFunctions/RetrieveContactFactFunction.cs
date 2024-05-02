@@ -24,7 +24,7 @@ public class RetrieveContactFactFunction(
 
     protected override string Description =>
         """"
-        Retrieves information when a person asks a question about a contact.
+        Retrieves information when a person asks a question about a contact other than their location.
         
         For example, in the question:
         
