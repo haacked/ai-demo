@@ -5,7 +5,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
-namespace AIDemoWeb.Entities.Eventing.Consumers;
+namespace Haack.AIDemoWeb.Eventing.Consumers;
 
 public class ContactImportConsumer(
     GoogleApiClient googleApiClient,
@@ -50,6 +50,9 @@ public class ContactImportConsumer(
                     var newContact = new Contact
                     {
                         ResourceName = contact.ResourceName,
+                        Birthday = contact.Birthdays?.FirstOrDefault() is { } birthday
+                            ? ContactBirthday.FromGoogleContactBirthday(birthday)
+                            : null,
                         Addresses = addressesWithLocations.ToList(),
                         Names = names.Select(ContactName.FromGoogleContactName).ToList(),
                         EmailAddresses = emailAddresses.Select(ContactEmailAddress.FromGoogleContactEmail).ToList(),
@@ -62,7 +65,6 @@ public class ContactImportConsumer(
             if (contactsResponse.NextPageToken is null)
             {
                 break;
-
             }
             next = contactsResponse.NextPageToken;
         }
