@@ -19,11 +19,11 @@ public class SearchContactsLocationFunction(
     AIDemoContext db,
     IHubContext<BotHub> hubContext) : ChatFunction<SearchUsersLocationArguments, object>
 {
-    protected override string Name => "search_contacts_location";
+    protected override string Name => "filter_contacts_by_location";
 
     protected override string Description =>
         """"
-        When asking about all contacts that live near a location, this finds those contacts.
+        When asking about all contacts that live near a location, this finds or filters those contacts.
         """";
 
     protected override async Task<object?> InvokeAsync(
@@ -39,7 +39,7 @@ public class SearchContactsLocationFunction(
             SRID = 4326
         };
 
-        var noContactNames = arguments.Names is null or [];
+        var noContactNames = arguments.ContactNames is null or [];
 
         var contactsQuery = db.Contacts
             // We only look at contacts with a location.
@@ -55,7 +55,7 @@ public class SearchContactsLocationFunction(
                 c.Location,
                 Distance = c.Location!.Distance(point)
             })
-            .Where(c => noContactNames || arguments.Names!.Any(n => c.Names.Any(cn => EF.Functions.ILike(cn, n))))
+            .Where(c => noContactNames || arguments.ContactNames!.Any(n => c.Names.Any(cn => EF.Functions.ILike(cn, n))))
             .OrderBy(u => u.Distance);
 
         var contacts = await contactsQuery.ToListAsync(cancellationToken);
@@ -69,7 +69,7 @@ public class SearchContactsLocationFunction(
 
         var contactDistances = contacts.Select(
                 u => new ContactDistance(
-                    u.Names.FirstOrDefault(n => noContactNames || arguments.Names!.Contains(n)) ?? "Unknown",
+                    u.Names.FirstOrDefault(n => noContactNames || arguments.ContactNames!.Contains(n)) ?? "Unknown",
                     new Measurement(
                         DistanceCalculator.CalculateDistance(
                             point.Coordinate.Y,
@@ -112,8 +112,8 @@ public record SearchUsersLocationArguments(
     Measurement Distance,
 
     [property: JsonPropertyName("contact_names")]
-    [property: Description("If specified, limit the results to these contacts.")]
-    IReadOnlyList<string>? Names,
+    [property: Description("If specified, only look up the location for these contacts.")]
+    IReadOnlyList<string>? ContactNames,
 
 [property: Required]
     [property: JsonPropertyName("justification")]

@@ -24,7 +24,9 @@ public class SearchContactsFunction(
 
     protected override string Description =>
         """"
-        When asking about all contacts that meet a criteria, this searches for contacts that match the criteria.
+        When asking about all contacts that meet a criteria other than location, this finds or filters contacts that match the criteria.
+        
+        For example, when asking about all contacts that like whiskey, this function finds or filters contacts that like whiskey.
         """";
 
     protected override async Task<object?> InvokeAsync(
@@ -41,7 +43,11 @@ public class SearchContactsFunction(
         }
 
         // Cosine similarity == 1 - Cosine Distance.
-        var facts = await db.ContactFacts
+        var factsQuery = arguments.ContactNames is not null or []
+            ? db.ContactFacts.Where(f => arguments.ContactNames.Any(n => f.Contact.Names.Any(cn => EF.Functions.ILike(cn.UnstructuredName, n))))
+            : db.ContactFacts;
+
+        var facts = await factsQuery
             .Include(f => f.Contact)
             .Select(f => new
             {
@@ -80,6 +86,11 @@ public record SearchContactsArguments(
     [property: JsonPropertyName("question")]
     [property: Description("The question being asked about a contact.")]
     string Question,
+
+
+    [property: JsonPropertyName("contact_names")]
+    [property: Description("If specified, only look up facts for these contacts.")]
+    IReadOnlyList<string>? ContactNames,
 
     [property: Required]
     [property: JsonPropertyName("justification")]
