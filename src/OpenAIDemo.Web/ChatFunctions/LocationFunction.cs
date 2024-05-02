@@ -1,9 +1,11 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serious;
 using Serious.ChatFunctions;
@@ -14,6 +16,7 @@ namespace Haack.AIDemoWeb.ChatFunctions;
 /// Extends GPT with a function that can retrieve location or address information.
 /// </summary>
 public class LocationFunction(
+    AIDemoContext db,
     IGoogleGeocodeClient geocodeClient,
     IOptions<GoogleOptions> geocodeOptions)
     : ChatFunction<ContactLocationArguments, ContactLocation>
@@ -29,11 +32,31 @@ public class LocationFunction(
         string source,
         CancellationToken cancellationToken)
     {
+        if (arguments.IsContact)
+        {
+            // Look up contact by name.
+            var contact = await db.Contacts
+                .Where(c => c.Addresses.Any(a => a.Location != null))
+                .Where(c => c.Names.Any(n => EF.Functions.ILike(n.UnstructuredName, arguments.Address)))
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (contact is null)
+            {
+                return new ContactLocation(new Coordinate(0, 0), "Unknown location");
+            }
+
+            var address = contact.Addresses.FirstOrDefault(a => a.Location != null);
+            return address?.Location is not { } location
+                ? new ContactLocation(new Coordinate(0, 0), "Unknown location")
+                : new ContactLocation(new(location.Y, location.X), address.FormattedValue ?? "Unspecified location");
+        }
+
         var apiKey = geocodeOptions.Value.Require().GeolocationApiKey.Require();
         var response = await geocodeClient.GeoCodeAsync(apiKey, arguments.Address);
         if (response.Results is { Count: 0 })
         {
-            return new ContactLocation(new Coordinate(0, 0), "Unknown");
+            return new ContactLocation(new Coordinate(0, 0), "Unknown location");
         }
 
         var result = response.Results[0];
@@ -48,7 +71,12 @@ public record ContactLocationArguments(
     [property: Required]
     [property: JsonPropertyName("address")]
     [property: Description("The address or location.")]
-    string Address);
+    string Address,
+
+    [property: Required]
+    [property: JsonPropertyName("is_contact")]
+    [property: Description("True if the location is a contact name. Otherwise false.")]
+    bool IsContact);
 
 
 
