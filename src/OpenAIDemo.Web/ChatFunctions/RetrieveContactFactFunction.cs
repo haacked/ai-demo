@@ -13,7 +13,7 @@ using Serious.ChatFunctions;
 namespace Haack.AIDemoWeb.ChatFunctions;
 
 /// <summary>
-/// Extends Chat GPT with a function that stores facts about a user.
+/// Extends Chat GPT with a function that retrieves facts about a user.
 /// </summary>
 public class RetrieveContactFactFunction(
     AIDemoContext db,
@@ -24,7 +24,7 @@ public class RetrieveContactFactFunction(
 
     protected override string Description =>
         """"
-        Retrieves information when a person asks a question about a contact other than their location.
+        Retrieves information when a person asks a question about a contact other than their location or birthday.
         
         For example, in the question:
         
