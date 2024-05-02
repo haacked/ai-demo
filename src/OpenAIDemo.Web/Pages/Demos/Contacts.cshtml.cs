@@ -1,6 +1,6 @@
-using AIDemoWeb.Entities.Eventing.Consumers;
 using Google.Apis.PeopleService.v1.Data;
 using Haack.AIDemoWeb.Entities;
+using Haack.AIDemoWeb.Eventing.Consumers;
 using Haack.AIDemoWeb.Library;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Serious;
 
-namespace AIDemoWeb.Demos.Pages;
+namespace Haack.AIDemoWeb.Pages.Demos;
 
 public class ContactsPageModel(
     GoogleApiClient googleApiClient,
@@ -49,8 +49,10 @@ public class ContactsPageModel(
         Contacts = contacts;
     }
 
-    public async Task<IActionResult> OnPostAsync(string? next)
+    public async Task<IActionResult> OnPostAsync(string? next, bool showAll = false)
     {
+        await OnGetAsync(showAll);
+
         var authenticateResult = await HttpContext.AuthenticateAsync("Google");
         var accessToken = authenticateResult.Properties.Require().GetTokenValue("access_token").Require();
 
