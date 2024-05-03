@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 using Google.Apis.PeopleService.v1.Data;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -20,6 +21,8 @@ public class Contact
     {
         Facts = new EntityList<ContactFact>(db, this, nameof(Facts));
     }
+
+    public ContactBirthday? Birthday { get; set; }
 
     public int Id { get; set; }
 
@@ -105,5 +108,23 @@ public record ContactAddress(
             address.Country,
             address.CountryCode,
             location);
+};
+
+[Owned]
+public record ContactBirthday(int Year, int Month, int Day)
+{
+    public static ContactBirthday? FromGoogleContactBirthday(Birthday birthday) =>
+        birthday.Date is { } birthDate
+            ? new(birthDate.Year ?? 0, birthDate.Month ?? 0, birthDate.Day ?? 0)
+            : null;
+
+    public override string ToString() =>
+        (Year, Month, Day) switch
+        {
+            (_, 0, 0) => "Unknown",
+            (0, _, 0) => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Month), // Get month name from Month number
+            (0, _, _) => $"{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Month)} {Day}",
+            _ => $"{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(Month)} {Day} {Year}",
+        };
 };
 

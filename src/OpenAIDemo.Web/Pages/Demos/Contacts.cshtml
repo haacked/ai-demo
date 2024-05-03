@@ -1,5 +1,5 @@
 @page
-@model AIDemoWeb.Demos.Pages.ContactsPageModel
+@model Haack.AIDemoWeb.Pages.Demos.ContactsPageModel
 
 @{
     ViewData["Title"] = "Contacts";
@@ -25,52 +25,66 @@
     <table class="border-collapse table-auto w-full text-sm">
         <thead>
             <tr>
-                <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">Name</th>
-                <th class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">Address</th>
-                <th class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">Facts</th>
+                <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                    Name
+                </th>
+                <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                    Birthday
+                </th>
+                <th class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                    Address
+                </th>
+                <th class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                    Facts
+                </th>
             </tr>
         </thead>
         <tbody class="bg-white dark:bg-slate-800">
         @foreach (var contact in Model.Contacts) {
             <tr>
-            <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
-                @foreach (var name in contact.Names) {
-                    @name.UnstructuredName
-                }
-            </td>
-            <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
-                <div class="flex">
-                    @foreach (var address in contact.Addresses) {
+                <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                    @foreach (var name in contact.Names) {
+                        @name.UnstructuredName
+                    }
+                </td>
+                <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                   @if (contact.Birthday is { } birthday) {
+                        <span>@birthday</span>
+                    }
+                </td>
+                <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                    <div class="flex">
+                        @foreach (var address in contact.Addresses) {
+                            <div class="max-w-sm rounded overflow-hidden shadow-lg">
+                                <div class="px-6 py-4">
+                                    <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">@address.Type</span>
+                                    <p class="text-gray-700 text-sm">
+                                        @address.FormattedValue
+                                    </p>
+                                    <p>
+                                        @if (address.Location is { } location) {
+                                            <span class="text-xs italic">@location.Y, @location.X</span>
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </td>
+                <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                    <div class="flex">
+                        @foreach (var fact in contact.Facts) {
                         <div class="max-w-sm rounded overflow-hidden shadow-lg">
                             <div class="px-6 py-4">
-                                <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">@address.Type</span>
                                 <p class="text-gray-700 text-sm">
-                                    @address.FormattedValue
-                                </p>
-                                <p>
-                                    @if (address.Location is { } location) {
-                                        <span class="text-xs italic">@location.Y, @location.X</span>
-                                    }
+                                    @fact.Content
                                 </p>
                             </div>
                         </div>
-                    }
-                </div>
-            </td>
-            <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
-                <div class="flex">
-                    @foreach (var fact in contact.Facts) {
-                    <div class="max-w-sm rounded overflow-hidden shadow-lg">
-                        <div class="px-6 py-4">
-                            <p class="text-gray-700 text-sm">
-                                @fact.Content
-                            </p>
-                        </div>
+                        }
                     </div>
-                    }
-                </div>
-            </td>
-        </tr>
+                </td>
+            </tr>
         }
         </tbody>
     </table>
