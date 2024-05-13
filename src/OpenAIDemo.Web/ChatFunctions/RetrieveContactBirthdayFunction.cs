@@ -11,7 +11,7 @@ using Serious.ChatFunctions;
 namespace Haack.AIDemoWeb.ChatFunctions;
 
 /// <summary>
-/// Extends Chat GPT with a function that retrieves users birthday or looks up users with upcoming birthdays.
+/// Extends Chat GPT with a function that retrieves contacts birthday or looks up contacts with upcoming birthdays.
 /// </summary>
 public class RetrieveContactBirthdayFunction(
     AIDemoContext db,
