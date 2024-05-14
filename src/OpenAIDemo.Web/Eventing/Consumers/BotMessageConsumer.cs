@@ -1,3 +1,4 @@
+using System.Text.Json;
 using AIDemoWeb.Entities.Eventing.Messages;
 using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Library;
