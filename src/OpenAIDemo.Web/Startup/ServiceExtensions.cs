@@ -2,7 +2,6 @@ using System.Security.Claims;
 using System.Text.Json;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
-using Haack.AIDemoWeb.Library.Clients;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
@@ -79,6 +78,7 @@ public static class ServiceExtensions
                 o.Scope.Add("https://www.googleapis.com/auth/contacts.readonly");
                 o.Scope.Add("profile"); // Request access to the user's profile information
                 o.SaveTokens = true;
+                o.AccessType = "offline"; // Request a refresh token
 
                 o.Events = new OAuthEvents
                 {
@@ -99,11 +99,18 @@ public static class ServiceExtensions
                                 .FirstOrDefaultAsync(u => u.NameIdentifier == nameIdentifier);
                             if (user is null)
                             {
-                                await dbContext.Users.AddAsync(new User
+                                user = new User
                                 {
                                     NameIdentifier = nameIdentifier,
-                                });
+                                };
+                                await dbContext.Users.AddAsync(user);
+                            }
 
+                            // Store the refresh token if available
+                            var refreshToken = context.RefreshToken;
+                            if (!string.IsNullOrEmpty(refreshToken))
+                            {
+                                user.RefreshToken = refreshToken;
                                 await dbContext.SaveChangesAsync();
                             }
                         }

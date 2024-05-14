@@ -18,4 +18,9 @@ public class GoogleOptions
     /// The OAuth Client Secret
     /// </summary>
     public string? OAuthClientSecret { get; init; }
+
+    /// <summary>
+    /// The URL for the Google OAuth refresh token endpoint.
+    /// </summary>
+    public string? RefreshTokenEndpointUrl { get; init; }
 }

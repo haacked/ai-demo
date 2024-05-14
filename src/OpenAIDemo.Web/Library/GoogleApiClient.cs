@@ -13,6 +13,10 @@ public class GoogleApiClient(IGoogleGeocodeClient geocodeClient, IOptions<Google
 {
     static readonly IEnumerable<string> ContactsScopes = new[] { "https://www.googleapis.com/auth/contacts.readonly" };
 
+    public GoogleApiClient()
+    {
+    }
+
     public async Task<ListConnectionsResponse> GetContactsAsync(string accessToken, string? nextPageToken = null)
     {
         var credential = GoogleCredential.FromAccessToken(accessToken)
@@ -46,4 +50,15 @@ public class GoogleApiClient(IGoogleGeocodeClient geocodeClient, IOptions<Google
             ? null
             : response.Results[0];
     }
+
+    // Method to refresh the access token using the stored refresh token
+    public async Task<string?> RefreshAccessTokenAsync(string refreshToken)
+    {
+        // Implementation to refresh the access token using the stored refresh token
+        // This is a placeholder for the actual implementation
+        return null;
+    }
+
+    // Modify existing methods to use the refreshed token if the current token is expired
+    // This is a placeholder for the actual implementation
 }

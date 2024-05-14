@@ -59,4 +59,9 @@ public class User
     /// The IANA Time Zone identifier for the member.
     /// </summary>
     public string? TimeZoneId { get; set; }
+
+    /// <summary>
+    /// The refresh token for the user's Google account.
+    /// </summary>
+    public string? RefreshToken { get; set; }
 }
