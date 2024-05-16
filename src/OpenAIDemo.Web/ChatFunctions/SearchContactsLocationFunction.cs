@@ -108,7 +108,7 @@ public record SearchUsersLocationArguments(
 
     [property: Required]
     [property: JsonPropertyName("distance")]
-    [property: Description("The distance in kilometers from the coordinate. If not specified, use 10 if the user is asking for nearby contacts. Otherwise use 1000. If the user specifies miles, convert to kilometers using the `unit_converter` function first.")]
+    [property: Description("The distance in kilometers from the coordinate. If not specified and asking about a country, use 610. If asking about near contacts, use 10. If the user specifies miles, convert to kilometers using the `unit_converter` function first.")]
     Measurement Distance,
 
     [property: JsonPropertyName("contact_names")]
