@@ -545,7 +545,7 @@ public static class StringExtensions
         }
     }
 
-    static readonly JsonSerializerOptions PrettifyJsonOptions = new JsonSerializerOptions { WriteIndented = true };
+    static readonly JsonSerializerOptions PrettifyJsonOptions = new() { WriteIndented = true };
 
     public static string JsonPrettify(this string json)
     {

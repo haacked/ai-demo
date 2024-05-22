@@ -10,11 +10,11 @@
       },
       "Azure.AI.OpenAI": {
         "type": "Direct",
-        "requested": "[1.0.0-beta.15, )",
-        "resolved": "1.0.0-beta.15",
-        "contentHash": "6j28/bwKl1dnQA25RuuV7z90ZuiVBAU/V9rUyXFnPBba6IyV9iI+njOY20VyoGQ/gzaUxSiT3BSV3BTY4N9mxg==",
+        "requested": "[1.0.0-beta.17, )",
+        "resolved": "1.0.0-beta.17",
+        "contentHash": "cYTqSHxST4+xyXWa+J0TFid8r5/pX/qLxQ22jynSHY2ACe93rnZ5GPiNtZ06c4pWvm1TPX5aJntED6im6xnzCA==",
         "dependencies": {
-          "Azure.Core": "1.38.0",
+          "Azure.Core": "1.39.0",
           "System.ClientModel": "1.0.0",
           "System.Text.Json": "4.7.2"
         }
@@ -103,6 +103,16 @@
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "8.0.7",
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0"
+        }
+      },
+      "Microsoft.SemanticKernel": {
+        "type": "Direct",
+        "requested": "[1.15.1, )",
+        "resolved": "1.15.1",
+        "contentHash": "mPkfo3SmCVWL82PuUCHMJTTaBPVv8NFgLadzKZxEG0rZ/5/Wl9FUpssDXgJo+PFdaRUHLqSZeVn/rkixZCvkIw==",
+        "dependencies": {
+          "Microsoft.SemanticKernel.Connectors.OpenAI": "1.15.1",
+          "Microsoft.SemanticKernel.Core": "1.15.1"
         }
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL": {
@@ -200,8 +210,8 @@
       },
       "Azure.Core": {
         "type": "Transitive",
-        "resolved": "1.38.0",
-        "contentHash": "IuEgCoVA0ef7E4pQtpC3+TkPbzaoQfa77HlfJDmfuaJUCVJmn7fT0izamZiryW5sYUFKizsftIxMkXKbgIcPMQ==",
+        "resolved": "1.39.0",
+        "contentHash": "9vaV4ZICtVQp+2wjOKrIAjEjMzBkUohaBbKGqqcTW993MRfHA0N4L1BszQjWynS7lRvlYQLxaFK4wh9ewNm4HQ==",
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "1.1.1",
           "System.ClientModel": "1.0.0",
@@ -336,8 +346,13 @@
       },
       "Microsoft.Bcl.AsyncInterfaces": {
         "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "UcSjPsst+DfAdJGVDsu346FX0ci0ah+lw3WRtn18NUwEqRt70HaOQ7lI72vy3+1LxtqI3T5GWwV39rQSrCzAeg=="
+        "resolved": "8.0.0",
+        "contentHash": "3WA9q9yVqJp222P3x1wYIGDAkpjAku0TMUaaQV22g6L67AI0LdOIrVS7Ht2vJfLHGSPVuqN94vIr15qn+HEkHw=="
+      },
+      "Microsoft.Bcl.HashCode": {
+        "type": "Transitive",
+        "resolved": "1.1.1",
+        "contentHash": "MalY0Y/uM/LjXtHfX/26l2VtN4LDNZ2OE3aumNOHDLsT4fNYy2hiHXI4CXCqKpNUNm7iJ2brrc4J89UdaL56FA=="
       },
       "Microsoft.CodeAnalysis.Analyzers": {
         "type": "Transitive",
@@ -593,6 +608,37 @@
         "resolved": "8.0.0",
         "contentHash": "bXJEZrW9ny8vjMF1JV253WeLhpEVzFo1lyaZu1vQ4ZxWUlVvknZ/+ftFgVheLubb4eZPSwwxBeqS1JkCOjxd8g=="
       },
+      "Microsoft.SemanticKernel.Abstractions": {
+        "type": "Transitive",
+        "resolved": "1.15.1",
+        "contentHash": "hzEIbAslNJmHWPIxeK3RXJBtYJ2Mc8Z4yd0m3axX70qh4lLKNDU9nNQzh3ZfqSUAVvp+4ZCmY/XnHuQ8QWYL7A==",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "8.0.0",
+          "Microsoft.Bcl.HashCode": "1.1.1",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.1",
+          "System.Diagnostics.DiagnosticSource": "8.0.1",
+          "System.Text.Json": "8.0.2"
+        }
+      },
+      "Microsoft.SemanticKernel.Connectors.OpenAI": {
+        "type": "Transitive",
+        "resolved": "1.15.1",
+        "contentHash": "zV01YLnV3JBaYDh/UtEqEDuj3cblokPQhn5H3x711Vw7YYL4Bw2p0mp5hSkQhGPTbqlyqiKErF0T3Uyqbh8T/Q==",
+        "dependencies": {
+          "Azure.AI.OpenAI": "1.0.0-beta.17",
+          "Microsoft.SemanticKernel.Core": "1.15.1"
+        }
+      },
+      "Microsoft.SemanticKernel.Core": {
+        "type": "Transitive",
+        "resolved": "1.15.1",
+        "contentHash": "eWXxbsn7FKDNz6k2UDnQHZcAJOcwUels/av2o7uJoVxiXsygEATB02SN9w7X1HEtwIJWiTNu9IVEgohbC7vxTA==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection": "8.0.0",
+          "Microsoft.SemanticKernel.Abstractions": "1.15.1"
+        }
+      },
       "Mono.TextTemplating": {
         "type": "Transitive",
         "resolved": "2.2.1",
@@ -722,8 +768,8 @@
       },
       "System.Diagnostics.DiagnosticSource": {
         "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "c9xLpVz6PL9lp/djOWtk5KPDZq3cSYpmXoJQY524EOtuFl5z9ZtsotpsyrDW40U1DRnQSYvcPKEUV0X//u6gkQ=="
+        "resolved": "8.0.1",
+        "contentHash": "vaoWjvkG1aenR2XdjaVivlCV9fADfgyhW5bZtXT23qaEea0lWiUljdQuze4E31vKM7ZWJaSUsbYIKE3rnzfZUg=="
       },
       "System.IO.Pipelines": {
         "type": "Transitive",

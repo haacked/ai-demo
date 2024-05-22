@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Refit;
@@ -16,12 +17,14 @@ public interface IWeatherApiClient
         CancellationToken cancellationToken);
 }
 
-
-public enum Unit
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum TemperatureUnit
 {
+    [Description("The temperature in celsius.")]
     [EnumMember(Value = "celsius")]
     Celsius,
 
+    [Description("The temperature in fahrenheit.")]
     [EnumMember(Value = "fahrenheit")]
     Fahrenheit,
 }

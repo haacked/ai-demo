@@ -59,7 +59,7 @@ public class MultiUserChatMessageConsumer(
                     context.CancellationToken);
                 if (result is not null)
                 {
-                    await SendThought($"I got a result. I'll send it back to GPT to summarize", result.Content);
+                    await SendThought("I got a result. I'll send it back to GPT to summarize", result.Content);
 
                     // We got a result, which we can send back to GPT so it can summarize it for the user.
                     options.Messages.Add(result);

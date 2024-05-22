@@ -60,9 +60,11 @@ public static partial class MigratorServiceLoggingExtensions
 
 public static class MigrationStartupExtensions
 {
-    public static void AddMigrationServices(this IServiceCollection services)
+    public static IServiceCollection AddMigrationServices(this IServiceCollection services)
     {
         services.AddTransient<Migrator>();
         services.AddHostedService<MigratorService>();
+
+        return services;
     }
 }

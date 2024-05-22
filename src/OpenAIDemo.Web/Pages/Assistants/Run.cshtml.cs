@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
@@ -23,8 +24,8 @@ public class RunAssistantPageModel(AIDemoContext db, IOptions<OpenAIOptions> opt
         Assistant = await openAIClient.GetAssistantAsync(_options.ApiKey.Require(), id, cancellationToken);
 
         // Let's see if the current user has a thread for this assistant.
-        var username = User.Identity?.Name;
-        var currentUser = await db.Users.SingleOrDefaultAsync(u => u.NameIdentifier == username, cancellationToken);
+        var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var currentUser = await db.Users.SingleOrDefaultAsync(u => u.NameIdentifier == nameIdentifier, cancellationToken);
 
         var threadEntity = await db.Threads
             .Where(t => t.AssistantId == id)

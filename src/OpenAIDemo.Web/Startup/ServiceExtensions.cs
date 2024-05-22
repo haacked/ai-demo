@@ -3,20 +3,73 @@ using System.Text.Json;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.Library.Clients;
+using Haack.AIDemoWeb.Plugins;
+using Haack.AIDemoWeb.SemanticKernel.Plugins;
+using Haack.AIDemoWeb.Startup.Config;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.SemanticKernel;
 using Npgsql;
+using OpenAIDemo.Hubs;
 using Refit;
 using Serious;
+using Serious.ChatFunctions;
 
 namespace Haack.AIDemoWeb.Startup;
 
 public static class ServiceExtensions
 {
-    public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddSemanticKernel(this IServiceCollection services, IConfiguration configuration)
+    {
+        var options = configuration.GetSection(OpenAIOptions.OpenAI).Get<OpenAIOptions>().Require();
+
+        services.AddOpenAIChatCompletion(
+            options.Model,
+            options.ApiKey.Require());
+
+        services
+            .AddTransient<ContactFactsPlugin>()
+            .AddTransient<ContactPlugin>()
+            .AddTransient<WeatherPlugin>()
+            .AddTransient<UnitConverterPlugin>()
+            .AddTransient<LocationPlugin>();
+
+        services.AddTransient<Kernel>(serviceProvider =>
+        {
+            var kernel = new Kernel(serviceProvider);
+
+#pragma warning disable SKEXP0001
+            var filter = new FunctionSignalFilter(serviceProvider.GetRequiredService<IHubContext<BotHub>>());
+            kernel.FunctionInvocationFilters.Add(filter);
+            kernel.AutoFunctionInvocationFilters.Add(filter);
+#pragma warning disable CS0618 // Type or member is obsolete
+            kernel.FunctionInvoked += (sender, args) =>
+            {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                filter.OnFunctionInvokedAsync(args);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            };
+
+#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore SKEXP0001
+
+            kernel.ImportPluginFromType<ContactFactsPlugin>();
+            kernel.ImportPluginFromType<ContactPlugin>();
+            kernel.ImportPluginFromType<UnitConverterPlugin>();
+            kernel.ImportPluginFromType<WeatherPlugin>();
+            kernel.ImportPluginFromType<LocationPlugin>();
+
+            return kernel;
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString(AIDemoContext.ConnectionStringName)
             ?? throw new InvalidOperationException(
@@ -29,6 +82,7 @@ public static class ServiceExtensions
             options => SetupDbContextOptions(connectionString, options),
             optionsLifetime: ServiceLifetime.Singleton);
 
+        return services;
     }
 
     /// <summary>
@@ -59,7 +113,7 @@ public static class ServiceExtensions
         });
     }
 
-    public static void AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddAuthentication(o =>
             {
@@ -110,13 +164,15 @@ public static class ServiceExtensions
                     }
                 };
             });
+
+        return services;
     }
 
     /// <summary>
     /// Configure Mass Transit.
     /// </summary>
     /// <param name="services"></param>
-    public static void AddMassTransitConfig(this IServiceCollection services)
+    public static IServiceCollection AddMassTransitConfig(this IServiceCollection services)
     {
         services.AddMassTransit(configurator =>
         {
@@ -128,9 +184,11 @@ public static class ServiceExtensions
                 cfg.ConfigureEndpoints(context);
             });
         });
+
+        return services;
     }
 
-    public static void AddClients(this IServiceCollection services)
+    public static IServiceCollection AddClients(this IServiceCollection services)
     {
         services.AddTransient<LoggingHttpMessageHandler>();
         services.AddTransient<GeocodeClient>();
@@ -150,6 +208,8 @@ public static class ServiceExtensions
                 PropertyNameCaseInsensitive = true,
             });
         services.AddRefitClient<IWeatherApiClient>(IWeatherApiClient.BaseAddress);
+
+        return services;
     }
 
     static IHttpClientBuilder AddRefitClient<T>(this IServiceCollection services, Uri baseAddress) where T : class

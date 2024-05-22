@@ -14,24 +14,21 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
-builder.Services.AddClients();
-builder.Services.AddDatabase(builder.Configuration);
 
 // Registers my OpenAI client accessor and configures it.
-builder.Services.RegisterOpenAI(builder.Configuration);
-builder.Services.Configure<GitHubOptions>(builder.Configuration.GetSection(GitHubOptions.GitHub));
-builder.Services.Configure<GoogleOptions>(builder.Configuration.GetSection(GoogleOptions.Google));
-builder.Services.Configure<WeatherOptions>(builder.Configuration.GetSection(WeatherOptions.Weather));
-builder.Services.AddAuthentication(builder.Configuration);
-builder.Services.AddMigrationServices();
-builder.Services.AddSignalR();
-builder.Services.AddMassTransitConfig();
-
-// Register all the GPT functions in the specified assembly.
-// I wrote this to make calling GPT functions easier.
-builder.Services.AddFunctionDispatcher(typeof(WeatherOptions).Assembly.Require());
-
-
+builder.Services
+    .AddClients()
+    .AddDatabase(builder.Configuration)
+    .RegisterOpenAI(builder.Configuration)
+    .AddSemanticKernel(builder.Configuration)
+    .Configure<GitHubOptions>(builder.Configuration.GetSection(GitHubOptions.GitHub))
+    .Configure<GoogleOptions>(builder.Configuration.GetSection(GoogleOptions.Google))
+    .Configure<WeatherOptions>(builder.Configuration.GetSection(WeatherOptions.Weather))
+    .AddAuthentication(builder.Configuration)
+    .AddMigrationServices()
+    .AddMassTransitConfig()
+    .AddFunctionDispatcher(typeof(WeatherOptions).Assembly.Require())
+    .AddSignalR();
 
 var app = builder.Build();
 

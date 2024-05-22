@@ -48,9 +48,11 @@ public static class OpenAIOptionsExtensions
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="configuration">The configuration.  </param>
-    public static void RegisterOpenAI(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection RegisterOpenAI(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<OpenAIOptions>(configuration.GetSection(OpenAIOptions.OpenAI));
         services.AddSingleton<OpenAIClientAccessor>();
+
+        return services;
     }
 }

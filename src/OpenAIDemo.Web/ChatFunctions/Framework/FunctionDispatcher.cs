@@ -73,11 +73,13 @@ public static class FunctionDispatcherServiceExtensions
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="assemblies">The assemblies to search.</param>
-    public static void AddFunctionDispatcher(
+    public static IServiceCollection AddFunctionDispatcher(
         this IServiceCollection services,
         params Assembly[] assemblies)
     {
         services.AddScoped<FunctionDispatcher>();
         services.RegisterAllTypes<IChatFunction>(ServiceLifetime.Scoped, publicOnly: true, assemblies);
+
+        return services;
     }
 }

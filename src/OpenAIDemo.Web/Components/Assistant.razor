@@ -1,3 +1,4 @@
+@using System.Text.Json
 @using Serious
 @using Haack.AIDemoWeb.Library
 @using Haack.AIDemoWeb.Library.Clients
@@ -145,9 +146,10 @@
         JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16: \ud83d\udcad %c{thought}", "`@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap'); font-size: 16px; font-family: Orbitron, Roboto, Courier");
     }
 
-    void BroadcastFunctionCall(string name, string args)
+    void BroadcastFunctionCall(string name, object args)
     {
-        JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16: \u2699\ufe0f %c{name}%c({args})", "font-size: 16px; font-family: Orbitron, Roboto, Courier");
+        var argsJson = JsonSerializer.Serialize(args);
+        JsRuntime.InvokeVoidAsync("console.log", $"\ud83e\udd16: \u2699\ufe0f %c{name}%c({argsJson})", "font-size: 16px; font-family: Orbitron, Roboto, Courier");
     }
 
     async Task DisconnectAsync()

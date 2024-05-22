@@ -1,10 +1,9 @@
 using System.Text.Json.Serialization;
-using Haack.AIDemoWeb.ChatFunctions;
 using Haack.AIDemoWeb.Library.Clients;
+using Haack.AIDemoWeb.SemanticKernel.Plugins;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
 using Serious;
-using Serious.ChatFunctions;
 
 namespace Haack.AIDemoWeb.Library;
 
