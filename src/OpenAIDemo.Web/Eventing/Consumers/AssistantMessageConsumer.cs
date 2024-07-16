@@ -124,7 +124,7 @@ public class AssistantMessageConsumer(
                 context.CancellationToken);
 
         async Task SendFunction(FunctionCall functionCall)
-            => await hubContext.Clients.Client(connectionId).SendAsync(
+            => await hubContext.Clients.All.SendAsync(
                 nameof(AssistantHub.BroadcastFunctionCall),
                 functionCall.Name,
                 functionCall.Arguments,
