@@ -1,4 +1,4 @@
-name: Build OpenAIDemo
+name: Build AIDemo
 
 on:
   push:
