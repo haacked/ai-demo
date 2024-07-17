@@ -25,7 +25,7 @@ public static class ServiceExtensions
 {
     public static IHostApplicationBuilder AddSemanticKernel(this IHostApplicationBuilder builder)
     {
-        var options = builder.Configuration.GetSection(OpenAIOptions.OpenAI).Get<OpenAIOptions>().Require();
+        var options = builder.GetConfigurationSection<OpenAIOptions>().Require();
 
         builder.Services.AddOpenAIChatCompletion(
             options.Model,
@@ -174,7 +174,7 @@ public static class ServiceExtensions
     /// <summary>
     /// Configure Mass Transit.
     /// </summary>
-    /// <param name="services"></param>
+    /// <param name="builder"></param>
     public static IHostApplicationBuilder AddMassTransitConfig(this IHostApplicationBuilder builder)
     {
         builder.Services.AddMassTransit(configurator =>

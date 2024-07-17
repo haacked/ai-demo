@@ -5,13 +5,8 @@ namespace Haack.AIDemoWeb.Startup.Config;
 /// <summary>
 /// The configuration options for Open AI.
 /// </summary>
-public class OpenAIOptions
+public class OpenAIOptions : IConfigOptions
 {
-    /// <summary>
-    /// The name of the configuration section.
-    /// </summary>
-    public const string OpenAI = "OpenAI";
-
     /// <summary>
     /// The Open AI api key.
     /// </summary>
@@ -36,6 +31,12 @@ public class OpenAIOptions
     /// The model to use for embeddings.
     /// </summary>
     public string EmbeddingModel { get; init; } = "text-embedding-ada-002";
+
+    /// <summary>
+    /// The config section name. Leave null to use part of the name of this type before the "Options" suffix
+    /// as the section name.
+    /// </summary>
+    public static string SectionName => "OpenAI";
 }
 
 /// <summary>
@@ -49,11 +50,8 @@ public static class OpenAIOptionsExtensions
     /// <param name="builder">The host application builder.</param>
     public static IHostApplicationBuilder RegisterOpenAI(this IHostApplicationBuilder builder)
     {
-        var services = builder.Services;
-        var configuration = builder.Configuration;
-
-        services.Configure<OpenAIOptions>(configuration.GetSection(OpenAIOptions.OpenAI));
-        services.AddSingleton<OpenAIClientAccessor>();
+        builder.Configure<OpenAIOptions>();
+        builder.Services.AddSingleton<OpenAIClientAccessor>();
 
         return builder;
     }

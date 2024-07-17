@@ -25,10 +25,10 @@ builder
     .AddMigrationServices()
     .AddMassTransitConfig()
     .AddFunctionDispatcher(typeof(WeatherOptions).Assembly.Require())
+    .Configure<GitHubOptions>()
+    .Configure<GoogleOptions>()
+    .Configure<WeatherOptions>()
     .Services
-    .Configure<GitHubOptions>(builder.Configuration.GetSection(GitHubOptions.GitHub))
-    .Configure<GoogleOptions>(builder.Configuration.GetSection(GoogleOptions.Google))
-    .Configure<WeatherOptions>(builder.Configuration.GetSection(WeatherOptions.Weather))
     .AddSignalR();
 
 var app = builder.Build();
