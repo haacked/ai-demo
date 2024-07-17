@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\OpenAIDemo.Web\OpenAIDemo.Web.csproj" />
+      <ProjectReference Include="..\..\src\AIDemo.Web\AIDemo.Web.csproj" />
     </ItemGroup>
 
 </Project>

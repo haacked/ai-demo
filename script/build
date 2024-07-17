@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #/ Usage: script/build [<configuration>]
-#/ Description: Builds OpenAIDemo.Web
+#/ Description: Builds AIDemo.Web
 #/ Arguments:
 #/   <configuration> - The configuration to build. Defaults to Debug.
 { set +x; } 2>/dev/null
@@ -37,11 +37,11 @@ if ! type dotnet >/dev/null 2>&1; then
   fatal "dotnet is required to run this script. Have you run 'script/bootstrap'?"
 fi
 
-echo "Building OpenAIDemo.sln for $configuration"
-dotnet restore OpenAIDemo.sln
-dotnet build OpenAIDemo.sln --no-restore -c $configuration --nologo
+echo "Building AIDemo.sln for $configuration"
+dotnet restore AIDemo.sln
+dotnet build AIDemo.sln --no-restore -c $configuration --nologo
 
-cd "$root_dir/src/OpenAIDemo.Web" > /dev/null
+cd "$root_dir/src/AIDemo.Web" > /dev/null
 npm install
 npm rebuild node-sass
 if [[ x"$configuration" == x"Release" ]]; then

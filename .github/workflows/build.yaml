@@ -31,13 +31,13 @@ jobs:
             8.0.x
 
       - name: Restore NuGet Packages
-        run: dotnet restore OpenAIDemo.sln --locked-mode
+        run: dotnet restore AIDemo.sln --locked-mode
 
       - name: Build
-        run: dotnet build OpenAIDemo.sln --configuration Release --no-restore --nologo
+        run: dotnet build AIDemo.sln --configuration Release --no-restore --nologo
 
       - name: Run Tests
-        run: dotnet test OpenAIDemo.sln --logger "trx;LogFileName=test-results.trx" --configuration Release --no-build --nologo
+        run: dotnet test AIDemo.sln --logger "trx;LogFileName=test-results.trx" --configuration Release --no-build --nologo
 
       - name: Collect Test Results
         uses: dorny/test-reporter@v1
@@ -65,12 +65,12 @@ jobs:
       with:
         node-version: '16.x'
 
-    - name: OpenAIDemo.Web - npm install
-      working-directory: src/OpenAIDemo.Web
+    - name: AIDemo.Web - npm install
+      working-directory: src/AIDemo.Web
       run: npm ci
 
-    - name: OpenAIDemo.Web - npm run release
-      working-directory: src/OpenAIDemo.Web
+    - name: AIDemo.Web - npm run release
+      working-directory: src/AIDemo.Web
       run: npm run release
 
   format:
