@@ -23,22 +23,22 @@ namespace Haack.AIDemoWeb.Startup;
 
 public static class ServiceExtensions
 {
-    public static IServiceCollection AddSemanticKernel(this IServiceCollection services, IConfiguration configuration)
+    public static IHostApplicationBuilder AddSemanticKernel(this IHostApplicationBuilder builder)
     {
-        var options = configuration.GetSection(OpenAIOptions.OpenAI).Get<OpenAIOptions>().Require();
+        var options = builder.Configuration.GetSection(OpenAIOptions.OpenAI).Get<OpenAIOptions>().Require();
 
-        services.AddOpenAIChatCompletion(
+        builder.Services.AddOpenAIChatCompletion(
             options.Model,
             options.ApiKey.Require());
 
-        services
+        builder.Services
             .AddTransient<ContactFactsPlugin>()
             .AddTransient<ContactPlugin>()
             .AddTransient<WeatherPlugin>()
             .AddTransient<UnitConverterPlugin>()
             .AddTransient<LocationPlugin>();
 
-        services.AddTransient<Kernel>(serviceProvider =>
+        builder.Services.AddTransient<Kernel>(serviceProvider =>
         {
             var kernel = new Kernel(serviceProvider);
 
@@ -47,7 +47,7 @@ public static class ServiceExtensions
             kernel.FunctionInvocationFilters.Add(filter);
             kernel.AutoFunctionInvocationFilters.Add(filter);
 #pragma warning disable CS0618 // Type or member is obsolete
-            kernel.FunctionInvoked += (sender, args) =>
+            kernel.FunctionInvoked += (_, args) =>
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 filter.OnFunctionInvokedAsync(args);
@@ -66,11 +66,13 @@ public static class ServiceExtensions
             return kernel;
         });
 
-        return services;
+        return builder;
     }
 
-    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
+    public static IHostApplicationBuilder AddDatabase(this IHostApplicationBuilder builder)
     {
+        var configuration = builder.Configuration;
+        var services = builder.Services;
         var connectionString = configuration.GetConnectionString(AIDemoContext.ConnectionStringName)
             ?? throw new InvalidOperationException(
                 $"The `ConnectionStrings:AIDemoContext` setting is not configured in the `ConnectionStrings`" +
@@ -82,7 +84,7 @@ public static class ServiceExtensions
             options => SetupDbContextOptions(connectionString, options),
             optionsLifetime: ServiceLifetime.Singleton);
 
-        return services;
+        return builder;
     }
 
     /// <summary>
@@ -113,9 +115,10 @@ public static class ServiceExtensions
         });
     }
 
-    public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static IHostApplicationBuilder AddAuthentication(this IHostApplicationBuilder builder)
     {
-        services.AddAuthentication(o =>
+        var configuration = builder.Configuration;
+        builder.Services.AddAuthentication(o =>
             {
                 o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
@@ -165,16 +168,16 @@ public static class ServiceExtensions
                 };
             });
 
-        return services;
+        return builder;
     }
 
     /// <summary>
     /// Configure Mass Transit.
     /// </summary>
     /// <param name="services"></param>
-    public static IServiceCollection AddMassTransitConfig(this IServiceCollection services)
+    public static IHostApplicationBuilder AddMassTransitConfig(this IHostApplicationBuilder builder)
     {
-        services.AddMassTransit(configurator =>
+        builder.Services.AddMassTransit(configurator =>
         {
             configurator.AddConsumers(typeof(ServiceExtensions).Assembly);
             configurator.SetKebabCaseEndpointNameFormatter();
@@ -185,11 +188,12 @@ public static class ServiceExtensions
             });
         });
 
-        return services;
+        return builder;
     }
 
-    public static IServiceCollection AddClients(this IServiceCollection services)
+    public static IHostApplicationBuilder AddClients(this IHostApplicationBuilder builder)
     {
+        var services = builder.Services;
         services.AddTransient<LoggingHttpMessageHandler>();
         services.AddTransient<GeocodeClient>();
         services.AddTransient<GoogleApiClient>();
@@ -209,7 +213,7 @@ public static class ServiceExtensions
             });
         services.AddRefitClient<IWeatherApiClient>(IWeatherApiClient.BaseAddress);
 
-        return services;
+        return builder;
     }
 
     static IHttpClientBuilder AddRefitClient<T>(this IServiceCollection services, Uri baseAddress) where T : class

@@ -46,13 +46,15 @@ public static class OpenAIOptionsExtensions
     /// <summary>
     /// Register the OpenAIOptions with the DI container.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configuration">The configuration.  </param>
-    public static IServiceCollection RegisterOpenAI(this IServiceCollection services, IConfiguration configuration)
+    /// <param name="builder">The host application builder.</param>
+    public static IHostApplicationBuilder RegisterOpenAI(this IHostApplicationBuilder builder)
     {
+        var services = builder.Services;
+        var configuration = builder.Configuration;
+
         services.Configure<OpenAIOptions>(configuration.GetSection(OpenAIOptions.OpenAI));
         services.AddSingleton<OpenAIClientAccessor>();
 
-        return services;
+        return builder;
     }
 }
