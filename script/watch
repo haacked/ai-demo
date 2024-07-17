@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #/ Usage: script/watch [<configuration>]
-#/ Description: Launches the OpenAIDemo.Web server in 'watch' mode (reloading them on any changes)
+#/ Description: Launches the AIDemo.Web server in 'watch' mode (reloading them on any changes)
 { set +x; } 2>/dev/null
 source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
 root_dir=$(cd $source_dir && cd ../ && pwd)
@@ -31,7 +31,7 @@ fi
 cd "$root_dir"
 
 script/watch-js &
-dotnet watch --project "$root_dir/src/OpenAIDemo.Web/OpenAIDemo.Web.csproj" run --configuration $configuration &
+dotnet watch --project "$root_dir/src/AIDemo.Web/AIDemo.Web.csproj" run --configuration $configuration &
 
 function cleanup() {
 	trap - SIGTERM && kill -- -$$

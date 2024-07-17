@@ -59,4 +59,4 @@ Then run the web server from the IDE.
 
 This project is set up using Central NuGet Package Management.
 
-I also ran `dotnet user-secrets init --project src/OpenAIDemo.Web/OpenAIDemo.Web.csproj` from the repository root to initialize the user secrets.
+I also ran `dotnet user-secrets init --project src/AIDemo.Web/AIDemo.Web.csproj` from the repository root to initialize the user secrets.

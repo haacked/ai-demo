@@ -75,7 +75,7 @@ public static class ServiceExtensions
             ?? throw new InvalidOperationException(
                 $"The `ConnectionStrings:AIDemoContext` setting is not configured in the `ConnectionStrings`" +
                 $" section. For local development, make sure `ConnectionStrings:AIDemoContext` is set properly " +
-                "in `appsettings.Development.json` within `OpenAIDemo.Web`.");
+                "in `appsettings.Development.json` within `AIDemo.Web`.");
         services.AddDbContextFactory<AIDemoContext>(
             options => SetupDbContextOptions(connectionString, options));
         services.AddDbContext<AIDemoContext>(
@@ -109,7 +109,7 @@ public static class ServiceExtensions
         {
             o.UseVector();
             o.UseNetTopologySuite();
-            o.MigrationsAssembly("OpenAIDemo.Web");
+            o.MigrationsAssembly("AIDemo.Web");
         });
     }
 

@@ -9,8 +9,8 @@ root_dir=$(cd $source_dir && cd ../ && pwd)
 cd $root_dir
 source script/helpers/_utils.sh
 
-SOLUTION_FILE="OpenAIDemo.sln"
-PROJECT_DIR="./src/OpenAIDemo.Web"
+SOLUTION_FILE="AIDemo.sln"
+PROJECT_DIR="./src/AIDemo.Web"
 
 check=false
 

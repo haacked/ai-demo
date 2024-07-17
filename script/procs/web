@@ -10,7 +10,7 @@ if [ -z $configuration ]; then
 fi
 
 if [ "$USE_DOTNET_WATCH" = "1" ]; then
-    dotnet watch --project "$root_dir/src/OpenAIDemo.Web/OpenAIDemo.Web.csproj" run --configuration $configuration
+    dotnet watch --project "$root_dir/src/AIDemo.Web/AIDemo.Web.csproj" run --configuration $configuration
 else
-    dotnet run --project "$root_dir/src/OpenAIDemo.Web/OpenAIDemo.Web.csproj" --configuration $configuration
+    dotnet run --project "$root_dir/src/AIDemo.Web/AIDemo.Web.csproj" --configuration $configuration
 fi
