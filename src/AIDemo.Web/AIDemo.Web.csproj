@@ -33,6 +33,7 @@
   </Target>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="AspNet.Security.OAuth.GitHub" />
     <PackageReference Include="Azure.AI.OpenAI" />
     <PackageReference Include="Google.Apis.PeopleService.v1" />
