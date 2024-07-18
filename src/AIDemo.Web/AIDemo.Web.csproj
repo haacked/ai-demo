@@ -63,4 +63,8 @@
     <Content Update="**\package-lock.json" CopyToPublishDirectory="Never" CopyToOutputDirectory="Never" />
     <Content Update="**\packages.lock.json" CopyToPublishDirectory="Never" CopyToOutputDirectory="Never" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AIDemo.ServiceDefaults\AIDemo.ServiceDefaults.csproj" />
+  </ItemGroup>
 </Project>

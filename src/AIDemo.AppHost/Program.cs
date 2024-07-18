@@ -1,11 +1,14 @@
-using Aspire.Hosting;
+using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var postgres = builder.AddPostgres("postgres");
+var postgres = builder
+    .AddPostgres("postgres")
+    .WithImage("ankane/pgvector");
+
 var postgresdb = postgres.AddDatabase("postgresdb");
 
-builder.AddProject<Projects.AIDemo_Web>("webfrontend")
+builder.AddProject<AIDemo_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithReference(postgresdb);
 
