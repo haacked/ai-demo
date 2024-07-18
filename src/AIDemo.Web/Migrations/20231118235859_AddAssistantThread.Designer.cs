@@ -11,7 +11,7 @@ using Pgvector;
 
 namespace Haack.AIDemoWeb.Migrations
 {
-    [DbContext(typeof(AIDemoContext))]
+    [DbContext(typeof(AIDemoDbContext))]
     [Migration("20231118235859_AddAssistantThread")]
     partial class AddAssistantThread
     {

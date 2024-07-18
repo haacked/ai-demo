@@ -1,6 +1,8 @@
+using AIDemo.Web.Startup;
 using Haack.AIDemoWeb.Startup;
 using Haack.AIDemoWeb.Startup.Config;
-using Haack.AIDemoWeb.Components; // Rider highlights this line for some reason, but it's legit. It compiles.
+using Haack.AIDemoWeb.Components;
+using Haack.AIDemoWeb.Entities; // Rider highlights this line for some reason, but it's legit. It compiles.
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using OpenAIDemo.Hubs;
@@ -22,7 +24,7 @@ builder
     .RegisterOpenAI()
     .AddSemanticKernel()
     .AddAuthentication()
-    .AddMigrationServices()
+    .AddDbInitializationServices<AIDemoDbInitializer, AIDemoDbContext>()
     .AddMassTransitConfig()
     .AddFunctionDispatcher(typeof(WeatherOptions).Assembly.Require())
     .Configure<GitHubOptions>()

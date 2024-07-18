@@ -13,7 +13,7 @@ using Serious;
 
 namespace Haack.AIDemoWeb.Plugins;
 
-public class ContactFactsPlugin(AIDemoContext db, OpenAIClientAccessor client, IHubContext<BotHub> hubContext)
+public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClientAccessor client, IHubContext<BotHub> hubContext)
 {
     [KernelFunction]
     [Description(

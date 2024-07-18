@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Haack.AIDemoWeb.Migrations
 {
-    [DbContext(typeof(AIDemoContext))]
+    [DbContext(typeof(AIDemoDbContext))]
     [Migration("20230831182712_AddUsers")]
     partial class AddUsers
     {

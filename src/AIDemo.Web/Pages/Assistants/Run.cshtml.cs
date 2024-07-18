@@ -10,7 +10,7 @@ using Serious;
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 
-public class RunAssistantPageModel(AIDemoContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+public class RunAssistantPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
     : PageModel
 {
     readonly OpenAIOptions _options = options.Value;

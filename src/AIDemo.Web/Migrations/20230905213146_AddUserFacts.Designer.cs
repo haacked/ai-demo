@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Haack.AIDemoWeb.Migrations
 {
-    [DbContext(typeof(AIDemoContext))]
+    [DbContext(typeof(AIDemoDbContext))]
     [Migration("20230905213146_AddUserFacts")]
     partial class AddUserFacts
     {

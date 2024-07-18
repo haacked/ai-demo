@@ -12,7 +12,7 @@ using Pgvector;
 
 namespace Haack.AIDemoWeb.Migrations
 {
-    [DbContext(typeof(AIDemoContext))]
+    [DbContext(typeof(AIDemoDbContext))]
     [Migration("20240325203927_AddLocationToUser")]
     partial class AddLocationToUser
     {

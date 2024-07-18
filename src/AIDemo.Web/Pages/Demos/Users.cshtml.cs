@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AIDemoWeb.Demos.Pages;
 
 [AllowAnonymous]
-public class UsersPageModel(AIDemoContext db) : PageModel
+public class UsersPageModel(AIDemoDbContext db) : PageModel
 {
     [BindProperty]
     public int? FactId { get; set; }

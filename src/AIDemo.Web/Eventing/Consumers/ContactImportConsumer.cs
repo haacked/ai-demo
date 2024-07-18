@@ -9,7 +9,7 @@ namespace Haack.AIDemoWeb.Eventing.Consumers;
 
 public class ContactImportConsumer(
     GoogleApiClient googleApiClient,
-    IDbContextFactory<AIDemoContext> dbFactory) : IConsumer<ContactImportMessage>
+    IDbContextFactory<AIDemoDbContext> dbFactory) : IConsumer<ContactImportMessage>
 {
     public async Task Consume(ConsumeContext<ContactImportMessage> context)
     {
@@ -17,7 +17,7 @@ public class ContactImportConsumer(
         await ImportContactsAsync(context, db);
     }
 
-    async Task ImportContactsAsync(ConsumeContext<ContactImportMessage> context, AIDemoContext db)
+    async Task ImportContactsAsync(ConsumeContext<ContactImportMessage> context, AIDemoDbContext db)
     {
         var accessToken = context.Message.AccessToken;
         string? next = null;
