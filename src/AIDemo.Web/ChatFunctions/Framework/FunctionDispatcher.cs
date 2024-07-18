@@ -71,15 +71,17 @@ public static class FunctionDispatcherServiceExtensions
     /// <summary>
     /// Registers the function dispatchers and all <see cref="IChatFunction"/> in the specified assembly or assemblies.
     /// </summary>
-    /// <param name="services">The service collection.</param>
+    /// <param name="builder">The host application builder.</param>
     /// <param name="assemblies">The assemblies to search.</param>
-    public static IServiceCollection AddFunctionDispatcher(
-        this IServiceCollection services,
+    public static IHostApplicationBuilder AddFunctionDispatcher(
+        this IHostApplicationBuilder builder,
         params Assembly[] assemblies)
     {
+        var services = builder.Services;
+
         services.AddScoped<FunctionDispatcher>();
         services.RegisterAllTypes<IChatFunction>(ServiceLifetime.Scoped, publicOnly: true, assemblies);
 
-        return services;
+        return builder;
     }
 }

@@ -16,18 +16,19 @@ builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
 
 // Registers my OpenAI client accessor and configures it.
-builder.Services
+builder
     .AddClients()
-    .AddDatabase(builder.Configuration)
-    .RegisterOpenAI(builder.Configuration)
-    .AddSemanticKernel(builder.Configuration)
-    .Configure<GitHubOptions>(builder.Configuration.GetSection(GitHubOptions.GitHub))
-    .Configure<GoogleOptions>(builder.Configuration.GetSection(GoogleOptions.Google))
-    .Configure<WeatherOptions>(builder.Configuration.GetSection(WeatherOptions.Weather))
-    .AddAuthentication(builder.Configuration)
+    .AddDatabase()
+    .RegisterOpenAI()
+    .AddSemanticKernel()
+    .AddAuthentication()
     .AddMigrationServices()
     .AddMassTransitConfig()
     .AddFunctionDispatcher(typeof(WeatherOptions).Assembly.Require())
+    .Configure<GitHubOptions>()
+    .Configure<GoogleOptions>()
+    .Configure<WeatherOptions>()
+    .Services
     .AddSignalR();
 
 var app = builder.Build();
