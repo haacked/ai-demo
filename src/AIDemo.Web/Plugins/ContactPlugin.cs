@@ -18,7 +18,7 @@ namespace Haack.AIDemoWeb.SemanticKernel.Plugins;
 /// <summary>
 /// Extends Chat GPT with a function that retrieves contacts birthday or looks up contacts with upcoming birthdays.
 /// </summary>
-public class ContactPlugin(AIDemoContext db)
+public class ContactPlugin(AIDemoDbContext db)
 {
     [KernelFunction]
     [Description(

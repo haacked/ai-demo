@@ -12,7 +12,7 @@ using Pgvector;
 
 namespace Haack.AIDemoWeb.Migrations
 {
-    [DbContext(typeof(AIDemoContext))]
+    [DbContext(typeof(AIDemoDbContext))]
     [Migration("20240429193430_AddContactFacts")]
     partial class AddContactFacts
     {

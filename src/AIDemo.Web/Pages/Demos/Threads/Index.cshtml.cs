@@ -10,7 +10,7 @@ using AssistantThread = Haack.AIDemoWeb.Entities.AssistantThread;
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 
-public class ThreadsIndexPageModel(AIDemoContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+public class ThreadsIndexPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
     : PageModel
 {
     readonly OpenAIOptions _options = options.Value;

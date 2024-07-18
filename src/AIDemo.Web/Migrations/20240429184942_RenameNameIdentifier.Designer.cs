@@ -12,7 +12,7 @@ using Pgvector;
 
 namespace Haack.AIDemoWeb.Migrations
 {
-    [DbContext(typeof(AIDemoContext))]
+    [DbContext(typeof(AIDemoDbContext))]
     [Migration("20240429184942_RenameNameIdentifier")]
     partial class RenameNameIdentifier
     {

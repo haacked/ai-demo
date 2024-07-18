@@ -13,7 +13,7 @@ namespace Haack.AIDemoWeb.Pages.Demos;
 
 public class ContactsPageModel(
     GoogleApiClient googleApiClient,
-    AIDemoContext db,
+    AIDemoDbContext db,
     IPublishEndpoint publishEndpoint) : PageModel
 {
     public IReadOnlyList<Person> ApiContacts { get; private set; } = new List<Person>();

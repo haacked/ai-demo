@@ -15,7 +15,7 @@ namespace Haack.AIDemoWeb.SemanticKernel.Plugins;
 /// Extends GPT with a function that can retrieve location or address information.
 /// </summary>
 public class LocationPlugin(
-    AIDemoContext db,
+    AIDemoDbContext db,
     IGoogleGeocodeClient geocodeClient,
     IOptions<GoogleOptions> geocodeOptions)
 {

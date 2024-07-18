@@ -73,14 +73,14 @@ public static class ServiceExtensions
     {
         var configuration = builder.Configuration;
         var services = builder.Services;
-        var connectionString = configuration.GetConnectionString(AIDemoContext.ConnectionStringName)
+        var connectionString = configuration.GetConnectionString(AIDemoDbContext.ConnectionStringName)
             ?? throw new InvalidOperationException(
                 $"The `ConnectionStrings:AIDemoContext` setting is not configured in the `ConnectionStrings`" +
                 $" section. For local development, make sure `ConnectionStrings:AIDemoContext` is set properly " +
                 "in `appsettings.Development.json` within `AIDemo.Web`.");
-        services.AddDbContextFactory<AIDemoContext>(
+        services.AddDbContextFactory<AIDemoDbContext>(
             options => SetupDbContextOptions(connectionString, options));
-        services.AddDbContext<AIDemoContext>(
+        services.AddDbContext<AIDemoDbContext>(
             options => SetupDbContextOptions(connectionString, options),
             optionsLifetime: ServiceLifetime.Singleton);
 
@@ -150,7 +150,7 @@ public static class ServiceExtensions
                         // Look up or create user based on NameIdentifier.
                         if (identity.FindFirst(ClaimTypes.NameIdentifier)?.Value is { Length: > 0 } nameIdentifier)
                         {
-                            var dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<AIDemoContext>>();
+                            var dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<AIDemoDbContext>>();
                             await using var dbContext = await dbContextFactory.CreateDbContextAsync();
                             var user = await dbContext.Users
                                 .FirstOrDefaultAsync(u => u.NameIdentifier == nameIdentifier);
