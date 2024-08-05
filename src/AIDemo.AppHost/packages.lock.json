@@ -4,31 +4,31 @@
     "net8.0": {
       "Aspire.Hosting.AppHost": {
         "type": "Direct",
-        "requested": "[8.0.2, )",
-        "resolved": "8.0.2",
-        "contentHash": "PE19D/nTjHEdnnJrICV1rl+H/oK8dHQgchhKx0cOnDPAn2b5tu+ZAOQHhZAPy6+8xwvc4cZsu8yvY2f4E2N8bg==",
+        "requested": "[8.1.0, )",
+        "resolved": "8.1.0",
+        "contentHash": "CLSQLAw0RTliqbHw1hurz9XS94l1PZkDRy++XPayZweA7u7Weyr1Af+6uP7EFwYsZse4U5xd5etIxaInsXnS6g==",
         "dependencies": {
-          "Aspire.Hosting": "8.0.2"
+          "Aspire.Hosting": "8.1.0"
         }
       },
       "Aspire.Hosting.PostgreSQL": {
         "type": "Direct",
-        "requested": "[8.0.2, )",
-        "resolved": "8.0.2",
-        "contentHash": "kqyw8hOHU1ko0N/32/QFiW4Ht9dX95qWYWeWBeUE1vHVcGEgTPPHBZdfEsLFwzXTP+coW3Llj0u1UHXV6sTVBA==",
+        "requested": "[8.1.0, )",
+        "resolved": "8.1.0",
+        "contentHash": "jJrIqax+BQ5TH0GwKdfc93veCDgIpCvslMdT1q27PdySJASd9d+kssHNedM9mNM+6+gHz9vmMmKUW/z+tVRa8Q==",
         "dependencies": {
-          "Aspire.Hosting": "8.0.2"
+          "Aspire.Hosting": "8.1.0"
         }
       },
       "Aspire.Hosting": {
         "type": "Transitive",
-        "resolved": "8.0.2",
-        "contentHash": "cyLqx37YV0a75H2/DWckZoO26J/p/THbaIomR1vk+8A7MZ5+X/hwSM7rYwwBmbucEo+r9vHFKurr2QY+J1Q9wg==",
+        "resolved": "8.1.0",
+        "contentHash": "AT+yOBcPHddsDREVqEIzcAWf+dv6pQZOuLRPfX1eAYiNcUGo3DnI8IyWXfaWd2ggxxh9GD9r6kDznT0ExQd4LQ==",
         "dependencies": {
           "Grpc.AspNetCore": "2.63.0",
           "KubernetesClient": "14.0.2",
           "Microsoft.Extensions.Hosting": "8.0.0",
-          "Polly.Core": "8.4.0"
+          "Polly.Core": "8.4.1"
         }
       },
       "Fractions": {
@@ -454,8 +454,8 @@
       },
       "Polly.Core": {
         "type": "Transitive",
-        "resolved": "8.4.0",
-        "contentHash": "3AZxuP//pxOeBo9tQs7/tz4Z5TTbu4BYfjpaXZD0JYKJo98ngN9TMUz1nybh4k0ykWkMBpGZALV/AmVIE3ew7A=="
+        "resolved": "8.4.1",
+        "contentHash": "bg4kE7mFwXc6FJ8NLknTgVgLAMlbToWC7vpdqAITv8lPzKpp9v7aWJPc04GRoZQaJhVY/tdr8K2/VW2aTmaA1Q=="
       },
       "System.Diagnostics.DiagnosticSource": {
         "type": "Transitive",
