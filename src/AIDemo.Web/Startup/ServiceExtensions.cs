@@ -80,7 +80,7 @@ public static class ServiceExtensions
                         o.UseNetTopologySuite();
                     })
             );
-        builder.Services.AddDbContextFactory<AIDemoDbContext>( );
+        builder.Services.AddDbContextFactory<AIDemoDbContext>();
         return builder;
     }
 

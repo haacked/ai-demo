@@ -31,7 +31,7 @@ fi
 cd "$root_dir"
 
 script/watch-js &
-dotnet watch --project "$root_dir/src/AIDemo.Web/AIDemo.Web.csproj" run --configuration $configuration &
+dotnet watch --project "$root_dir/src/AIDemo.AppHost/AIDemo.AppHost.csproj" run --configuration $configuration &
 
 function cleanup() {
 	trap - SIGTERM && kill -- -$$
