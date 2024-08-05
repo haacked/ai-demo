@@ -52,20 +52,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_meta", "_meta", "{7C657BF1
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_docker", "_docker", "{4D2B04F8-77C3-45CD-831B-2028AD6466A2}"
-	ProjectSection(SolutionItems) = preProject
-		docker-compose.yml = docker-compose.yml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{BA660592-A554-4992-8D98-5080909A35E2}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "postgres", "postgres", "{834773C4-A198-48B6-90E1-3E2EB6FB4347}"
-	ProjectSection(SolutionItems) = preProject
-		docker\postgres\1-init-user-and-db.sh = docker\postgres\1-init-user-and-db.sh
-		docker\postgres\2-extensions.sh = docker\postgres\2-extensions.sh
-		docker\postgres\Dockerfile = docker\postgres\Dockerfile
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{E5AB31CE-B06A-4F6B-BFFF-21E432626739}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{BB18D9A3-E174-4A28-B8E9-B465C766317D}"
