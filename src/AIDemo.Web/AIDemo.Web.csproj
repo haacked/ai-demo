@@ -65,6 +65,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\AIDemo.Messages\AIDemo.Messages.csproj" />
     <ProjectReference Include="..\AIDemo.ServiceDefaults\AIDemo.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>
