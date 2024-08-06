@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Json;
+using AIDemo.Web.Startup;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.Library.Clients;
@@ -11,9 +12,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.SemanticKernel;
-using Npgsql;
 using OpenAIDemo.Hubs;
 using Refit;
 using Serious;
@@ -71,48 +70,18 @@ public static class ServiceExtensions
 
     public static IHostApplicationBuilder AddDatabase(this IHostApplicationBuilder builder)
     {
-        var configuration = builder.Configuration;
-        var services = builder.Services;
-        var connectionString = configuration.GetConnectionString(AIDemoDbContext.ConnectionStringName)
-            ?? throw new InvalidOperationException(
-                $"The `ConnectionStrings:AIDemoContext` setting is not configured in the `ConnectionStrings`" +
-                $" section. For local development, make sure `ConnectionStrings:AIDemoContext` is set properly " +
-                "in `appsettings.Development.json` within `AIDemo.Web`.");
-        services.AddDbContextFactory<AIDemoDbContext>(
-            options => SetupDbContextOptions(connectionString, options));
-        services.AddDbContext<AIDemoDbContext>(
-            options => SetupDbContextOptions(connectionString, options),
-            optionsLifetime: ServiceLifetime.Singleton);
-
+        builder.AddDbInitializationServices<AIDemoDbInitializer, AIDemoDbContext>()
+            .AddNpgsqlDbContext<AIDemoDbContext>(
+                connectionName: "postgresdb",
+                configureDbContextOptions: options => options.UseNpgsql(
+                    o =>
+                    {
+                        o.UseVector();
+                        o.UseNetTopologySuite();
+                    })
+            );
+        builder.Services.AddDbContextFactory<AIDemoDbContext>();
         return builder;
-    }
-
-    /// <summary>
-    /// Setup a DbContextOptions object for a requested `DbContext` subclass.
-    /// </summary>
-    /// <param name="connectionString">The connection string to use for the DbContext.</param>
-    /// <param name="options"></param>
-    /// <exception cref="InvalidOperationException"></exception>
-    static void SetupDbContextOptions(string connectionString, DbContextOptionsBuilder options)
-    {
-#if DEBUG
-        options.EnableSensitiveDataLogging();
-        options.EnableDetailedErrors();
-#endif
-
-        var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-        dataSourceBuilder.UseNetTopologySuite();
-        dataSourceBuilder.UseVector();
-        var dataSource = dataSourceBuilder.Build();
-
-        options.ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.NavigationBaseIncludeIgnored));
-
-        options.UseNpgsql(dataSource, o =>
-        {
-            o.UseVector();
-            o.UseNetTopologySuite();
-            o.MigrationsAssembly("AIDemo.Web");
-        });
     }
 
     public static IHostApplicationBuilder AddAuthentication(this IHostApplicationBuilder builder)

@@ -30,6 +30,12 @@ jobs:
           dotnet-version: |
             8.0.x
 
+      - name: dotnet workload update
+        run: dotnet workload update
+
+      - name: dotnet workload install aspire
+        run: dotnet workload install aspire
+
       - name: Restore NuGet Packages
         run: dotnet restore AIDemo.sln --locked-mode
 
@@ -86,6 +92,12 @@ jobs:
       with:
         dotnet-version: |
           8.0.x
+
+    - name: dotnet workload update
+      run: dotnet workload update
+
+    - name: dotnet workload install aspire
+      run: dotnet workload install aspire
 
     - name: Restore NuGet Packages
       run: dotnet restore ${{ env.APP_SOLUTION }} --locked-mode

@@ -33,6 +33,7 @@
   </Target>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="AspNet.Security.OAuth.GitHub" />
     <PackageReference Include="Azure.AI.OpenAI" />
     <PackageReference Include="Google.Apis.PeopleService.v1" />
@@ -61,5 +62,9 @@
     <Content Update="**\package.json" CopyToPublishDirectory="Never" CopyToOutputDirectory="Never" />
     <Content Update="**\package-lock.json" CopyToPublishDirectory="Never" CopyToOutputDirectory="Never" />
     <Content Update="**\packages.lock.json" CopyToPublishDirectory="Never" CopyToOutputDirectory="Never" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AIDemo.ServiceDefaults\AIDemo.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>

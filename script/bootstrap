@@ -11,7 +11,6 @@ cd $root_dir
 source script/helpers/_utils.sh # Load the _utils.sh script
 
 install=false
-ngrok_domain="aidemo-$USER-dev"
 
 # Assign command line arguments to variables
 while (( "$#" )); do
@@ -34,27 +33,31 @@ done
 echo "Bootstrapping AIDemo..."
 
 if $install && ! type brew >/dev/null 2>&1; then
-  fatal "Can't auto-install dependencies. You don't have homebrew installed. Please install it and try again."
+  fatal "🚨Can't auto-install dependencies. You don't have homebrew installed. Please install it and try again."
+else
+  echo "✅Brew installed."
 fi
 
 # JQ is used for JSON processing
+echo "Checking for JQ - used by this script for JSON processing…"
 if ! type jq >/dev/null 2>&1; then
   if $install; then
-    echo "Installing jq…"
+    echo "🚧Installing jq…"
     brew install jq
   else
-    fatal "jq is required to run this script. Please install it and try again."
+    fatal "✅jq is required to run this script. Please install it and try again."
   fi
+else
+  echo "✅jq installed."
 fi
+
 
 echo "Checking for docker…"
 if ! type docker >/dev/null 2>&1; then
-  fatal "docker is required. Please install it and try again."
+  fatal "🚨Docker is required. Please install it and try again."
+else
+  echo "✅Docker installed."
 fi
-
-echo "Checking for postgres docker image…"
-# If the latest image isn't present, pull it.
-docker pull postgres
 
 dotnet_sdk_channel=$(cat global.json | jq -r '.sdk.channel')
 
@@ -63,7 +66,7 @@ echo "Checking for .NET SDK $dotnet_sdk_channel…"
 has_dotnet=false
 
 install_dotnet() {
-  fatal ".NET SDK $dotnet_sdk_channel is required. Please install it and try again."
+  fatal "🚨.NET SDK $dotnet_sdk_channel is required. Please install it and try again."
 
   # TODO: Auto-install .NET
   # It's not trivial though. The path in which it's located matters, etc.
@@ -80,53 +83,39 @@ else
   if [ -z "$matching_version" ]; then
     install_dotnet
   else
-    echo "Found suitable .NET SDK version $matching_version."
+    echo "✅Found suitable .NET SDK version $matching_version."
   fi
 fi
 
-dotnet tool restore
+echo "Checking for ngrok…"
+if ! type ngrok >/dev/null 2>&1; then
+  if $install; then
+    echo "🚧Installing ngrok…"
+    brew install ngrok
+  else
+    fatal "🚨ngrok is required to run project."
+  fi
+else
+  echo "✅ngrok installed."
+fi
 
 # Now set up configuration
-if [ ! -d "$HOME/.aidemo" ]; then
-  mkdir $HOME/.aidemo
-fi
 
-if [ ! -d "$HOME/.aidemo/database" ]; then
-  echo "Creating Postgres database directory: $HOME/.aidemo/database. This should match the one in docker-compose.yml"
-  mkdir $HOME/.aidemo/database
-fi
-
-echo "Configuring ngrok for domain $ngrok_domain…"
-cat <<EOF > $HOME/.aidemo/ngrok.tunnel.yml
-version: 2
-tunnels:
-  default:
-    addr: https://host.docker.internal:7047
-    proto: http
-    subdomain: $ngrok_domain
-    host_header: localhost:7047
-  in:
-    addr: https://host.docker.internal:7047
-    proto: http
-    subdomain: ${ngrok_domain}-in
-  run:
-    addr: https://host.docker.internal:7047
-    proto: http
-    subdomain: ${ngrok_domain}-run
-EOF
-
-if [ -f "$HOME/.aidemo/ngrok.config.yml" ]; then
-  echo "Found existing ngrok configuration. Skipping…"
+if [ -f "$HOME/Library/Application Support/ngrok/ngrok.yml" ]; then
+  echo "✅Found existing ngrok configuration. Skipping…"
 else
-  echo "I need your ngrok auth token."
+  echo "⚠️I need your ngrok auth token."
   echo "Go to https://dashboard.ngrok.com/get-started/your-authtoken and copy it."
   read -s -r -p "Then paste it right here (it won't be echoed): " ngrok_auth_token
   echo
-  cat <<EOF > $HOME/.aidemo/ngrok.config.yml
-version: 2
-authtoken: $ngrok_auth_token
-EOF
+  ngrok config add-authtoken $ngrok_auth_token
 fi
 
-# Start background services
-script/start-services
+echo "About to install the .NET tools and workloads. This may take a while."
+
+echo "dotnet tool restore"
+sudo dotnet tool restore
+echo "dotnet workload update"
+sudo dotnet workload update
+echo "dotnet workload install aspire"
+sudo dotnet workload install aspire

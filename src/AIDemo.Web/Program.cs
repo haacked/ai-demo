@@ -1,10 +1,10 @@
-using AIDemo.Web.Startup;
 using Haack.AIDemoWeb.Startup;
 using Haack.AIDemoWeb.Startup.Config;
 using Haack.AIDemoWeb.Components;
 using Haack.AIDemoWeb.Entities; // Rider highlights this line for some reason, but it's legit. It compiles.
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 using OpenAIDemo.Hubs;
 using Serious;
 using Serious.ChatFunctions;
@@ -12,26 +12,24 @@ using Serious.ChatFunctions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-builder.Services.AddRazorPages()
-    .AddRazorRuntimeCompilation();
-
-// Registers my OpenAI client accessor and configures it.
 builder
+    .AddServiceDefaults()
     .AddClients()
     .AddDatabase()
     .RegisterOpenAI()
     .AddSemanticKernel()
     .AddAuthentication()
-    .AddDbInitializationServices<AIDemoDbInitializer, AIDemoDbContext>()
     .AddMassTransitConfig()
     .AddFunctionDispatcher(typeof(WeatherOptions).Assembly.Require())
     .Configure<GitHubOptions>()
     .Configure<GoogleOptions>()
-    .Configure<WeatherOptions>()
-    .Services
-    .AddSignalR();
+    .Configure<WeatherOptions>();
+
+builder.Services.AddSignalR();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+builder.Services.AddRazorPages()
+    .AddRazorRuntimeCompilation();
 
 var app = builder.Build();
 
