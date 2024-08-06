@@ -4,6 +4,8 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var postgres = builder
     .AddPostgres("postgres")
+    .WithPgAdmin()
+    .WithDataVolume()
     .WithImage("ankane/pgvector")
     .WithDockerfile("docker/postgres")
     .WithBuildArg("VERSION", "14-3.2");
