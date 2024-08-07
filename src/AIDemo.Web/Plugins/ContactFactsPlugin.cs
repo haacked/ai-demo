@@ -1,20 +1,23 @@
 using System.ComponentModel;
-using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.SemanticKernel.Plugins;
+using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
+using OpenAI;
 using OpenAIDemo.Hubs;
 using Pgvector;
 using Pgvector.EntityFrameworkCore;
-using Serious;
 
 namespace Haack.AIDemoWeb.Plugins;
 
-public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClientAccessor client, IHubContext<BotHub> hubContext)
+public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClient client, IOptions<OpenAIOptions> options, IHubContext<BotHub> hubContext)
 {
+    OpenAIOptions Options { get; } = options.Value;
+
     [KernelFunction]
     [Description(
         """"
@@ -61,8 +64,12 @@ public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClientAccessor client,
             return Array.Empty<ContactFactResult>();
         }
 
+        var embeddingClient = client.GetEmbeddingClient(Options.EmbeddingModel);
+
         // Calculate the embedding for the question.
-        var embeddings = await client.GetEmbeddingsAsync(question, cancellationToken);
+        var embeddings = await embeddingClient.GenerateEmbeddingAsync(
+            question,
+            cancellationToken: cancellationToken);
 
         if (embeddings is null)
         {
@@ -115,8 +122,12 @@ public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClientAccessor client,
         string justification,
         CancellationToken cancellationToken)
     {
+        var embeddingClient = client.GetEmbeddingClient(Options.EmbeddingModel);
+
         // Calculate the embedding for the question.
-        var embeddings = await client.GetEmbeddingsAsync(question, cancellationToken);
+        var embeddings = await embeddingClient.GenerateEmbeddingAsync(
+            question,
+            cancellationToken: cancellationToken);
 
         if (embeddings is null)
         {
@@ -214,28 +225,22 @@ public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClientAccessor client,
             .FirstOrDefaultAsync(c => c.Names.Any(n => EF.Functions.ILike(n.UnstructuredName, contactName)), cancellationToken);
     }
 
-    async Task<float[]> GetEmbeddingsAsync(string fact, CancellationToken cancellationToken)
+    async Task<ReadOnlyMemory<float>> GetEmbeddingsAsync(string fact, CancellationToken cancellationToken)
     {
+        var embeddingClient = client.GetEmbeddingClient(Options.EmbeddingModel);
         try
         {
-            var response = await client.GetEmbeddingsAsync(
-                new EmbeddingsOptions { Input = { fact } },
-                cancellationToken);
-            if (response.HasValue)
-            {
-                var embedding = response.Value.Data;
-                if (embedding is { Count: > 0 })
-                {
-                    return embedding[0].Embedding.ToArray();
-                }
-            }
+            var response = await embeddingClient.GenerateEmbeddingAsync(
+            fact,
+            cancellationToken: cancellationToken);
+            return response.Value.Vector;
         }
 #pragma warning disable CA1031
         catch (Exception)
 #pragma warning restore CA1031
         {
         }
-        return [];
+        return new ReadOnlyMemory<float>();
     }
 }
 

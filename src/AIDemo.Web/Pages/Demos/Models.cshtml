@@ -18,16 +18,14 @@
             <th>id</th>
             <th>created</th>
             <th>owned_by</th>
-            <th>object</th>
         </tr>
         </thead>
         <tbody>
             @foreach (var modelEntity in Model.Models.OrderBy(m => m.Id)) {
                 <tr>
                     <td>@modelEntity.Id</td>
-                    <td>@modelEntity.Created</td>
+                    <td>@modelEntity.CreatedAt</td>
                     <td>@modelEntity.OwnedBy</td>
-                    <td>@modelEntity.ObjectType</td>
                 </tr>
             }
         </tbody>

@@ -1,52 +1,45 @@
 using AIDemoWeb.Entities.Eventing.Messages;
-using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Library;
-using Haack.AIDemoWeb.Library.Clients;
-using Haack.AIDemoWeb.Startup.Config;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Options;
+using OpenAI;
+using OpenAI.Assistants;
 using OpenAIDemo.Hubs;
 using Serious;
 
 namespace AIDemoWeb.Entities.Eventing.Consumers;
 
-public class AssistantMessageConsumer(
-    IHubContext<AssistantHub> hubContext,
-    IOpenAIClient openAIClient,
-    IOptions<OpenAIOptions> options)
+public class AssistantMessageConsumer(IHubContext<AssistantHub> hubContext, OpenAIClient openAIClient)
     : IConsumer<AssistantMessageReceived>
 {
-    readonly OpenAIOptions _options = options.Value;
-
     public async Task Consume(ConsumeContext<AssistantMessageReceived> context)
     {
         var (message, assistantName, assistantId, threadId, connectionId) = context.Message;
 
+#pragma warning disable OPENAI001
+        var assistantClient = openAIClient.GetAssistantClient();
+#pragma warning restore OPENAI001
+
         // Create a new message in the thread
-        var newMessage = await openAIClient.CreateMessageAsync(
-            _options.ApiKey.Require(),
+        var newMessage = await assistantClient.CreateMessageAsync(
             threadId.Require(),
-            new MessageCreateBody { Content = message },
-            context.CancellationToken);
+            MessageRole.User,
+            new[] { MessageContent.FromText(message), },
+            cancellationToken: context.CancellationToken);
 
         var runCreateDate = DateTime.UtcNow;
 
         // Create a run for the thread.
-        var run = await openAIClient.CreateRunAsync(
-            _options.ApiKey.Require(),
+        var run = (await assistantClient.CreateRunAsync(
             threadId,
-            new ThreadRunCreateBody
-            {
-                AssistantId = assistantId.Require()
-            },
-            context.CancellationToken);
+            assistantId,
+            cancellationToken: context.CancellationToken))
+            .Value;
 
         var retryAttempt = 1;
 
         // Now we need to poll the run for the bot's response. We'll do it up to a minute.
-        while (run.Status is not ("completed" or "cancelled" or "failed" or "expired") &&
-               DateTime.UtcNow < runCreateDate.AddMinutes(1))
+        while (!run.Status.IsTerminal && DateTime.UtcNow < runCreateDate.AddMinutes(1))
         {
             if (retryAttempt is 4)
             {
@@ -55,15 +48,14 @@ public class AssistantMessageConsumer(
             }
 
             await Task.Delay(1000, context.CancellationToken);
-            run = await openAIClient.GetRunAsync(
-                _options.ApiKey.Require(),
-                run.Id,
+            run = await assistantClient.GetRunAsync(
                 threadId,
+                run.Id,
                 context.CancellationToken);
             retryAttempt++;
 
 
-            if (run.Status is "requires_action")
+            if (run.Status == RunStatus.RequiresAction)
             {
                 await SendThought($"Assistant run {run.Id} needs me to call a function.");
 
@@ -71,17 +63,21 @@ public class AssistantMessageConsumer(
             }
         }
 
-        if (run.Status is "completed")
+        if (run.Status == RunStatus.Completed)
         {
             // Grab the messages added by the assistant.
-            var response = await openAIClient.GetMessagesAsync(
-                _options.ApiKey.Require(),
+            var response = await assistantClient.GetMessagesAsync(
                 threadId,
-                order: "asc",
-                after: newMessage.Id,
-                cancellationToken: context.CancellationToken);
+                new MessageCollectionOptions
+                {
+                    Order = ListOrder.OldestFirst,
+                    AfterId = newMessage.Value.Id,
+                },
+                cancellationToken: context.CancellationToken)
+                .GetAllValuesAsync(context.CancellationToken)
+                .ToReadOnlyListAsync(context.CancellationToken);
 
-            foreach (var reply in response.Data.SelectMany(m => m.ToBlazorMessages()).Where(m => !m.IsUser))
+            foreach (var reply in response.SelectMany(m => m.ToBlazorMessages()).Where(m => !m.IsUser))
             {
                 await SendResponseAsync(reply.Text, reply.Annotations);
             }
@@ -100,7 +96,7 @@ public class AssistantMessageConsumer(
                 data,
                 context.CancellationToken);
 
-        async Task SendResponseAsync(string response, IReadOnlyList<Annotation>? annotations = null)
+        async Task SendResponseAsync(string response, IReadOnlyList<TextAnnotation>? annotations = null)
         {
             await hubContext.Clients.Client(connectionId).SendAsync(
                 nameof(AssistantHub.Broadcast),
@@ -109,7 +105,7 @@ public class AssistantMessageConsumer(
                 assistantName,
                 assistantId,
                 threadId,
-                annotations ?? Array.Empty<Annotation>(),
+                annotations ?? Array.Empty<TextAnnotation>(),
                 context.CancellationToken);
         }
     }

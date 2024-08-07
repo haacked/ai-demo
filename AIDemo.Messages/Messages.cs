@@ -30,10 +30,3 @@ public record BotMessageReceived(
     string Message,
     string Author,
     string ConnectionId);
-
-/// <summary>
-/// A new multi-user chat message.
-/// </summary>
-/// <param name="Author">The author of the message.</param>
-/// <param name="Message">The message text.</param>
-public record MultiUserChatMessageReceived(string Author, string Message);

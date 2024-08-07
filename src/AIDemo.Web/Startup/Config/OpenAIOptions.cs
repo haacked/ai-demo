@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using OpenAI;
 using Serious;
 
 namespace Haack.AIDemoWeb.Startup.Config;
@@ -48,10 +50,11 @@ public static class OpenAIOptionsExtensions
     /// Register the OpenAIOptions with the DI container.
     /// </summary>
     /// <param name="builder">The host application builder.</param>
-    public static IHostApplicationBuilder RegisterOpenAI(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddOpenAIClient(this IHostApplicationBuilder builder)
     {
         builder.Configure<OpenAIOptions>();
-        builder.Services.AddSingleton<OpenAIClientAccessor>();
+        builder.Services.AddSingleton(sp => new OpenAIClient(
+            sp.GetRequiredService<IOptions<OpenAIOptions>>().Value.Require().ApiKey.Require()));
 
         return builder;
     }

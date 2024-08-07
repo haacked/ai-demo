@@ -149,13 +149,11 @@
       },
       "OpenAI": {
         "type": "Direct",
-        "requested": "[1.11.0, )",
-        "resolved": "1.11.0",
-        "contentHash": "ezjdykDSC/j5zB76S0WWIYuI3GwiOtYtjZZBkaGMMOC6QZgyJX4mzN28XMScTftxXjsY0RTxDF0ZkmXxwQwl9w==",
+        "requested": "[2.0.0-beta.8, )",
+        "resolved": "2.0.0-beta.8",
+        "contentHash": "IMSel7m7EVOb84urNH0WQPQ8xFXnveYaZm6u6Eou7W0lbXX1Rwr/FDBMxK8wg55Gtx3j13a/iMyxCG8JR8mGGg==",
         "dependencies": {
-          "Microsoft.Bcl.AsyncInterfaces": "1.1.1",
-          "Microsoft.Extensions.Http": "2.1.0",
-          "Newtonsoft.Json": "13.0.3"
+          "System.ClientModel": "1.1.0-beta.5"
         }
       },
       "Pgvector.EntityFrameworkCore": {
@@ -957,8 +955,8 @@
       },
       "System.ClientModel": {
         "type": "Transitive",
-        "resolved": "1.0.0",
-        "contentHash": "I3CVkvxeqFYjIVEP59DnjbeoGNfo/+SZrCLpRz2v/g0gpCHaEMPtWSY0s9k/7jR1rAsLNg2z2u1JRB76tPjnIw==",
+        "resolved": "1.1.0-beta.5",
+        "contentHash": "6YP3qvWGkSvvK838pWpEcuWi4ibSf8fP3Q8OEovRfIoO6BK6Xvp9VyBjt/Tjdyq//JU0aQBhgxH/vQ95W7LQ5g==",
         "dependencies": {
           "System.Memory.Data": "1.0.2",
           "System.Text.Json": "4.7.2"

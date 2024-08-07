@@ -1,34 +1,34 @@
-using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
+using OpenAI;
+using OpenAI.Assistants;
 using Refit;
-using Serious;
-using Serious.ChatFunctions;
 
-#pragma warning disable CA2227, CA1002, CA1819
+#pragma warning disable CA2227, CA1002, CA1819, OPENAI001
+
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 
-public class CreateAssistantPageModel : PageModel
+public class CreateAssistantPageModel(IOptions<OpenAIOptions> options, OpenAIClient openAIClient)
+    : PageModel
 {
-    readonly OpenAIOptions _options;
-    readonly IOpenAIClient _openAIClient;
+    readonly OpenAIOptions _options = options.Value;
 
     [BindProperty]
-    public AssistantCreateBody Assistant { get; init; } = null!;
+    public AssistantCreationOptions Assistant { get; init; } = null!;
 
     [BindProperty]
-    public string[] FileIds { get; init; } = Array.Empty<string>();
+    public string[] FileIds { get; init; } = [];
 
     [BindProperty]
-    public string[] Tools { get; init; } = Array.Empty<string>();
+    public string[] Tools { get; init; } = [];
 
     public IReadOnlyList<SelectListItem> AvailableFileIds { get; set; } = Array.Empty<SelectListItem>();
 
-    public IReadOnlyList<ToolDescriptor> AvailableTools { get; }
+    public IReadOnlyList<ToolDescriptor> AvailableTools { get; } = DefaultTools;
 
     public IReadOnlyList<FunctionToolDescriptor> AvailableFunctions { get; } = Array.Empty<FunctionToolDescriptor>();
 
@@ -41,19 +41,12 @@ public class CreateAssistantPageModel : PageModel
         new("retrieval") { Description = "Information Retrieval"},
     };
 
-    public CreateAssistantPageModel(
-        IOptions<OpenAIOptions> options,
-        IOpenAIClient openAIClient)
-    {
-        _options = options.Value;
-        _openAIClient = openAIClient;
-        AvailableTools = DefaultTools;
-    }
-
     public async Task OnGetAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _openAIClient.GetFilesAsync(_options.ApiKey.Require(), "assistants", cancellationToken);
-        AvailableFileIds = response.Data.Select(f => new SelectListItem(f.Filename, f.Id)).ToList();
+        var fileClient = openAIClient.GetFileClient();
+
+        var response = await fileClient.GetFilesAsync("assistants", cancellationToken);
+        AvailableFileIds = response.Value.Select(f => new SelectListItem(f.Filename, f.Id)).ToList();
     }
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
@@ -63,20 +56,16 @@ public class CreateAssistantPageModel : PageModel
             return Page();
         }
 
-        var request = Assistant with
-        {
-            Model = _options.RetrievalModel,
-            FileIds = FileIds,
-            Tools = Tools.Select(GetToolByTypeOrName).ToList(),
-        };
+        var assistant = openAIClient.GetAssistantClient();
+
         try
         {
-            var response = await _openAIClient.CreateAssistantAsync(
-                _options.ApiKey.Require(),
-                request,
+            var response = await assistant.CreateAssistantAsync(
+                _options.Model,
+                Assistant,
                 cancellationToken);
 
-            StatusMessage = $"Assistant {response.Id} created.";
+            StatusMessage = $"Assistant {response.Value.Id} created.";
 
             // TODO: Associate the Id of the assistant with the current user so no other fools can use it.
             return RedirectToPage("Index");
@@ -86,23 +75,6 @@ public class CreateAssistantPageModel : PageModel
             ModelState.AddModelError("", e.Content ?? e.Message);
             return Page();
         }
-    }
-
-    AssistantTool GetToolByTypeOrName(string typeOrName)
-    {
-        var tool = AvailableTools.FirstOrDefault(t => t.Type == typeOrName);
-        if (tool is not null)
-        {
-            return new AssistantTool(tool.Type);
-        }
-
-        var function = AvailableFunctions.FirstOrDefault(f => f.Function.Name == typeOrName);
-        if (function is not null)
-        {
-            return new AssistantTool("function", function.Function);
-        }
-
-        throw new ArgumentException($"Unknown tool type or name: {typeOrName}");
     }
 }
 

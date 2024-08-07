@@ -59,16 +59,14 @@
                     <div>
                         <span class="text-black">Files</span>
                         <ul class="list-disc text-gray-500 text-xs">
-                            @foreach (var fileId in assistant.FileIds) {
-                                <li class="ml-3"><code>@fileId</code></li>
-                            }
+                            <li class="ml-3"><code>TODO</code></li>
                         </ul>
                     </div>
                     <div class="mt-2">
                         <span class="text-black">Tools</span>
                         <ul class="list-disc text-gray-500 text-xs">
                             @foreach (var tool in assistant.Tools) {
-                                <li class="ml-3"><code>@tool.Type</code></li>
+                                <li class="ml-3"><code>@tool</code></li>
                             }
                         </ul>
                     </div>

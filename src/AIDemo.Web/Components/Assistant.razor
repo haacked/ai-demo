@@ -1,14 +1,12 @@
 @using System.Text.Json
-@using Serious
 @using Haack.AIDemoWeb.Library
 @using Haack.AIDemoWeb.Library.Clients
-@using Haack.AIDemoWeb.Startup.Config
 @using Microsoft.AspNetCore.SignalR.Client
-@using Microsoft.Extensions.Options
+@using OpenAI
+@using OpenAI.Assistants
 @using OpenAIDemo.Hubs
 @inject NavigationManager NavigationManager
-@inject IOpenAIClient OpenAIClient
-@inject IOptions<OpenAIOptions> OpenAIOptions
+@inject OpenAIClient OpenAIClient
 @inject IJSRuntime JsRuntime
 
 <div class="max-w-sm mx-auto">
@@ -93,14 +91,20 @@
     protected override async Task OnInitializedAsync()
     {
         // Load the chat history for the current assistant.
-        var apiToken = OpenAIOptions.Value.ApiKey.Require();
-        var history = await OpenAIClient.GetMessagesAsync(apiToken, AssistantThreadId, order: "asc");
+#pragma warning disable OPENAI001
+        var assistantClient = OpenAIClient.GetAssistantClient();
+#pragma warning restore OPENAI001
+        var history = await assistantClient.GetMessagesAsync(
+            AssistantThreadId,
+            new MessageCollectionOptions { Order = ListOrder.OldestFirst })
+            .GetAllValuesAsync()
+            .ToReadOnlyListAsync();
 
         _messages.Add(new BlazorMessage(
             $"Hi, I’m the {AssistantName} bot. How can I help you?",
             IsUser: false,
             DateTime.Now.AddMinutes(-1)));
-        _messages.AddRange(history.Data.SelectMany(m => m.ToBlazorMessages()));
+        _messages.AddRange(history.SelectMany(m => m.ToBlazorMessages()));
 
         var baseUrl = NavigationManager.BaseUri;
         _hubUrl = baseUrl.TrimEnd('/') + "/assistant-hub";
@@ -111,8 +115,7 @@
                 .WithUrl(_hubUrl)
                 .WithAutomaticReconnect()
                 .Build();
-
-            _hubConnection.On<string, bool, string?, string?, string?, IReadOnlyList<Annotation>>(
+            _hubConnection.On<string, bool, string?, string?, string?, IReadOnlyList<TextAnnotation>>(
                 nameof(AssistantHub.Broadcast),
                 BroadcastMessage);
 
@@ -133,7 +136,7 @@
         string? assistantName,
         string? assistantId,
         string? threadId,
-        IReadOnlyList<Annotation>? annotations)
+        IReadOnlyList<TextAnnotation>? annotations)
     {
         _messages.Add(new BlazorMessage(message, isUser, DateTime.Now, annotations));
 

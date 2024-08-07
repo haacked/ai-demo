@@ -1,16 +1,16 @@
-@model Haack.AIDemoWeb.Library.Clients.MessageText
+@model OpenAI.Assistants.MessageContent
 @{
-    var content = Model.Value;
+    var content = Model.Text;
     int startIndex = 0;
     int annotationIndex = 1;
 }
 
 <span class="font-medium">
-    @foreach(var annotation in Model.Annotations) {
+    @foreach(var annotation in Model.TextAnnotations) {
         <span>@content[startIndex..annotation.StartIndex]</span>
         <span
             class="has-tooltip-arrow"
-            data-tooltip="@(annotation.FileCitation?.Quote ?? annotation.FilePath?.FileId)">[@annotationIndex]</span>
+            data-tooltip="@(annotation.TextToReplace ?? annotation.InputFileId)">[@annotationIndex]</span>
         startIndex = annotation.EndIndex;
         annotationIndex++;
     }

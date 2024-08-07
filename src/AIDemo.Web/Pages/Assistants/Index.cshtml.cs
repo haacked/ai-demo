@@ -1,17 +1,14 @@
-using Haack.AIDemoWeb.Library.Clients;
-using Haack.AIDemoWeb.Startup.Config;
+using Haack.AIDemoWeb.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Options;
+using OpenAI;
+using OpenAI.Assistants;
 using Serious;
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 
-public class AssistantsIndexPageModel(IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
-    : PageModel
+public class AssistantsIndexPageModel(OpenAIClient openAIClient) : PageModel
 {
-    readonly OpenAIOptions _options = options.Value;
-
     [TempData]
     public string? StatusMessage { get; set; }
 
@@ -22,17 +19,23 @@ public class AssistantsIndexPageModel(IOptions<OpenAIOptions> options, IOpenAICl
 
     public async Task OnGetAsync(CancellationToken cancellationToken = default)
     {
-        var response = await openAIClient.GetAssistantsAsync(_options.ApiKey.Require(), cancellationToken);
-        Assistants = response.Data;
+#pragma warning disable OPENAI001
+        var assistantClient = openAIClient.GetAssistantClient();
+#pragma warning restore OPENAI001
+        Assistants = await assistantClient
+            .GetAssistantsAsync(cancellationToken: cancellationToken)
+            .GetAllValuesAsync(cancellationToken)
+            .ToReadOnlyListAsync(cancellationToken);
     }
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
     {
-        var response = await openAIClient.DeleteAssistantAsync(
-            _options.ApiKey.Require(),
-            AssistantIdToDelete.Require(),
-            cancellationToken);
-        StatusMessage = $"Assistant {response.Id} deleted.";
+#pragma warning disable OPENAI001
+        var assistantClient = openAIClient.GetAssistantClient();
+#pragma warning restore OPENAI001
+
+        await assistantClient.DeleteAssistantAsync(AssistantIdToDelete.Require(), cancellationToken);
+        StatusMessage = $"Assistant {AssistantIdToDelete} deleted.";
         return RedirectToPage();
     }
 }

@@ -2,6 +2,7 @@ using AIDemoWeb.Entities.Eventing.Messages;
 using Haack.AIDemoWeb.Library.Clients;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
+using OpenAI.Assistants;
 
 namespace OpenAIDemo.Hubs;
 
@@ -22,7 +23,7 @@ public class AssistantHub(IPublishEndpoint publishEndpoint, ILogger<AssistantHub
             assistantName,
             assistantId,
             threadId,
-            Array.Empty<Annotation>());
+            Array.Empty<TextAnnotation>());
         await publishEndpoint.Publish(
             new AssistantMessageReceived(
                 message,

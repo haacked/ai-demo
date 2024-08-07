@@ -12,7 +12,7 @@ builder
     .AddServiceDefaults()
     .AddClients()
     .AddDatabase()
-    .RegisterOpenAI()
+    .AddOpenAIClient()
     .AddSemanticKernel()
     .AddAuthentication()
     .AddMassTransitConfig()
@@ -61,9 +61,5 @@ app.MapGet("/logout", async ctx =>
 // The SignalR hubs used in my talks.
 app.MapHub<AssistantHub>("/assistant-hub");
 app.MapHub<BotHub>("/bot-hub");
-
-// A legacy SignalR Hub I don't use in my talk, but keep around for reference.
-app.MapHub<MultiUserChatHub>("/chat-hub");
-
 
 app.Run();

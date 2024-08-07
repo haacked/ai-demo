@@ -41,17 +41,17 @@
                 <ul role="list" class="divide-y divide-gray-100 rounded-md border border-gray-200 my-1">
                     @foreach (var messageContent in message.Content) {
                         <li class="items-center py-2 px-3 text-sm leading-6">
-                            <span class="text-gray-400">type: @messageContent.Type</span>
+                            <span class="text-gray-400">type: @messageContent.</span>
                             @if (messageContent.Text is { } messageContentText) {
                                 <div class="flex min-w-0 gap-2">
                                     <partial name="Shared/MessageContentText" model="@messageContentText" />
                                 </div>
                                 <div class="rounded-md border border-gray-200 py-1">
-                                    <partial name="Shared/Annotations" model="messageContentText.Annotations"/>
+                                    <partial name="Shared/Annotations" model="messageContent.TextAnnotations"/>
                                 </div>
-                            } else if (messageContent.ImageFile is { } imageFile) {
+                            } else if (messageContent.ImageFileId is { } imageFileId) {
                                 <div class="flex min-w-0 gap-2">
-                                    <span class="font-medium">File Id: @imageFile.FileId</span>
+                                    <span class="font-medium">File Id: @imageFileId</span>
                                 </div>
                             }
                         </li>
