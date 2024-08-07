@@ -30,7 +30,7 @@ public class CreateAssistantPageModel : PageModel
 
     public IReadOnlyList<ToolDescriptor> AvailableTools { get; }
 
-    public IReadOnlyList<FunctionToolDescriptor> AvailableFunctions { get; }
+    public IReadOnlyList<FunctionToolDescriptor> AvailableFunctions { get; } = Array.Empty<FunctionToolDescriptor>();
 
     [TempData]
     public string? StatusMessage { get; set; }
@@ -42,14 +42,12 @@ public class CreateAssistantPageModel : PageModel
     };
 
     public CreateAssistantPageModel(
-        IEnumerable<IChatFunction> functions,
         IOptions<OpenAIOptions> options,
         IOpenAIClient openAIClient)
     {
         _options = options.Value;
         _openAIClient = openAIClient;
         AvailableTools = DefaultTools;
-        AvailableFunctions = functions.Select(f => new FunctionToolDescriptor(f.Definition)).ToList();
     }
 
     public async Task OnGetAsync(CancellationToken cancellationToken = default)
@@ -117,3 +115,5 @@ public record FunctionToolDescriptor(FunctionDescription Function) : ToolDescrip
 {
     public override string Description => Function.Description;
 }
+
+public record FunctionDescription(string Name, string Description, IReadOnlyDictionary<string, object> Parameters);

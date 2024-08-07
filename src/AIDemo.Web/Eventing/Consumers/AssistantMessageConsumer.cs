@@ -8,13 +8,11 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using OpenAIDemo.Hubs;
 using Serious;
-using Serious.ChatFunctions;
 
 namespace AIDemoWeb.Entities.Eventing.Consumers;
 
 public class AssistantMessageConsumer(
     IHubContext<AssistantHub> hubContext,
-    FunctionDispatcher dispatcher,
     IOpenAIClient openAIClient,
     IOptions<OpenAIOptions> options)
     : IConsumer<AssistantMessageReceived>
@@ -69,28 +67,7 @@ public class AssistantMessageConsumer(
             {
                 await SendThought($"Assistant run {run.Id} needs me to call a function.");
 
-                var outputs = new List<ToolOutput>();
-                foreach (var toolCall in run.RequiredAction?.SubmitToolOutputs.ToolCalls ?? Enumerable.Empty<RequiredToolCall>())
-                {
-                    await SendFunction(toolCall.Function);
-
-                    var result = await dispatcher.DispatchAsync(
-                        toolCall.Function,
-                        message,
-                        context.CancellationToken);
-
-                    if (result is not null)
-                    {
-                        outputs.Add(new ToolOutput(toolCall.Id, result.Content));
-                    }
-                }
-
-                run = await openAIClient.SubmitToolOutputs(
-                    _options.ApiKey,
-                    threadId,
-                    run.Id,
-                    new ToolsOutputsSubmissionBody(outputs),
-                    context.CancellationToken);
+                // TODO: Implement this later.
             }
         }
 
@@ -121,13 +98,6 @@ public class AssistantMessageConsumer(
                 nameof(AssistantHub.BroadcastThought),
                 thought,
                 data,
-                context.CancellationToken);
-
-        async Task SendFunction(FunctionCall functionCall)
-            => await hubContext.Clients.All.SendAsync(
-                nameof(AssistantHub.BroadcastFunctionCall),
-                functionCall.Name,
-                functionCall.Arguments,
                 context.CancellationToken);
 
         async Task SendResponseAsync(string response, IReadOnlyList<Annotation>? annotations = null)

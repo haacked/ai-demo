@@ -5,7 +5,6 @@ using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using OpenAIDemo.Hubs;
 using Serious;
-using Serious.ChatFunctions;
 
 namespace AIDemoWeb.Entities.Eventing.Consumers;
 
@@ -15,8 +14,7 @@ namespace AIDemoWeb.Entities.Eventing.Consumers;
 /// </summary>
 public class MultiUserChatMessageConsumer(
     IHubContext<MultiUserChatHub> hubContext,
-    OpenAIClientAccessor client,
-    FunctionDispatcher dispatcher)
+    OpenAIClientAccessor client)
     : IConsumer<MultiUserChatMessageReceived>
 {
     // We'll only maintain the last 20 messages in memory.
@@ -38,7 +36,6 @@ public class MultiUserChatMessageConsumer(
                     new ChatRequestSystemMessage("You are observing a conversation in a chat room with multiple participants. Each message starts with the participant's name which must not be altered. If you can be of assistance, please do chime in, otherwise stay quiet and let them speak."),
                 },
             };
-            options.Functions.AddRange(dispatcher.EnumerateFunctionDefinitions());
             foreach (var chatMessage in Messages)
             {
                 options.Messages.Add(chatMessage);
@@ -46,37 +43,6 @@ public class MultiUserChatMessageConsumer(
 
             var response = await client.GetChatCompletionsAsync(options, context.CancellationToken);
             var responseChoice = response.Value.Choices[0];
-
-            int chainedFunctions = 0;
-            while (responseChoice.FinishReason == CompletionsFinishReason.FunctionCall && chainedFunctions < 5) // Don't allow infinite loops.
-            {
-                await SendThought("I have a function that can help with this! I'll call it.");
-                await SendFunction(responseChoice.Message.FunctionCall);
-
-                var result = await dispatcher.DispatchAsync(
-                    responseChoice.Message.FunctionCall,
-                    message,
-                    context.CancellationToken);
-                if (result is not null)
-                {
-                    await SendThought("I got a result. I'll send it back to GPT to summarize", result.Content);
-
-                    // We got a result, which we can send back to GPT so it can summarize it for the user.
-                    options.Messages.Add(result);
-                    Messages.Enqueue(result);
-
-                    response = await client.GetChatCompletionsAsync(options, context.CancellationToken);
-                    responseChoice = response.Value.Choices[0];
-                }
-                else
-                {
-                    // If we're just storing data, there's nothing to respond with.
-                    await SendResponseAsync(context, "Ok, got it.");
-                    return;
-                }
-
-                chainedFunctions++;
-            }
 
             await SendResponseAsync(context, responseChoice.Message.Content);
         }
@@ -102,13 +68,6 @@ public class MultiUserChatMessageConsumer(
                 thoughtMessage,
                 context.CancellationToken);
         }
-
-        async Task SendFunction(FunctionCall functionCall)
-            => await hubContext.Clients.All.SendAsync(
-                nameof(AssistantHub.BroadcastFunctionCall),
-                functionCall.Name,
-                functionCall.Arguments,
-                context.CancellationToken);
     }
 
     async Task SendResponseAsync(ConsumeContext<MultiUserChatMessageReceived> context, string response)
