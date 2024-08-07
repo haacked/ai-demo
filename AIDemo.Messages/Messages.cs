@@ -1,5 +1,3 @@
-using AIDemoWeb.Entities.Eventing.Consumers;
-
 namespace AIDemoWeb.Entities.Eventing.Messages;
 
 /// <summary>
@@ -21,7 +19,7 @@ public record AssistantMessageReceived(
 /// A new message sent to a GPT chat bot.
 /// </summary>
 /// <remarks>
-/// This message is consumed by <see cref="BotMessageConsumer"/>. Normally I wouldn't mention this here because
+/// This message is consumed by BotMessageConsumer". Normally I wouldn't mention this here because
 /// messages shouldn't be coupled to consumers, it's the other way around. But for demonstration purposes,
 /// I mention it here so I can find the consumer for my demo more easily.
 /// </remarks>
