@@ -1,20 +1,18 @@
 using Haack.AIDemoWeb.Entities;
-using Haack.AIDemoWeb.Library.Clients;
-using Haack.AIDemoWeb.Startup.Config;
+using Haack.AIDemoWeb.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using OpenAI;
+using OpenAI.Assistants;
 using Serious;
+using AssistantThread = OpenAI.Assistants.AssistantThread;
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 
-public class ThreadDetailsPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
-    : PageModel
+public class ThreadDetailsPageModel(AIDemoDbContext db, OpenAIClient openAIClient) : PageModel
 {
-    readonly OpenAIOptions _options = options.Value;
-
     [TempData]
     public string? StatusMessage { get; set; }
 
@@ -31,7 +29,7 @@ public class ThreadDetailsPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> 
 
     public Haack.AIDemoWeb.Entities.AssistantThread ThreadEntity { get; private set; } = default!;
 
-    public Haack.AIDemoWeb.Library.Clients.AssistantThread Thread { get; private set; } = default!;
+    public AssistantThread Thread { get; private set; } = default!;
 
     public IReadOnlyList<ThreadMessage> Messages { get; private set; } = Array.Empty<ThreadMessage>();
 
@@ -47,7 +45,6 @@ public class ThreadDetailsPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> 
             return NotFound();
         }
 
-        var apiKey = _options.ApiKey.Require();
         var username = User.Identity?.Name;
         var currentUser = await db.Users.SingleOrDefaultAsync(u => u.NameIdentifier == username, cancellationToken);
 
@@ -56,19 +53,33 @@ public class ThreadDetailsPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> 
             return Forbid();
         }
 
-        var thread = await openAIClient.GetThreadAsync(apiKey, id, cancellationToken);
+#pragma warning disable OPENAI001
+        var assistantClient = openAIClient.GetAssistantClient();
+#pragma warning restore OPENAI001
+        var thread = await assistantClient.GetThreadAsync(id, cancellationToken);
 
         ThreadEntity = threadEntity;
         Thread = thread;
 
-        var response = await openAIClient.GetMessagesAsync(apiKey, id, order: "asc", cancellationToken: cancellationToken);
-        Messages = response.Data;
+        Messages = await assistantClient.GetMessagesAsync(
+            id,
+            options: new MessageCollectionOptions { Order = ListOrder.OldestFirst },
+            cancellationToken: cancellationToken)
+            .GetAllValuesAsync(cancellationToken: cancellationToken)
+            .ToReadOnlyListAsync(cancellationToken);
 
-        var assistantsResponse = await openAIClient.GetAssistantsAsync(apiKey, cancellationToken);
-        Assistants = assistantsResponse.Data.Select(a => new SelectListItem(a.Name, a.Id)).ToList();
+        var assistantsResponse = await assistantClient
+            .GetAssistantsAsync(cancellationToken: cancellationToken)
+            .GetAllValuesAsync(cancellationToken)
+            .ToReadOnlyListAsync(cancellationToken);
+        Assistants = assistantsResponse.Select(a => new SelectListItem(a.Name, a.Id)).ToList();
 
-        var runsResponse = await openAIClient.GetRunsAsync(apiKey, id, order: "asc", cancellationToken: cancellationToken);
-        Runs = runsResponse.Data;
+        Runs = await assistantClient.GetRunsAsync(
+            id,
+            new RunCollectionOptions { Order = ListOrder.OldestFirst },
+            cancellationToken: cancellationToken)
+            .GetAllValuesAsync(cancellationToken)
+            .ToReadOnlyListAsync(cancellationToken);
 
         return Page();
     }
@@ -80,26 +91,33 @@ public class ThreadDetailsPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> 
             return Page();
         }
 
-        var message = await openAIClient.CreateMessageAsync(
-            _options.ApiKey.Require(),
-            id,
-            new MessageCreateBody { Content = NewMessageContent },
-            cancellationToken);
+#pragma warning disable OPENAI001
+        var assistantClient = openAIClient.GetAssistantClient();
+#pragma warning restore OPENAI001
 
-        StatusMessage = $"Message {message.Id} added to the thread.";
+        var message = await assistantClient.CreateMessageAsync(
+            id,
+            MessageRole.User,
+            new[] { MessageContent.FromText(NewMessageContent) },
+            cancellationToken: cancellationToken);
+
+        StatusMessage = $"Message {message.Value.Id} added to the thread.";
 
         return RedirectToPage();
     }
 
     public async Task<IActionResult> OnPostCreateRunAsync(string id, CancellationToken cancellationToken = default)
     {
-        var run = await openAIClient.CreateRunAsync(
-            _options.ApiKey.Require(),
-            id,
-            new ThreadRunCreateBody { AssistantId = AssistantIdForRun.Require() },
-            cancellationToken);
+#pragma warning disable OPENAI001
+        var assistantClient = openAIClient.GetAssistantClient();
+#pragma warning restore OPENAI001
 
-        StatusMessage = $"Run {run.Id} created.";
+        var run = await assistantClient.CreateRunAsync(
+            id,
+            AssistantIdForRun.Require(),
+            cancellationToken: cancellationToken);
+
+        StatusMessage = $"Run {run.Value.Id} created.";
 
         return RedirectToPage();
     }

@@ -1,27 +1,28 @@
 using System.Security.Claims;
 using Haack.AIDemoWeb.Entities;
-using Haack.AIDemoWeb.Library.Clients;
-using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using OpenAI;
+using OpenAI.Assistants;
 using Serious;
+using AssistantThread = Haack.AIDemoWeb.Entities.AssistantThread;
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 
-public class RunAssistantPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+public class RunAssistantPageModel(AIDemoDbContext db, OpenAIClient openAIClient)
     : PageModel
 {
-    readonly OpenAIOptions _options = options.Value;
-
     public Assistant Assistant { get; private set; } = default!;
 
     public string ThreadId { get; private set; } = default!;
 
     public async Task<IActionResult> OnGetAsync(string id, CancellationToken cancellationToken = default)
     {
-        Assistant = await openAIClient.GetAssistantAsync(_options.ApiKey.Require(), id, cancellationToken);
+#pragma warning disable OPENAI001
+        var assistantClient = openAIClient.GetAssistantClient();
+#pragma warning restore OPENAI001
+        Assistant = await assistantClient.GetAssistantAsync(id, cancellationToken);
 
         // Let's see if the current user has a thread for this assistant.
         var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -34,14 +35,12 @@ public class RunAssistantPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> o
         if (threadEntity is null)
         {
             // Create the thread for this user.
-            var createdThread = await openAIClient.CreateThreadAsync(
-                _options.ApiKey.Require(),
-                Array.Empty<MessageCreateBody>(),
-                cancellationToken);
+            var createdThread = await assistantClient.CreateThreadAsync(
+                cancellationToken: cancellationToken);
 
-            threadEntity = new Haack.AIDemoWeb.Entities.AssistantThread
+            threadEntity = new AssistantThread
             {
-                ThreadId = createdThread.Id,
+                ThreadId = createdThread.Value.Id,
                 AssistantId = id,
                 Creator = currentUser.Require(),
                 CreatorId = currentUser.Id,

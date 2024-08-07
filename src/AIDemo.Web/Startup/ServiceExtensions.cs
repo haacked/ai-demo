@@ -166,13 +166,6 @@ public static class ServiceExtensions
         services.AddTransient<LoggingHttpMessageHandler>();
         services.AddTransient<GeocodeClient>();
         services.AddTransient<GoogleApiClient>();
-        services.AddRefitClient<IOpenAIClient>(
-            IOpenAIClient.BaseAddress,
-            new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-                PropertyNameCaseInsensitive = true,
-            });
         services.AddRefitClient<IGoogleGeocodeClient>(
             IGoogleGeocodeClient.BaseAddress,
             new JsonSerializerOptions

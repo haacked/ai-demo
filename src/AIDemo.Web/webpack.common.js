@@ -7,8 +7,7 @@ const webpack = require('webpack')
 module.exports = {
     target: 'web',
     entry: {
-        main: './assets/index',
-        react: './assets/react/index'
+        main: './assets/index'
     },
     output: {
        publicPath: "/dist/js/",

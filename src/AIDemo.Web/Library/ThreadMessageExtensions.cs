@@ -1,4 +1,5 @@
 using Haack.AIDemoWeb.Library.Clients;
+using OpenAI.Assistants;
 
 namespace Haack.AIDemoWeb.Library;
 
@@ -10,17 +11,17 @@ public static class ThreadMessageExtensions
         {
             var text = content switch
             {
-                { Text: { } messageText } => messageText.Value,
-                { ImageFile: { } imageFile } => $"File: {imageFile.FileId}",
+                { Text: { } messageText } => messageText,
+                { ImageFileId: { } imageFile } => $"File: {imageFile}",
                 _ => "Unknown response",
             };
 
-            var annotations = content.Text?.Annotations ?? Array.Empty<Annotation>();
+            var annotations = content.TextAnnotations ?? Array.Empty<TextAnnotation>();
 
             yield return new BlazorMessage(
                 text,
-                message.Role is "user",
-                DateTimeOffset.FromUnixTimeSeconds(message.CreatedAt).DateTime,
+                message.Role is MessageRole.User,
+                message.CreatedAt.DateTime,
                 annotations);
         }
     }

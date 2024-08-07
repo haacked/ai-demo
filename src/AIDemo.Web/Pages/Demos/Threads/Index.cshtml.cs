@@ -1,20 +1,16 @@
 using Haack.AIDemoWeb.Entities;
-using Haack.AIDemoWeb.Library.Clients;
-using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using OpenAI;
 using Serious;
 using AssistantThread = Haack.AIDemoWeb.Entities.AssistantThread;
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 
-public class ThreadsIndexPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+public class ThreadsIndexPageModel(AIDemoDbContext db, OpenAIClient openAIClient)
     : PageModel
 {
-    readonly OpenAIOptions _options = options.Value;
-
     [TempData]
     public string? StatusMessage { get; set; }
 
@@ -42,11 +38,14 @@ public class ThreadsIndexPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> o
         db.Threads.Remove(threadToDelete);
         await db.SaveChangesAsync(cancellationToken);
 
-        var response = await openAIClient.DeleteThreadAsync(
-            _options.ApiKey.Require(),
+#pragma warning disable OPENAI001
+        var assistantClient = openAIClient.GetAssistantClient();
+#pragma warning restore OPENAI001
+
+        await assistantClient.DeleteThreadAsync(
             ThreadIdToDelete.Require(),
             cancellationToken);
-        StatusMessage = $"Thread {response.Id} deleted.";
+        StatusMessage = $"Thread {ThreadIdToDelete} deleted.";
         return RedirectToPage();
     }
 }

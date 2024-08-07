@@ -1,23 +1,18 @@
 using Haack.AIDemoWeb.Entities;
-using Haack.AIDemoWeb.Library.Clients;
-using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using OpenAI;
 using Refit;
-using Serious;
 using AssistantThread = Haack.AIDemoWeb.Entities.AssistantThread;
 
 #pragma warning disable CA2227, CA1002, CA1819
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 
-public class CreateThreadPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+public class CreateThreadPageModel(AIDemoDbContext db, OpenAIClient openAIClient)
     : PageModel
 {
-    readonly OpenAIOptions _options = options.Value;
-
     [TempData]
     public string? StatusMessage { get; set; }
 
@@ -28,14 +23,15 @@ public class CreateThreadPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> o
             return Page();
         }
 
+#pragma warning disable OPENAI001
+        var assistantClient = openAIClient.GetAssistantClient();
+#pragma warning restore OPENAI001
         try
         {
-            var createdThread = await openAIClient.CreateThreadAsync(
-                _options.ApiKey.Require(),
-                Array.Empty<MessageCreateBody>(),
-                cancellationToken);
+            var createdThread = await assistantClient.CreateThreadAsync(
+                cancellationToken: cancellationToken);
 
-            StatusMessage = $"Assistant {createdThread.Id} created.";
+            StatusMessage = $"Assistant {createdThread.Value.Id} created.";
 
             var username = User.Identity?.Name;
             var currentUser = await db.Users.SingleOrDefaultAsync(u => u.NameIdentifier == username, cancellationToken);
@@ -48,7 +44,7 @@ public class CreateThreadPageModel(AIDemoDbContext db, IOptions<OpenAIOptions> o
 
             var threadEntity = new AssistantThread
             {
-                ThreadId = createdThread.Id,
+                ThreadId = createdThread.Value.Id,
                 Creator = currentUser,
                 CreatorId = currentUser.Id,
             };

@@ -1,18 +1,13 @@
-using Haack.AIDemoWeb.Library.Clients;
-using Haack.AIDemoWeb.Startup.Config;
+using System.ClientModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Options;
-using Refit;
-using Serious;
+using OpenAI;
 
 namespace AIDemoWeb.Demos.Pages.Files;
 
-public class UploadPageModel(IOptions<OpenAIOptions> options, IOpenAIClient openAIClient)
+public class UploadPageModel(OpenAIClient openAIClient)
     : PageModel
 {
-    readonly OpenAIOptions _options = options.Value;
-
     [BindProperty]
     public IFormFile Upload { get; set; } = null!;
 
@@ -29,10 +24,16 @@ public class UploadPageModel(IOptions<OpenAIOptions> options, IOpenAIClient open
             return Page();
         }
 
-        var streamPart = new StreamPart(Upload.OpenReadStream(), Upload.FileName);
-        var result = await openAIClient.UploadFileAsync(_options.ApiKey.Require(), Purpose, streamPart);
+        var fileClient = openAIClient.GetFileClient();
 
-        StatusMessage = $"File {result.Id} uploaded.";
+        using var binaryContent = BinaryContent.Create(Upload.OpenReadStream());
+
+        // Use the binaryContent object as needed
+        var result = await fileClient.UploadFileAsync(
+            binaryContent,
+            Upload.ContentType,
+            options: null);
+        StatusMessage = $"File \"{Upload.FileName}\" uploaded.";
 
         return RedirectToPage("Index");
     }

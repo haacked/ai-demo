@@ -1,13 +1,9 @@
 using Haack.AIDemoWeb.Startup;
 using Haack.AIDemoWeb.Startup.Config;
-using Haack.AIDemoWeb.Components;
-using Haack.AIDemoWeb.Entities; // Rider highlights this line for some reason, but it's legit. It compiles.
+using Haack.AIDemoWeb.Components; // Rider highlights this line for some reason, but it's legit. It compiles.
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
 using OpenAIDemo.Hubs;
-using Serious;
-using Serious.ChatFunctions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +12,10 @@ builder
     .AddServiceDefaults()
     .AddClients()
     .AddDatabase()
-    .RegisterOpenAI()
+    .AddOpenAIClient()
     .AddSemanticKernel()
     .AddAuthentication()
     .AddMassTransitConfig()
-    .AddFunctionDispatcher(typeof(WeatherOptions).Assembly.Require())
     .Configure<GitHubOptions>()
     .Configure<GoogleOptions>()
     .Configure<WeatherOptions>();
@@ -66,9 +61,5 @@ app.MapGet("/logout", async ctx =>
 // The SignalR hubs used in my talks.
 app.MapHub<AssistantHub>("/assistant-hub");
 app.MapHub<BotHub>("/bot-hub");
-
-// A legacy SignalR Hub I don't use in my talk, but keep around for reference.
-app.MapHub<MultiUserChatHub>("/chat-hub");
-
 
 app.Run();
