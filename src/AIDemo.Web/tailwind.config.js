@@ -1,7 +1,8 @@
 module.exports = {
     content: [
         './Pages/**/*.{html,cshtml}',
-        './assets/**/*.{ts,tsx,js}',
+        './Components/**/*.razor',
+        './assets/**/*.{ts,js}',
         './node_modules/flowbite/**/*.js',
     ],
     safelist: [
