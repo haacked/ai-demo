@@ -28,7 +28,7 @@ public class BotMessageConsumer(
 
         if (message is ".count")
         {
-            await SendResponseAsync($"I have {history.Count - 1} messages in my history.");
+            await SendResponseAsync($"I have {history.Count - 1} messages in my history.", AuthorRole.Assistant);
             return;
         }
 
@@ -38,7 +38,7 @@ public class BotMessageConsumer(
                          .Where(m => m.Content is not null or [])
                          .Where(m => m.Role == AuthorRole.User || m.Role == AuthorRole.Assistant)) // Skip the system prompt
             {
-                await SendResponseAsync(msg.Content ?? string.Empty, msg.Role == AuthorRole.User);
+                await SendResponseAsync(msg.Content ?? string.Empty, msg.Role);
             }
             return;
         }
@@ -46,7 +46,7 @@ public class BotMessageConsumer(
         if (message is ".clear" or ".clr")
         {
             await cache.DeleteChatHistoryAsync();
-            await SendResponseAsync("I have 0 messages in my history.");
+            await SendResponseAsync("I have 0 messages in my history.", AuthorRole.Assistant);
             return;
         }
 
@@ -77,7 +77,7 @@ public class BotMessageConsumer(
 
         if (result.Content is not null)
         {
-            await SendResponseAsync(result.Content);
+            await SendResponseAsync(result.Content, AuthorRole.Assistant);
         }
 
         await cache.SaveChatHistoryAsync(history);
@@ -91,13 +91,13 @@ public class BotMessageConsumer(
                 data,
                 context.CancellationToken);
 
-        async Task SendResponseAsync(string response, bool isUser = false)
+        async Task SendResponseAsync(string response, AuthorRole authorRole)
         {
             await hubContext.Clients.Client(connectionId).SendAsync(
                 nameof(BotHub.Broadcast),
                 response,
                 "Clippy", // author
-                isUser, // isUser
+                authorRole,
                 userIdentifier,
                 context.CancellationToken);
         }

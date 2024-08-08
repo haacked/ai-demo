@@ -20,9 +20,16 @@ public class ChatHistoryCache(
         // That could make expunging older messages easier.
         var redisValue = await _db.StringGetAsync(userKey);
         var promptMessage = new ChatMessageContent(AuthorRole.System, prompt);
-        return redisValue != RedisValue.Null && redisValue.HasValue
+        var history = redisValue != RedisValue.Null && redisValue.HasValue
             ? JsonSerializer.Deserialize<ChatHistory>(redisValue.ToString()).Require()
             : [promptMessage];
+
+        if (history.Count is 1)
+        {
+            history.AddMessage(AuthorRole.Assistant, "How may I help you?");
+        }
+
+        return history;
     }
 
     public async Task SaveChatHistoryAsync(ChatHistory chatHistory)
