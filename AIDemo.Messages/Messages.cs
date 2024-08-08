@@ -24,9 +24,11 @@ public record AssistantMessageReceived(
 /// I mention it here so I can find the consumer for my demo more easily.
 /// </remarks>
 /// <param name="Message">The message text.</param>
-/// <param name="Author">The author of the message.</param>
+/// <param name="Author">The name of author of the message.</param>
 /// <param name="ConnectionId">The SignalR connection id</param>
+/// <param name="UserIdentifier">The identifier of the user.</param>
 public record BotMessageReceived(
     string Message,
     string Author,
-    string ConnectionId);
+    string ConnectionId,
+    string? UserIdentifier);

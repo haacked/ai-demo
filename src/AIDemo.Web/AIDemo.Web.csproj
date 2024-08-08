@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Aspire.StackExchange.Redis" />
     <PackageReference Include="AspNet.Security.OAuth.GitHub" />
     <PackageReference Include="Google.Apis.PeopleService.v1" />
     <PackageReference Include="MassTransit" />
