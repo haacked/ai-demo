@@ -18,12 +18,12 @@ public class BotMessageConsumer(
     public async Task Consume(ConsumeContext<BotMessageReceived> context)
     {
         // TODO: We probably want to provide the author to the system prompt.
-        var (message, author, connectionId) = context.Message;
+        var (message, _, connectionId, userIdentifier) = context.Message;
 
         var cache = new ChatHistoryCache(
             connectionMultiplexer,
             "You are a helpful assistant who is concise and to the point.",
-            author);
+            userIdentifier ?? Guid.NewGuid().ToString());
         var history = await cache.GetChatHistoryAsync();
 
         if (message is ".count")
@@ -98,6 +98,7 @@ public class BotMessageConsumer(
                 response,
                 "Clippy", // author
                 isUser, // isUser
+                userIdentifier,
                 context.CancellationToken);
         }
     }

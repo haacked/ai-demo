@@ -76,6 +76,9 @@
     public string? Username { get; set; }
 
     [Parameter]
+    public string? UserIdentifier { get; set; }
+
+    [Parameter]
     public Uri? AvatarUrl { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -91,7 +94,7 @@
                 .Build();
 
             // When user submits a message in the chat UI, send the "Broadcast" message to the SignalR Hub
-            _hubConnection.On<string, string, bool>(
+            _hubConnection.On<string, string, bool, string>(
                 nameof(BotHub.Broadcast),
                 BroadcastMessage);
 
@@ -106,7 +109,7 @@
         }
     }
 
-    void BroadcastMessage(string message, string author, bool isUser)
+    void BroadcastMessage(string message, string author, bool isUser, string userIdentifier)
     {
         InvokeAsync(() => {
             _messages.Add(new BlazorMessage(message, isUser, DateTime.Now));
@@ -172,7 +175,8 @@
                 nameof(BotHub.Broadcast),
                 _newMessage,
                 Username,
-                true /*isUser*/);
+                true /*isUser*/,
+                UserIdentifier);
 
             _newMessage = string.Empty;
         }

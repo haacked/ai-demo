@@ -6,16 +6,21 @@ namespace OpenAIDemo.Hubs;
 
 public class BotHub(IPublishEndpoint publishEndpoint, ILogger<BotHub> logger) : Hub
 {
-    public async Task Broadcast(string message, string author, bool isUser)
+    public async Task Broadcast(string message, string author, bool isUser, string userIdentifier)
     {
         await Clients.Client(Context.ConnectionId).SendAsync(
             nameof(Broadcast),
             message,
             author,
-            isUser);
+            isUser,
+            userIdentifier);
 
         // Publish the received message to the message bus, where the real action occurs.
-        await publishEndpoint.Publish(new BotMessageReceived(message, author, Context.ConnectionId));
+        await publishEndpoint.Publish(new BotMessageReceived(
+            message,
+            author,
+            Context.ConnectionId,
+            userIdentifier));
     }
 
     /// <summary>
