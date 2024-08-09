@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDemo.AppHost", "src\AIDem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDemo.Messages", "src\AIDemo.Messages\AIDemo.Messages.csproj", "{2B8963B6-E1C0-48FF-8A11-9CC4A23785B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDemo.Entities", "src\AIDemo.Entities\AIDemo.Entities.csproj", "{F7EEFDD5-A299-4F79-9BAD-6199FC385910}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,10 @@ Global
 		{2B8963B6-E1C0-48FF-8A11-9CC4A23785B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B8963B6-E1C0-48FF-8A11-9CC4A23785B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B8963B6-E1C0-48FF-8A11-9CC4A23785B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7EEFDD5-A299-4F79-9BAD-6199FC385910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7EEFDD5-A299-4F79-9BAD-6199FC385910}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7EEFDD5-A299-4F79-9BAD-6199FC385910}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7EEFDD5-A299-4F79-9BAD-6199FC385910}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{367AFC48-B548-40A9-9DEC-B56979EC7082} = {7FCDD3F2-5976-443D-B5C2-AC71C062C0FB}
