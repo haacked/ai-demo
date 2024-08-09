@@ -28,7 +28,7 @@ public class BotMessageConsumer(
 
         if (message is ".count")
         {
-            await SendResponseAsync($"I have {history.Count - 1} messages in my history.", AuthorRole.Assistant);
+            await SendResponseAsync($"I have {history.Count - 1} messages in my history.", ChatMessageRole.Assistant);
             return;
         }
 
@@ -38,7 +38,8 @@ public class BotMessageConsumer(
                          .Where(m => m.Content is not null or [])
                          .Where(m => m.Role == AuthorRole.User || m.Role == AuthorRole.Assistant)) // Skip the system prompt
             {
-                await SendResponseAsync(msg.Content ?? string.Empty, msg.Role);
+                var chatMessageRole = Enum.Parse<ChatMessageRole>(msg.Role.ToString(), ignoreCase: true);
+                await SendResponseAsync(msg.Content ?? string.Empty, chatMessageRole);
             }
             return;
         }
@@ -46,7 +47,7 @@ public class BotMessageConsumer(
         if (message is ".clear" or ".clr")
         {
             await cache.DeleteChatHistoryAsync();
-            await SendResponseAsync("I have 0 messages in my history.", AuthorRole.Assistant);
+            await SendResponseAsync("I have 0 messages in my history.", ChatMessageRole.Assistant);
             return;
         }
 
@@ -77,7 +78,7 @@ public class BotMessageConsumer(
 
         if (result.Content is not null)
         {
-            await SendResponseAsync(result.Content, AuthorRole.Assistant);
+            await SendResponseAsync(result.Content, ChatMessageRole.Assistant);
         }
 
         await cache.SaveChatHistoryAsync(history);
@@ -91,13 +92,13 @@ public class BotMessageConsumer(
                 data,
                 context.CancellationToken);
 
-        async Task SendResponseAsync(string response, AuthorRole authorRole)
+        async Task SendResponseAsync(string response, ChatMessageRole messageRole)
         {
             await hubContext.Clients.Client(connectionId).SendAsync(
                 nameof(BotHub.Broadcast),
                 response,
                 "Clippy", // author
-                authorRole,
+                messageRole,
                 userIdentifier,
                 context.CancellationToken);
         }
