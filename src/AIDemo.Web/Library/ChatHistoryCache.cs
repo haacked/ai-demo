@@ -8,7 +8,7 @@ namespace Haack.AIDemoWeb.Library;
 public class ChatHistoryCache(
     IConnectionMultiplexer connectionMultiplexer,
     string systemPrompt,
-    string userKey)
+    string userIdentifier)
 {
     readonly IDatabase _db = connectionMultiplexer.GetDatabase();
 
@@ -17,7 +17,7 @@ public class ChatHistoryCache(
         // For now, we just store the entire history as one entry in Redis.
         // We may want to consider storing each message separately in the future.
         // That could make expunging older messages easier.
-        var redisValue = await _db.StringGetAsync(userKey);
+        var redisValue = await _db.StringGetAsync(userIdentifier);
         var history = redisValue != RedisValue.Null && redisValue.HasValue
             ? JsonSerializer.Deserialize<ChatHistory>(redisValue.ToString()).Require()
             : new ChatHistory(systemPrompt);
@@ -32,11 +32,11 @@ public class ChatHistoryCache(
 
     public async Task SaveChatHistoryAsync(ChatHistory chatHistory)
     {
-        await _db.StringSetAsync(userKey, JsonSerializer.Serialize(chatHistory));
+        await _db.StringSetAsync(userIdentifier, JsonSerializer.Serialize(chatHistory));
     }
 
     public async Task DeleteChatHistoryAsync()
     {
-        await _db.StringGetDeleteAsync(userKey);
+        await _db.StringGetDeleteAsync(userIdentifier);
     }
 }
