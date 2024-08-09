@@ -51,7 +51,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDemo.ServiceDefaults", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDemo.AppHost", "src\AIDemo.AppHost\AIDemo.AppHost.csproj", "{6A5CC921-796B-4D16-84DD-0E105B48BE27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDemo.Messages", "AIDemo.Messages\AIDemo.Messages.csproj", "{2B8963B6-E1C0-48FF-8A11-9CC4A23785B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDemo.Messages", "src\AIDemo.Messages\AIDemo.Messages.csproj", "{2B8963B6-E1C0-48FF-8A11-9CC4A23785B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
