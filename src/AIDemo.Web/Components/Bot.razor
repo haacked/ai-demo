@@ -2,6 +2,7 @@
 @using OpenAIDemo.Hubs
 @using Haack.AIDemoWeb.Library
 @using Haack.AIDemoWeb.Library.Clients
+@using Microsoft.SemanticKernel.ChatCompletion
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
 
@@ -76,6 +77,9 @@
     public string? Username { get; set; }
 
     [Parameter]
+    public string? UserIdentifier { get; set; }
+
+    [Parameter]
     public Uri? AvatarUrl { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -91,7 +95,7 @@
                 .Build();
 
             // When user submits a message in the chat UI, send the "Broadcast" message to the SignalR Hub
-            _hubConnection.On<string, string, bool>(
+            _hubConnection.On<string, string, AuthorRole, string>(
                 nameof(BotHub.Broadcast),
                 BroadcastMessage);
 
@@ -99,6 +103,14 @@
             _hubConnection.On<string, string>(nameof(BotHub.BroadcastFunctionCall), BroadcastFunctionCall);
 
             await _hubConnection.StartAsync();
+
+            // Load the history.
+            await _hubConnection.SendAsync(
+                nameof(BotHub.Broadcast),
+                ".history",
+                Username,
+                AuthorRole.System,
+                UserIdentifier);
         }
         catch (Exception e)
         {
@@ -106,10 +118,10 @@
         }
     }
 
-    void BroadcastMessage(string message, string author, bool isUser)
+    void BroadcastMessage(string message, string author, AuthorRole authorRole, string userIdentifier)
     {
         InvokeAsync(() => {
-            _messages.Add(new BlazorMessage(message, isUser, DateTime.Now));
+            _messages.Add(new BlazorMessage(message, authorRole == AuthorRole.User, DateTime.Now));
             StateHasChanged();
         });
     }
@@ -172,7 +184,8 @@
                 nameof(BotHub.Broadcast),
                 _newMessage,
                 Username,
-                true /*isUser*/);
+                AuthorRole.User,
+                UserIdentifier);
 
             _newMessage = string.Empty;
         }

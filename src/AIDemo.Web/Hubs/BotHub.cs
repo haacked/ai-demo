@@ -1,21 +1,30 @@
 using AIDemoWeb.Entities.Eventing.Messages;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace OpenAIDemo.Hubs;
 
 public class BotHub(IPublishEndpoint publishEndpoint, ILogger<BotHub> logger) : Hub
 {
-    public async Task Broadcast(string message, string author, bool isUser)
+    public async Task Broadcast(string message, string author, AuthorRole authorRole, string userIdentifier)
     {
-        await Clients.Client(Context.ConnectionId).SendAsync(
-            nameof(Broadcast),
-            message,
-            author,
-            isUser);
+        if (authorRole == AuthorRole.Assistant || authorRole == AuthorRole.User)
+        {
+            await Clients.Client(Context.ConnectionId).SendAsync(
+                nameof(Broadcast),
+                message,
+                author,
+                authorRole,
+                userIdentifier);
+        }
 
         // Publish the received message to the message bus, where the real action occurs.
-        await publishEndpoint.Publish(new BotMessageReceived(message, author, Context.ConnectionId));
+        await publishEndpoint.Publish(new BotMessageReceived(
+            message,
+            author,
+            Context.ConnectionId,
+            userIdentifier));
     }
 
     /// <summary>
