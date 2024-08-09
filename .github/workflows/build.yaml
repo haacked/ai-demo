@@ -105,10 +105,10 @@ jobs:
     - name: Set up dotnet-format problem matcher
       run: echo "::add-matcher::$GITHUB_WORKSPACE/.github/problemMatchers/dotnet-format.json"
 
-    - name: Setup Node.js 16
-      uses: actions/setup-node@v3
+    - name: Setup Node.js 20
+      uses: actions/setup-node@v4
       with:
-        node-version: '16.x'
+        node-version: '20.15.0'
 
     - name: Set up eslint-compact problem matcher
       run: echo "::add-matcher::$GITHUB_WORKSPACE/.github/problemMatchers/eslint-compact.json"
