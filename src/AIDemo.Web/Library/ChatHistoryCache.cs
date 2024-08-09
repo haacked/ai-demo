@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Serious;
 using StackExchange.Redis;
@@ -19,14 +18,13 @@ public class ChatHistoryCache(
         // We may want to consider storing each message separately in the future.
         // That could make expunging older messages easier.
         var redisValue = await _db.StringGetAsync(userKey);
-        var systemMessage = new ChatMessageContent(AuthorRole.System, systemPrompt);
         var history = redisValue != RedisValue.Null && redisValue.HasValue
             ? JsonSerializer.Deserialize<ChatHistory>(redisValue.ToString()).Require()
-            : [systemMessage];
+            : new ChatHistory(systemPrompt);
 
         if (history.Count is 1)
         {
-            history.AddMessage(AuthorRole.Assistant, "How may I help you?");
+            history.AddAssistantMessage("How may I help you?");
         }
 
         return history;
