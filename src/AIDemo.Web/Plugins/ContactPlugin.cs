@@ -1,17 +1,11 @@
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using AIDemo.Web.Messages;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
-using Haack.AIDemoWeb.Plugins;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using NetTopologySuite.Geometries;
-using OpenAIDemo.Hubs;
-using Pgvector.EntityFrameworkCore;
-using Serious;
-using Coordinate = Haack.AIDemoWeb.Library.Coordinate;
+using Coordinate = AIDemo.Web.Messages.Coordinate;
 
 namespace Haack.AIDemoWeb.SemanticKernel.Plugins;
 
@@ -124,7 +118,7 @@ public class ContactPlugin(AIDemoDbContext db)
         // Query the database for the contacts(s).
         var contacts = await GetContactsAsync(contactNames, month, cancellationToken);
 
-        return contacts.Select(ContactBirthdayResult.FromContact).ToList();
+        return contacts.Select(c => c.ToContactBirthdayResult()).ToList();
     }
 
     async Task<IReadOnlyList<Contact>> GetContactsAsync(
@@ -167,21 +161,3 @@ public class ContactPlugin(AIDemoDbContext db)
         return [];
     }
 }
-
-public record ContactBirthdayResult(string ContactName, ContactBirthday Birthday)
-{
-    public static ContactBirthdayResult FromContact(Contact contact) =>
-        new(
-            contact.Names.First().UnstructuredName,
-            contact.Birthday ?? new ContactBirthday(0, 0, 0));
-}
-
-public record ContactFactResult(string ContactName, string Fact);
-
-public record ContactDistance(
-    [property: JsonPropertyName("name")]
-    string Name,
-
-    [property: JsonPropertyName("distance")]
-    Measurement<DistanceUnit> Distance);
-

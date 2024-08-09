@@ -1,4 +1,4 @@
-using AIDemoWeb.Entities.Eventing.Messages;
+using AIDemo.Web.Messages;
 using Haack.AIDemoWeb.Library;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;

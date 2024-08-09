@@ -1,5 +1,4 @@
-using AIDemoWeb.Entities.Eventing.Messages;
-using Haack.AIDemoWeb.Library.Clients;
+using AIDemo.Web.Messages;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using OpenAI.Assistants;

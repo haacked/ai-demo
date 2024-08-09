@@ -489,11 +489,6 @@
           "System.Threading.Channels": "6.0.0"
         }
       },
-      "Microsoft.EntityFrameworkCore.Abstractions": {
-        "type": "Transitive",
-        "resolved": "8.0.7",
-        "contentHash": "DHX6nxcg4/tpWfTjAleKrXveDiNFY/OGOK6nm27GipUXNI2Uofev9cH5SYXmtGIgHWxlvfn754TXN4WnrixOwg=="
-      },
       "Microsoft.EntityFrameworkCore.Analyzers": {
         "type": "Transitive",
         "resolved": "8.0.7",
@@ -1147,7 +1142,11 @@
         "contentHash": "zteT+G8xuGu6mS+mzDzYXbzS7rd3K6Fjb9RiZlYlJPam2/hU7JCBZBVEcywNuR+oZ1ncTvc/cq0faRr3P01OVg=="
       },
       "aidemo.messages": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Google.Apis.PeopleService.v1": "[1.68.0.3359, )",
+          "Microsoft.EntityFrameworkCore.Abstractions": "[8.0.7, )"
+        }
       },
       "aidemo.servicedefaults": {
         "type": "Project",
@@ -1160,6 +1159,12 @@
           "OpenTelemetry.Instrumentation.Http": "[1.9.0, )",
           "OpenTelemetry.Instrumentation.Runtime": "[1.9.0, )"
         }
+      },
+      "Microsoft.EntityFrameworkCore.Abstractions": {
+        "type": "CentralTransitive",
+        "requested": "[8.0.7, )",
+        "resolved": "8.0.7",
+        "contentHash": "DHX6nxcg4/tpWfTjAleKrXveDiNFY/OGOK6nm27GipUXNI2Uofev9cH5SYXmtGIgHWxlvfn754TXN4WnrixOwg=="
       },
       "Microsoft.Extensions.Http.Resilience": {
         "type": "CentralTransitive",

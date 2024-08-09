@@ -1,4 +1,4 @@
-using AIDemoWeb.Entities.Eventing.Messages;
+using AIDemo.Web.Messages;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.SemanticKernel.ChatCompletion;

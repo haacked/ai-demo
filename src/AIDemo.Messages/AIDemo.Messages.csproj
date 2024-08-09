@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Google.Apis.PeopleService.v1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" />
+    </ItemGroup>
 </Project>

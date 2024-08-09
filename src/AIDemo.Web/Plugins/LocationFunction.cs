@@ -1,7 +1,6 @@
 using System.ComponentModel;
-using System.Text.Json.Serialization;
+using AIDemo.Web.Messages;
 using Haack.AIDemoWeb.Entities;
-using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.EntityFrameworkCore;
@@ -64,9 +63,3 @@ public class LocationPlugin(
     }
 }
 
-public record ContactLocation(
-    [property: JsonPropertyName("coordinate")]
-    Coordinate Coordinate,
-
-    [property: JsonPropertyName("formatted_address")]
-    string FormattedAddress);

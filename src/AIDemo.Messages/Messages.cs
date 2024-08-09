@@ -1,4 +1,4 @@
-namespace AIDemoWeb.Entities.Eventing.Messages;
+namespace AIDemo.Web.Messages;
 
 /// <summary>
 /// A new message sent to an assistant.

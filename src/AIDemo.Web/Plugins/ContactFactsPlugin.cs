@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using AIDemo.Web.Messages;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.SemanticKernel.Plugins;
@@ -243,5 +244,3 @@ public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClient client, IOption
         return new ReadOnlyMemory<float>();
     }
 }
-
-public record SearchContactsResult(IReadOnlyList<string> Contacts);
