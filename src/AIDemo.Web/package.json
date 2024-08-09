@@ -47,7 +47,7 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "@microsoft/signalr": "^8.0.0",
+    "@microsoft/signalr": "^8.0.7",
     "flowbite": "^2.2.1"
   }
 }
