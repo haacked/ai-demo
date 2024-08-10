@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Haack.AIDemoWeb.Library;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.SemanticKernel;
-using OpenAIDemo.Hubs;
+using AIDemo.Hubs;
 
 namespace Haack.AIDemoWeb.Plugins;
 

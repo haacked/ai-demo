@@ -1150,6 +1150,15 @@
           "Pgvector.EntityFrameworkCore": "[0.2.1, )"
         }
       },
+      "aidemo.hubs": {
+        "type": "Project",
+        "dependencies": {
+          "AIDemo.Entities": "[1.0.0, )",
+          "AIDemo.Messages": "[1.0.0, )",
+          "MassTransit": "[8.2.4, )",
+          "Microsoft.AspNetCore.SignalR.Client": "[8.0.7, )"
+        }
+      },
       "aidemo.messages": {
         "type": "Project",
         "dependencies": {

@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
-using OpenAIDemo.Hubs;
+using AIDemo.Hubs;
 using Refit;
 using Serious;
 using Serious.ChatFunctions;

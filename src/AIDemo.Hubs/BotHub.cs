@@ -1,9 +1,9 @@
 using AIDemo.Web.Messages;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
-using ChatMessageRole = OpenAI.Chat.ChatMessageRole;
+using Microsoft.Extensions.Logging;
 
-namespace OpenAIDemo.Hubs;
+namespace AIDemo.Hubs;
 
 public class BotHub(IPublishEndpoint publishEndpoint, ILogger<BotHub> logger) : Hub
 {

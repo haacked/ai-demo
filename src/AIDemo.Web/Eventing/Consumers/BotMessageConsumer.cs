@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-using OpenAIDemo.Hubs;
+using AIDemo.Hubs;
 using StackExchange.Redis;
 
 namespace AIDemoWeb.Entities.Eventing.Consumers;

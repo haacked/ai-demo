@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using OpenAI;
-using OpenAIDemo.Hubs;
+using AIDemo.Hubs;
 using Pgvector;
 using Pgvector.EntityFrameworkCore;
 

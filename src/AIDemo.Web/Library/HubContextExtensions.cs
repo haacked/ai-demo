@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.SemanticKernel;
-using OpenAIDemo.Hubs;
+using AIDemo.Hubs;
 
 namespace Haack.AIDemoWeb.Library;
 

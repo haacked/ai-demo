@@ -1,10 +1,10 @@
+using AIDemo.Hubs;
 using AIDemo.Web.Messages;
 using Haack.AIDemoWeb.Library;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using OpenAI;
 using OpenAI.Assistants;
-using OpenAIDemo.Hubs;
 using Serious;
 
 namespace AIDemoWeb.Entities.Eventing.Consumers;
