@@ -15,7 +15,9 @@ public class UnitConverterPlugin
     [KernelFunction]
     [Description(
         "Converts a distance measurement or set of distance measurements from one unit to another. For example, this can convert kilometers to miles or vice versa. Always use this when the user requests a distance in miles but your result is in kilometers or vice versa.")]
+#pragma warning disable CA1822
     public IReadOnlyList<Measurement<DistanceUnit>> ConvertDistances(
+#pragma warning restore CA1822
         [Description("The distance measurements to convert.")]
         IReadOnlyList<double> measurements,
         [Description("The unit of the measurements.")]
@@ -35,7 +37,9 @@ public class UnitConverterPlugin
     [KernelFunction]
     [Description(
         "Converts a temperature measurement or set of temperature measurements from one unit to another. For example, this can convert celsiuse to fahrenheit or vice versa. Always use this when the user requests a temperature in fahrenheit but your result is in celsius or vice versa.")]
+#pragma warning disable CA1822
     public IReadOnlyList<Measurement<TemperatureUnit>> ConvertTemperatures(
+#pragma warning restore CA1822
         [Description("The temperature measurements to convert.")]
         IReadOnlyList<double> measurements,
         [Description("The unit of the measurements.")]
