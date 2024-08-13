@@ -203,11 +203,25 @@
         "resolved": "4.5.4",
         "contentHash": "1MbJTHS1lZ4bS4FmsJjnuGJOu88ZzTT2rLvrhW7Ygic+pC0NWA+3hgAen0HRdsocuQXCkUTdFn9yHJJhsijDXw=="
       },
-      "aidemo.messages": {
+      "System.Net.Http.Json": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "48Bxrd6zcGeQzS4GMEDVjuqCcAw/9wcEWnIu48FQJ5IzfKPiMR1nGtz9LrvGzU4+3TLbx/9FDlGmCUeLin1Eqg==",
+        "dependencies": {
+          "System.Text.Json": "8.0.0"
+        }
+      },
+      "System.Text.Encodings.Web": {
+        "type": "Transitive",
+        "resolved": "8.0.0",
+        "contentHash": "yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ=="
+      },
+      "aidemo.contracts": {
         "type": "Project",
         "dependencies": {
           "Google.Apis.PeopleService.v1": "[1.68.0.3359, )",
-          "Microsoft.EntityFrameworkCore.Abstractions": "[8.0.7, )"
+          "Microsoft.EntityFrameworkCore.Abstractions": "[8.0.7, )",
+          "refit": "[7.1.2, )"
         }
       },
       "Google.Apis.PeopleService.v1": {
@@ -246,6 +260,24 @@
           "Microsoft.EntityFrameworkCore.Abstractions": "8.0.4",
           "Microsoft.EntityFrameworkCore.Relational": "8.0.4",
           "Npgsql": "8.0.3"
+        }
+      },
+      "Refit": {
+        "type": "CentralTransitive",
+        "requested": "[7.1.2, )",
+        "resolved": "7.1.2",
+        "contentHash": "ZB1ZgciDq/lNz3OAPfYah4rCVYeI4LMxEksYUff8p4Bth9uf/8WQCXuzMckRJjh3NLysuwdCNkgxnezCm1SqTw==",
+        "dependencies": {
+          "System.Net.Http.Json": "8.0.0"
+        }
+      },
+      "System.Text.Json": {
+        "type": "CentralTransitive",
+        "requested": "[8.0.4, )",
+        "resolved": "8.0.0",
+        "contentHash": "OdrZO2WjkiEG6ajEFRABTRCi/wuXQPxeV6g8xvUJqdxMvvuCCEk86zPla8UiIQJz3durtUEbNyY/3lIhS0yZvQ==",
+        "dependencies": {
+          "System.Text.Encodings.Web": "8.0.0"
         }
       }
     }

@@ -5,19 +5,15 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SemanticKernel" />
+    </ItemGroup>
 
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    </ItemGroup>
-    
-    <ItemGroup>
-        <PackageReference Include="MassTransit" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
-    </ItemGroup>
-    
-    <ItemGroup>
       <ProjectReference Include="..\AIDemo.Entities\AIDemo.Entities.csproj" />
+      <ProjectReference Include="..\AIDemo.Hubs\AIDemo.Hubs.csproj" />
       <ProjectReference Include="..\AIDemo.Contracts\AIDemo.Contracts.csproj" />
     </ItemGroup>
-    
+
 </Project>

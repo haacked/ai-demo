@@ -1141,10 +1141,18 @@
         "resolved": "4.5.4",
         "contentHash": "zteT+G8xuGu6mS+mzDzYXbzS7rd3K6Fjb9RiZlYlJPam2/hU7JCBZBVEcywNuR+oZ1ncTvc/cq0faRr3P01OVg=="
       },
+      "aidemo.contracts": {
+        "type": "Project",
+        "dependencies": {
+          "Google.Apis.PeopleService.v1": "[1.68.0.3359, )",
+          "Microsoft.EntityFrameworkCore.Abstractions": "[8.0.7, )",
+          "refit": "[7.1.2, )"
+        }
+      },
       "aidemo.entities": {
         "type": "Project",
         "dependencies": {
-          "AIDemo.Messages": "[1.0.0, )",
+          "AIDemo.Contracts": "[1.0.0, )",
           "Microsoft.EntityFrameworkCore": "[8.0.7, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite": "[8.0.4, )",
           "Pgvector.EntityFrameworkCore": "[0.2.1, )"
@@ -1153,17 +1161,19 @@
       "aidemo.hubs": {
         "type": "Project",
         "dependencies": {
+          "AIDemo.Contracts": "[1.0.0, )",
           "AIDemo.Entities": "[1.0.0, )",
-          "AIDemo.Messages": "[1.0.0, )",
           "MassTransit": "[8.2.4, )",
           "Microsoft.AspNetCore.SignalR.Client": "[8.0.7, )"
         }
       },
-      "aidemo.messages": {
+      "aidemo.semantickernel": {
         "type": "Project",
         "dependencies": {
-          "Google.Apis.PeopleService.v1": "[1.68.0.3359, )",
-          "Microsoft.EntityFrameworkCore.Abstractions": "[8.0.7, )"
+          "AIDemo.Contracts": "[1.0.0, )",
+          "AIDemo.Entities": "[1.0.0, )",
+          "AIDemo.Hubs": "[1.0.0, )",
+          "Microsoft.SemanticKernel": "[1.17.1, )"
         }
       },
       "aidemo.servicedefaults": {

@@ -4,10 +4,12 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>AIDemo.Messages</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Google.Apis.PeopleService.v1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" />
+        <PackageReference Include="refit" />
     </ItemGroup>
 </Project>
