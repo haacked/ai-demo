@@ -1,21 +1,21 @@
-using AIDemoWeb.Entities.Eventing.Messages;
+using AIDemo.Web.Messages;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.Extensions.Logging;
 
-namespace OpenAIDemo.Hubs;
+namespace AIDemo.Hubs;
 
 public class BotHub(IPublishEndpoint publishEndpoint, ILogger<BotHub> logger) : Hub
 {
-    public async Task Broadcast(string message, string author, AuthorRole authorRole, string userIdentifier)
+    public async Task Broadcast(string message, string author, ChatMessageRole messageRole, string userIdentifier)
     {
-        if (authorRole == AuthorRole.Assistant || authorRole == AuthorRole.User)
+        if (messageRole is ChatMessageRole.Assistant or ChatMessageRole.User)
         {
             await Clients.Client(Context.ConnectionId).SendAsync(
                 nameof(Broadcast),
                 message,
                 author,
-                authorRole,
+                messageRole,
                 userIdentifier);
         }
 

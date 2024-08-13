@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using System.Text.Json.Serialization;
+using AIDemo.Web.Messages;
 using Haack.AIDemoWeb.Library.Clients;
 using Microsoft.SemanticKernel;
 
@@ -53,19 +53,3 @@ public class UnitConverterPlugin
     }
 }
 
-public record Measurement<TUnit>(
-    [property: JsonPropertyName("value")]
-    double Value,
-
-    [property: JsonPropertyName("unit")]
-    TUnit Unit);
-
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum DistanceUnit
-{
-    [Description("The distance in kilometers.")]
-    Kilometers,
-
-    [Description("The distance in miles.")]
-    Miles,
-}

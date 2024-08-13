@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using System.Text.Json;
+using AIDemo.Hubs;
 using AIDemo.Web.Startup;
+using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.Library.Clients;
@@ -13,7 +15,6 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
-using OpenAIDemo.Hubs;
 using Refit;
 using Serious;
 using Serious.ChatFunctions;
@@ -26,9 +27,13 @@ public static class ServiceExtensions
     {
         var options = builder.GetConfigurationSection<OpenAIOptions>().Require();
 
+#pragma warning disable SKEXP0010
         builder.Services.AddOpenAIChatCompletion(
             options.Model,
-            options.ApiKey.Require());
+            options.ApiKey.Require())
+        // Ugh, I think it's dumb I have to pass an OpenAIClient here. I hope they fix that up soon.
+        .AddOpenAITextEmbeddingGeneration(modelId: options.EmbeddingModel, openAIClient: new OpenAIClient(options.ApiKey));
+#pragma warning restore SKEXP0010
 
         builder.Services
             .AddTransient<ContactFactsPlugin>()

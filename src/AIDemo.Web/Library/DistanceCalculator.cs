@@ -1,3 +1,5 @@
+using AIDemo.Web.Messages;
+
 namespace Haack.AIDemoWeb.Library;
 
 using System;

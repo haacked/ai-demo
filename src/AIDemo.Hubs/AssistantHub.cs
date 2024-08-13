@@ -1,10 +1,9 @@
-using AIDemoWeb.Entities.Eventing.Messages;
-using Haack.AIDemoWeb.Library.Clients;
+using AIDemo.Web.Messages;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
-using OpenAI.Assistants;
+using Microsoft.Extensions.Logging;
 
-namespace OpenAIDemo.Hubs;
+namespace AIDemo.Hubs;
 
 public class AssistantHub(IPublishEndpoint publishEndpoint, ILogger<AssistantHub> logger)
     : Hub
@@ -22,8 +21,7 @@ public class AssistantHub(IPublishEndpoint publishEndpoint, ILogger<AssistantHub
             isUser,
             assistantName,
             assistantId,
-            threadId,
-            Array.Empty<TextAnnotation>());
+            threadId);
         await publishEndpoint.Publish(
             new AssistantMessageReceived(
                 message,

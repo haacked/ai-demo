@@ -1,4 +1,4 @@
-namespace AIDemoWeb.Entities.Eventing.Messages;
+namespace AIDemo.Web.Messages;
 
 /// <summary>
 /// A new message sent to an assistant.
@@ -32,3 +32,16 @@ public record BotMessageReceived(
     string Author,
     string ConnectionId,
     string? UserIdentifier);
+
+/// <summary>
+/// The role of a message in our system.
+/// </summary>
+public enum ChatMessageRole
+{
+    System,
+    Assistant,
+    User,
+    Tool,
+}
+
+

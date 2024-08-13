@@ -1,8 +1,8 @@
-@using Microsoft.AspNetCore.SignalR.Client
-@using OpenAIDemo.Hubs
+@using AIDemo.Web.Messages
 @using Haack.AIDemoWeb.Library
 @using Haack.AIDemoWeb.Library.Clients
-@using Microsoft.SemanticKernel.ChatCompletion
+@using Microsoft.AspNetCore.SignalR.Client
+@using AIDemo.Hubs
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
 
@@ -95,7 +95,7 @@
                 .Build();
 
             // When user submits a message in the chat UI, send the "Broadcast" message to the SignalR Hub
-            _hubConnection.On<string, string, AuthorRole, string>(
+            _hubConnection.On<string, string, ChatMessageRole, string>(
                 nameof(BotHub.Broadcast),
                 BroadcastMessage);
 
@@ -109,7 +109,7 @@
                 nameof(BotHub.Broadcast),
                 ".history",
                 Username,
-                AuthorRole.System,
+                ChatMessageRole.System,
                 UserIdentifier);
         }
         catch (Exception e)
@@ -118,10 +118,10 @@
         }
     }
 
-    void BroadcastMessage(string message, string author, AuthorRole authorRole, string userIdentifier)
+    void BroadcastMessage(string message, string author, ChatMessageRole chatMessageRole, string userIdentifier)
     {
         InvokeAsync(() => {
-            _messages.Add(new BlazorMessage(message, authorRole == AuthorRole.User, DateTime.Now));
+            _messages.Add(new BlazorMessage(message, chatMessageRole is ChatMessageRole.User, DateTime.Now));
             StateHasChanged();
         });
     }
@@ -184,7 +184,7 @@
                 nameof(BotHub.Broadcast),
                 _newMessage,
                 Username,
-                AuthorRole.User,
+                ChatMessageRole.User,
                 UserIdentifier);
 
             _newMessage = string.Empty;

@@ -3,7 +3,7 @@ using Haack.AIDemoWeb.Startup.Config;
 using Haack.AIDemoWeb.Components; // Rider highlights this line for some reason, but it's legit. It compiles.
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using OpenAIDemo.Hubs;
+using AIDemo.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="MassTransit" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\AIDemo.Entities\AIDemo.Entities.csproj" />
+      <ProjectReference Include="..\AIDemo.Messages\AIDemo.Messages.csproj" />
+    </ItemGroup>
+    
+</Project>
