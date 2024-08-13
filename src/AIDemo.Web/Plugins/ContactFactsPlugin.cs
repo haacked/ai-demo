@@ -1,24 +1,24 @@
 using System.ComponentModel;
+using AIDemo.Hubs;
 using AIDemo.Web.Messages;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
-using Haack.AIDemoWeb.SemanticKernel.Plugins;
-using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
-using OpenAI;
-using AIDemo.Hubs;
+using Microsoft.SemanticKernel.Embeddings;
 using Pgvector;
 using Pgvector.EntityFrameworkCore;
 
 namespace Haack.AIDemoWeb.Plugins;
 
-public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClient client, IOptions<OpenAIOptions> options, IHubContext<BotHub> hubContext)
+#pragma warning disable SKEXP0001
+public class ContactFactsPlugin(
+    AIDemoDbContext db,
+    ITextEmbeddingGenerationService embeddingClient,
+    IHubContext<BotHub> hubContext)
+#pragma warning restore SKEXP0001
 {
-    OpenAIOptions Options { get; } = options.Value;
-
     [KernelFunction]
     [Description(
         """"
@@ -65,17 +65,19 @@ public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClient client, IOption
             return Array.Empty<ContactFactResult>();
         }
 
-        var embeddingClient = client.GetEmbeddingClient(Options.EmbeddingModel);
-
         // Calculate the embedding for the question.
+#pragma warning disable SKEXP0001
         var embeddings = await embeddingClient.GenerateEmbeddingAsync(
             question,
             cancellationToken: cancellationToken);
+#pragma warning restore SKEXP0001
 
-        if (embeddings is null)
+        if (embeddings.Length is 0)
         {
             return [];
         }
+
+        var embeddingVector = new Vector(embeddings);
 
         var contactNameIdentifiers = contacts.Select(c => c.ResourceName).ToList();
 
@@ -86,7 +88,7 @@ public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClient client, IOption
             {
                 Name = f.Contact.Names.FirstOrDefault(),
                 Fact = f,
-                Distance = f.Embeddings.CosineDistance(embeddings),
+                Distance = f.Embeddings.CosineDistance(embeddingVector),
             })
             .Where(x => x.Distance <= 0.25)
             .OrderBy(x => x.Distance)
@@ -123,14 +125,14 @@ public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClient client, IOption
         string justification,
         CancellationToken cancellationToken)
     {
-        var embeddingClient = client.GetEmbeddingClient(Options.EmbeddingModel);
-
         // Calculate the embedding for the question.
+#pragma warning disable SKEXP0001
         var embeddings = await embeddingClient.GenerateEmbeddingAsync(
             question,
             cancellationToken: cancellationToken);
+#pragma warning restore SKEXP0001
 
-        if (embeddings is null)
+        if (embeddings.Length is 0)
         {
             return null;
         }
@@ -228,13 +230,14 @@ public class ContactFactsPlugin(AIDemoDbContext db, OpenAIClient client, IOption
 
     async Task<ReadOnlyMemory<float>> GetEmbeddingsAsync(string fact, CancellationToken cancellationToken)
     {
-        var embeddingClient = client.GetEmbeddingClient(Options.EmbeddingModel);
         try
         {
+#pragma warning disable SKEXP0001
             var response = await embeddingClient.GenerateEmbeddingAsync(
             fact,
             cancellationToken: cancellationToken);
-            return response.Value.Vector;
+#pragma warning restore SKEXP0001
+            return response;
         }
 #pragma warning disable CA1031
         catch (Exception)
