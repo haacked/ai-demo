@@ -11,32 +11,12 @@ using ModelContextProtocol.Protocol.Transport;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Create an MCPClient for the GitHub server
-await using var gitHubMcpClient = await McpClientFactory.CreateAsync(new StdioClientTransport(new()
-{
-    Name = "GitHub",
-    Command = "npx",
-    Arguments = ["-y", "@modelcontextprotocol/server-github"],
-}));
-
-// Create an MCPClient for the Bluesky server
-await using var blueSky = await McpClientFactory.CreateAsync(new StdioClientTransport(new()
-{
-    Name = "BlueSky",
-    Command = "npx",
-    Arguments = ["-y", "mcp-server-bluesky"]
-}));
-
-// Retrieve the list of tools available on the GitHub server
-var gitHubTools = await gitHubMcpClient.ListToolsAsync().ConfigureAwait(false);
-var blueSkyTools = await blueSky.ListToolsAsync().ConfigureAwait(false);
 // Add services to the container.
 builder
     .AddServiceDefaults()
     .AddClients()
     .AddDatabase()
     .AddOpenAIClient()
-    .AddSemanticKernel(gitHubTools, blueSkyTools)
     .AddAuthentication()
     .AddMassTransitConfig()
     .Configure<GitHubOptions>()
