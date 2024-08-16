@@ -71,7 +71,6 @@
         <ProjectReference Include="..\AIDemo.Entities\AIDemo.Entities.csproj" />
         <ProjectReference Include="..\AIDemo.Hubs\AIDemo.Hubs.csproj" />
         <ProjectReference Include="..\AIDemo.Contracts\AIDemo.Contracts.csproj" />
-        <ProjectReference Include="..\AIDemo.SemanticKernel\AIDemo.SemanticKernel.csproj" />
         <ProjectReference Include="..\AIDemo.ServiceDefaults\AIDemo.ServiceDefaults.csproj" />
     </ItemGroup>
 

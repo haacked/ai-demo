@@ -1,22 +1,17 @@
 using System.Security.Claims;
 using System.Text.Json;
 using AIDemo.Entities;
-using AIDemo.Hubs;
 using AIDemo.Library.Clients;
-using AIDemo.SemanticKernel.Plugins;
 using AIDemo.Web.Startup;
-using Haack.AIDemoWeb.SemanticKernel.Plugins;
 using Haack.AIDemoWeb.Startup.Config;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using ModelContextProtocol.Client;
 using Refit;
 using Serious;
-using Serious.ChatFunctions;
 using LoggingHttpMessageHandler = AIDemo.Library.Clients.LoggingHttpMessageHandler;
 
 namespace Haack.AIDemoWeb.Startup;
@@ -35,36 +30,11 @@ public static class ServiceExtensions
             options.ApiKey.Require())
         .AddOpenAITextEmbeddingGeneration(modelId: options.EmbeddingModel);
 
-        builder.Services
-            .AddTransient<ContactFactsPlugin>()
-            .AddTransient<ContactPlugin>()
-            .AddTransient<WeatherPlugin>()
-            .AddTransient<UnitConverterPlugin>()
-            .AddTransient<LocationPlugin>();
-
         builder.Services.AddTransient<Kernel>(serviceProvider =>
         {
             var kernel = new Kernel(serviceProvider);
-            kernel.Plugins.AddFromFunctions("GitHub", gitHubClientTools.Select(aiFunction => aiFunction.AsKernelFunction()));
-            kernel.Plugins.AddFromFunctions("BlueSky", blueSkyClientTools.Select(aiFunction => aiFunction.AsKernelFunction()));
 
-            var filter = new FunctionSignalFilter(serviceProvider.GetRequiredService<IHubContext<BotHub>>());
-            kernel.FunctionInvocationFilters.Add(filter);
-            kernel.AutoFunctionInvocationFilters.Add(filter);
-#pragma warning disable CS0618 // Type or member is obsolete
-            kernel.FunctionInvoked += (_, args) =>
-            {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                filter.OnFunctionInvokedAsync(args);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            };
-
-            kernel.ImportPluginFromType<ContactFactsPlugin>();
-            kernel.ImportPluginFromType<ContactPlugin>();
-            kernel.ImportPluginFromType<UnitConverterPlugin>();
-            kernel.ImportPluginFromType<WeatherPlugin>();
-            kernel.ImportPluginFromType<LocationPlugin>();
-
+            // TODO: Stuff will go here.
             return kernel;
         });
 
