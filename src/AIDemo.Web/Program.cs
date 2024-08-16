@@ -14,7 +14,6 @@ builder
     .AddClients()
     .AddDatabase()
     .AddOpenAIClient()
-    .AddSemanticKernel()
     .AddAuthentication()
     .AddMassTransitConfig()
     .Configure<GitHubOptions>()
