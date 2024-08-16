@@ -1,23 +1,18 @@
 using System.Security.Claims;
 using System.Text.Json;
-using AIDemo.Hubs;
 using AIDemo.Web.Startup;
 using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.Library.Clients;
-using Haack.AIDemoWeb.Plugins;
-using Haack.AIDemoWeb.SemanticKernel.Plugins;
 using Haack.AIDemoWeb.Startup.Config;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using Refit;
 using Serious;
-using Serious.ChatFunctions;
 
 namespace Haack.AIDemoWeb.Startup;
 
@@ -35,38 +30,10 @@ public static class ServiceExtensions
         .AddOpenAITextEmbeddingGeneration(modelId: options.EmbeddingModel, openAIClient: new OpenAIClient(options.ApiKey));
 #pragma warning restore SKEXP0010
 
-        builder.Services
-            .AddTransient<ContactFactsPlugin>()
-            .AddTransient<ContactPlugin>()
-            .AddTransient<WeatherPlugin>()
-            .AddTransient<UnitConverterPlugin>()
-            .AddTransient<LocationPlugin>();
-
         builder.Services.AddTransient<Kernel>(serviceProvider =>
         {
             var kernel = new Kernel(serviceProvider);
-
-#pragma warning disable SKEXP0001
-            var filter = new FunctionSignalFilter(serviceProvider.GetRequiredService<IHubContext<BotHub>>());
-            kernel.FunctionInvocationFilters.Add(filter);
-            kernel.AutoFunctionInvocationFilters.Add(filter);
-#pragma warning disable CS0618 // Type or member is obsolete
-            kernel.FunctionInvoked += (_, args) =>
-            {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                filter.OnFunctionInvokedAsync(args);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            };
-
-#pragma warning restore CS0618 // Type or member is obsolete
-#pragma warning restore SKEXP0001
-
-            kernel.ImportPluginFromType<ContactFactsPlugin>();
-            kernel.ImportPluginFromType<ContactPlugin>();
-            kernel.ImportPluginFromType<UnitConverterPlugin>();
-            kernel.ImportPluginFromType<WeatherPlugin>();
-            kernel.ImportPluginFromType<LocationPlugin>();
-
+            // TODO: Stuff will go here.
             return kernel;
         });
 
