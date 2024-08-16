@@ -1,16 +1,13 @@
 using System.Security.Claims;
 using System.Text.Json;
 using AIDemo.Web.Startup;
-using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.Entities;
 using Haack.AIDemoWeb.Library;
 using Haack.AIDemoWeb.Library.Clients;
-using Haack.AIDemoWeb.Startup.Config;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SemanticKernel;
 using Refit;
 using Serious;
 
@@ -18,28 +15,6 @@ namespace Haack.AIDemoWeb.Startup;
 
 public static class ServiceExtensions
 {
-    public static IHostApplicationBuilder AddSemanticKernel(this IHostApplicationBuilder builder)
-    {
-        var options = builder.GetConfigurationSection<OpenAIOptions>().Require();
-
-#pragma warning disable SKEXP0010
-        builder.Services.AddOpenAIChatCompletion(
-            options.Model,
-            options.ApiKey.Require())
-        // Ugh, I think it's dumb I have to pass an OpenAIClient here. I hope they fix that up soon.
-        .AddOpenAITextEmbeddingGeneration(modelId: options.EmbeddingModel, openAIClient: new OpenAIClient(options.ApiKey));
-#pragma warning restore SKEXP0010
-
-        builder.Services.AddTransient<Kernel>(serviceProvider =>
-        {
-            var kernel = new Kernel(serviceProvider);
-            // TODO: Stuff will go here.
-            return kernel;
-        });
-
-        return builder;
-    }
-
     public static IHostApplicationBuilder AddDatabase(this IHostApplicationBuilder builder)
     {
         builder.AddDbInitializationServices<AIDemoDbInitializer, AIDemoDbContext>()
