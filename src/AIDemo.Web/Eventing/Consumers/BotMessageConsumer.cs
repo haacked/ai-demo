@@ -55,18 +55,11 @@ public class BotMessageConsumer(
 
         history.AddUserMessage(message);
 
-        // Enable auto function calling
-        OpenAIPromptExecutionSettings openAiPromptExecutionSettings = new()
-        {
-            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
-        };
-
         var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 
         // Get the response from the AI
         var result = await chatCompletionService.GetChatMessageContentAsync(
             history,
-            executionSettings: openAiPromptExecutionSettings,
             kernel: kernel);
 
         // Add the message from the agent to the chat history
