@@ -66,18 +66,14 @@ public class ContactFactsPlugin(
         }
 
         // Calculate the embedding for the question.
-#pragma warning disable SKEXP0001
-        var embeddings = await embeddingClient.GenerateEmbeddingAsync(
+        var embeddings = await GetEmbeddingsVectorAsync(
             question,
             cancellationToken: cancellationToken);
-#pragma warning restore SKEXP0001
 
-        if (embeddings.Length is 0)
+        if (embeddings.Memory.Length is 0)
         {
             return [];
         }
-
-        var embeddingVector = new Vector(embeddings);
 
         var contactNameIdentifiers = contacts.Select(c => c.ResourceName).ToList();
 
@@ -88,7 +84,7 @@ public class ContactFactsPlugin(
             {
                 Name = f.Contact.Names.FirstOrDefault(),
                 Fact = f,
-                Distance = f.Embeddings.CosineDistance(embeddingVector),
+                Distance = f.Embeddings.CosineDistance(embeddings),
             })
             .Where(x => x.Distance <= 0.25)
             .OrderBy(x => x.Distance)
@@ -126,13 +122,11 @@ public class ContactFactsPlugin(
         CancellationToken cancellationToken)
     {
         // Calculate the embedding for the question.
-#pragma warning disable SKEXP0001
-        var embeddings = await embeddingClient.GenerateEmbeddingAsync(
+        var embeddings = await GetEmbeddingsVectorAsync(
             question,
             cancellationToken: cancellationToken);
-#pragma warning restore SKEXP0001
 
-        if (embeddings.Length is 0)
+        if (embeddings.Memory.Length is 0)
         {
             return null;
         }
@@ -202,7 +196,7 @@ public class ContactFactsPlugin(
                 !contact.Facts.Any(f => f.Content.Equals(fact, StringComparison.OrdinalIgnoreCase)))
             {
                 // Generate chat embedding for fact.
-                var embeddings = await GetEmbeddingsAsync(fact, cancellationToken);
+                var embeddings = await GetEmbeddingsVectorAsync(fact, cancellationToken);
 
                 // TODO: Let's ask GPT if this fact is already known or changes an existing fact.
                 contact.Facts.Add(new ContactFact
@@ -210,7 +204,7 @@ public class ContactFactsPlugin(
                     Contact = contact,
                     ContactId = contact.Id,
                     Content = fact,
-                    Embeddings = new Vector(embeddings),
+                    Embeddings = embeddings,
                     Justification = justification,
                     Source = source,
                 });
@@ -228,7 +222,7 @@ public class ContactFactsPlugin(
             .FirstOrDefaultAsync(c => c.Names.Any(n => EF.Functions.ILike(n.UnstructuredName, contactName)), cancellationToken);
     }
 
-    async Task<ReadOnlyMemory<float>> GetEmbeddingsAsync(string fact, CancellationToken cancellationToken)
+    async Task<Vector> GetEmbeddingsVectorAsync(string fact, CancellationToken cancellationToken)
     {
         try
         {
@@ -237,13 +231,13 @@ public class ContactFactsPlugin(
             fact,
             cancellationToken: cancellationToken);
 #pragma warning restore SKEXP0001
-            return response;
+            return new Vector(response);
         }
 #pragma warning disable CA1031
         catch (Exception)
 #pragma warning restore CA1031
         {
         }
-        return new ReadOnlyMemory<float>();
+        return new Vector(new ReadOnlyMemory<float>());
     }
 }
