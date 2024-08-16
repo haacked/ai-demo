@@ -4,7 +4,6 @@ using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 using AIDemo.Hubs;
 using StackExchange.Redis;
 
@@ -55,15 +54,6 @@ public class BotMessageConsumer(
 
         history.AddUserMessage(message);
 
-        // Enable auto function calling
-        OpenAIPromptExecutionSettings openAiPromptExecutionSettings = new()
-        {
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(options: new()
-            {
-                RetainArgumentTypes = true
-            })
-        };
-
         var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 
         try
@@ -71,7 +61,6 @@ public class BotMessageConsumer(
             // Get the response from the AI
             var result = await chatCompletionService.GetChatMessageContentAsync(
                 history,
-                executionSettings: openAiPromptExecutionSettings,
                 kernel: kernel);
 
             // Add the message from the agent to the chat history
