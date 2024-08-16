@@ -76,7 +76,7 @@ public class BotMessageConsumer(
             "I got a response. It should show up in chat",
             $"{result.Role}: {result.Content}");
 
-        if (result.Content is not null)
+        if (result.Content is not (null or []))
         {
             await SendResponseAsync(result.Content, ChatMessageRole.Assistant);
         }
