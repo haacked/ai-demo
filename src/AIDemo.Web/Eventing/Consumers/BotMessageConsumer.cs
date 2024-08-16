@@ -12,6 +12,12 @@ public class BotMessageConsumer(IHubContext<BotHub> hubContext) : IConsumer<BotM
         // TODO: We probably want to provide the author to the system prompt.
         var (message, author, connectionId, userIdentifier) = context.Message;
 
+        if (message.StartsWith('.'))
+        {
+            // Ignore commands for now.
+            return;
+        }
+
         await SendThought("The message addressed me! I'll try and respond.");
 
         // TODO: Sprinkle some of that AI magic here.
