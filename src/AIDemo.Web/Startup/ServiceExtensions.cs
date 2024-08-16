@@ -3,13 +3,10 @@ using System.Text.Json;
 using AIDemo.Entities;
 using AIDemo.Library.Clients;
 using AIDemo.Web.Startup;
-using Haack.AIDemoWeb.Startup.Config;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SemanticKernel;
-using ModelContextProtocol.Client;
 using Refit;
 using Serious;
 using LoggingHttpMessageHandler = AIDemo.Library.Clients.LoggingHttpMessageHandler;
@@ -18,29 +15,6 @@ namespace Haack.AIDemoWeb.Startup;
 
 public static class ServiceExtensions
 {
-    public static IHostApplicationBuilder AddSemanticKernel(
-        this IHostApplicationBuilder builder,
-        IEnumerable<McpClientTool> gitHubClientTools,
-        IEnumerable<McpClientTool> blueSkyClientTools)
-    {
-        var options = builder.GetConfigurationSection<OpenAIOptions>().Require();
-
-        builder.Services.AddOpenAIChatCompletion(
-            options.Model,
-            options.ApiKey.Require())
-        .AddOpenAITextEmbeddingGeneration(modelId: options.EmbeddingModel);
-
-        builder.Services.AddTransient<Kernel>(serviceProvider =>
-        {
-            var kernel = new Kernel(serviceProvider);
-
-            // TODO: Stuff will go here.
-            return kernel;
-        });
-
-        return builder;
-    }
-
     public static IHostApplicationBuilder AddDatabase(this IHostApplicationBuilder builder)
     {
         builder.AddDbInitializationServices<AIDemoDbInitializer, AIDemoDbContext>()
