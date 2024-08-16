@@ -132,9 +132,9 @@ public class ContactFactsPlugin(
         }
 
         // Cosine similarity == 1 - Cosine Distance.
-        var factsQuery = contactNames is not null or []
-            ? db.ContactFacts.Where(f => contactNames.Any(n => f.Contact.Names.Any(cn => EF.Functions.ILike(cn.UnstructuredName, n))))
-            : db.ContactFacts;
+        var factsQuery = contactNames is null or []
+            ? db.ContactFacts
+            : db.ContactFacts.Where(f => contactNames.Any(n => f.Contact.Names.Any(cn => EF.Functions.ILike(cn.UnstructuredName, n))));
 
         var facts = await factsQuery
             .Include(f => f.Contact)
