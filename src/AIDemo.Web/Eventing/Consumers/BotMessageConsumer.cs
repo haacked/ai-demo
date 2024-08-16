@@ -25,31 +25,6 @@ public class BotMessageConsumer(
             userIdentifier ?? Guid.NewGuid().ToString());
         var history = await cache.GetChatHistoryAsync();
 
-        if (message is ".count")
-        {
-            await SendResponseAsync($"I have {history.Count - 1} messages in my history.", ChatMessageRole.Assistant);
-            return;
-        }
-
-        if (message is ".replay" or ".history")
-        {
-            foreach (var msg in history.Skip(1)
-                         .Where(m => m.Content is not null or [])
-                         .Where(m => m.Role == AuthorRole.User || m.Role == AuthorRole.Assistant)) // Skip the system prompt
-            {
-                var chatMessageRole = Enum.Parse<ChatMessageRole>(msg.Role.ToString(), ignoreCase: true);
-                await SendResponseAsync(msg.Content ?? string.Empty, chatMessageRole);
-            }
-            return;
-        }
-
-        if (message is ".clear" or ".clr")
-        {
-            await cache.DeleteChatHistoryAsync();
-            await SendResponseAsync("I have 0 messages in my history.", ChatMessageRole.Assistant);
-            return;
-        }
-
         await SendThought("The message addressed me! I'll try and respond.");
 
         history.AddUserMessage(message);
