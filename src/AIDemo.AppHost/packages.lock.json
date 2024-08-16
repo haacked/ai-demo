@@ -20,15 +20,6 @@
           "Aspire.Hosting": "8.1.0"
         }
       },
-      "Aspire.Hosting.Redis": {
-        "type": "Direct",
-        "requested": "[8.1.0, )",
-        "resolved": "8.1.0",
-        "contentHash": "eqHWC5u1oLfkZ9pG009t9I/JtAmk9rUkTAv1rgwFIFug7CWqbc9E7YHJGCzVJvpLcNgXtlNAmoVHMBOQH1/jqQ==",
-        "dependencies": {
-          "Aspire.Hosting": "8.1.0"
-        }
-      },
       "Aspire.Hosting": {
         "type": "Transitive",
         "resolved": "8.1.0",
