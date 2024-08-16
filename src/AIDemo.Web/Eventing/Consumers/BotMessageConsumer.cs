@@ -2,14 +2,10 @@ using AIDemo.Hubs;
 using AIDemo.Web.Messages;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace AIDemoWeb.Entities.Eventing.Consumers;
 
-public class BotMessageConsumer(
-    IHubContext<BotHub> hubContext,
-    Kernel kernel) : IConsumer<BotMessageReceived>
+public class BotMessageConsumer(IHubContext<BotHub> hubContext) : IConsumer<BotMessageReceived>
 {
     public async Task Consume(ConsumeContext<BotMessageReceived> context)
     {
@@ -18,36 +14,8 @@ public class BotMessageConsumer(
 
         await SendThought("The message addressed me! I'll try and respond.");
 
-
-        var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
-
-        try
-        {
-            // Get the response from the AI
-            var result = await chatCompletionService.GetChatMessageContentAsync(
-                message,
-                kernel: kernel);
-
-            await SendThought(
-                "I got a response. It should show up in chat",
-                $"{result.Role}: {result.Content}");
-
-            if (result.Content is not (null or []))
-            {
-                await SendThought(
-                    "I got a response. It should show up in chat",
-                    $"{result.Role}: {result.Content}");
-
-                if (result.Content is not (null or []))
-                {
-                    await SendResponseAsync(result.Content, ChatMessageRole.Assistant);
-                }
-            }
-        }
-        catch (HttpOperationException e)
-        {
-            await SendResponseAsync(e.ToString(), ChatMessageRole.Assistant);
-        }
+        // TODO: Sprinkle some of that AI magic here.
+        await SendResponseAsync("\ud83d\udca9", ChatMessageRole.Assistant);
 
         return;
 
