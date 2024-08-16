@@ -1,44 +1,30 @@
+using AIDemo.Hubs;
 using AIDemo.Web.Messages;
-using Haack.AIDemoWeb.Library;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
-using AIDemo.Hubs;
-using StackExchange.Redis;
 
 namespace AIDemoWeb.Entities.Eventing.Consumers;
 
 public class BotMessageConsumer(
     IHubContext<BotHub> hubContext,
-    Kernel kernel,
-    IConnectionMultiplexer connectionMultiplexer) : IConsumer<BotMessageReceived>
+    Kernel kernel) : IConsumer<BotMessageReceived>
 {
     public async Task Consume(ConsumeContext<BotMessageReceived> context)
     {
         // TODO: We probably want to provide the author to the system prompt.
         var (message, author, connectionId, userIdentifier) = context.Message;
 
-        var cache = new ChatHistoryCache(
-            connectionMultiplexer,
-            systemPrompt: $"You are a helpful assistant who is concise and to the point. You are in a conversation with {author} with the identifier {userIdentifier}.",
-            userIdentifier ?? Guid.NewGuid().ToString());
-        var history = await cache.GetChatHistoryAsync();
-
         await SendThought("The message addressed me! I'll try and respond.");
 
-        history.AddUserMessage(message);
 
         var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 
         // Get the response from the AI
         var result = await chatCompletionService.GetChatMessageContentAsync(
-            history,
+            message,
             kernel: kernel);
-
-        // Add the message from the agent to the chat history
-        history.AddMessage(result.Role, result.Content ?? string.Empty);
 
         await SendThought(
             "I got a response. It should show up in chat",
@@ -48,8 +34,6 @@ public class BotMessageConsumer(
         {
             await SendResponseAsync(result.Content, ChatMessageRole.Assistant);
         }
-
-        await cache.SaveChatHistoryAsync(history);
 
         return;
 
