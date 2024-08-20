@@ -6,7 +6,6 @@ using AIDemo.Hubs;
 
 namespace Haack.AIDemoWeb.Plugins;
 
-[Experimental("SKEXP0001")]
 public class FunctionSignalFilter(IHubContext<BotHub> hubContext)
     : IFunctionInvocationFilter, IAutoFunctionInvocationFilter
 {

@@ -27,13 +27,11 @@ public static class ServiceExtensions
     {
         var options = builder.GetConfigurationSection<OpenAIOptions>().Require();
 
-#pragma warning disable SKEXP0010
         builder.Services.AddOpenAIChatCompletion(
             options.Model,
             options.ApiKey.Require())
         // Ugh, I think it's dumb I have to pass an OpenAIClient here. I hope they fix that up soon.
         .AddOpenAITextEmbeddingGeneration(modelId: options.EmbeddingModel, openAIClient: new OpenAIClient(options.ApiKey));
-#pragma warning restore SKEXP0010
 
         builder.Services
             .AddTransient<ContactFactsPlugin>()
@@ -46,7 +44,6 @@ public static class ServiceExtensions
         {
             var kernel = new Kernel(serviceProvider);
 
-#pragma warning disable SKEXP0001
             var filter = new FunctionSignalFilter(serviceProvider.GetRequiredService<IHubContext<BotHub>>());
             kernel.FunctionInvocationFilters.Add(filter);
             kernel.AutoFunctionInvocationFilters.Add(filter);
@@ -57,9 +54,6 @@ public static class ServiceExtensions
                 filter.OnFunctionInvokedAsync(args);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             };
-
-#pragma warning restore CS0618 // Type or member is obsolete
-#pragma warning restore SKEXP0001
 
             kernel.ImportPluginFromType<ContactFactsPlugin>();
             kernel.ImportPluginFromType<ContactPlugin>();

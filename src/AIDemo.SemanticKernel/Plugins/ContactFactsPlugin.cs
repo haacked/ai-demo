@@ -12,12 +12,10 @@ using Pgvector.EntityFrameworkCore;
 
 namespace Haack.AIDemoWeb.Plugins;
 
-#pragma warning disable SKEXP0001
 public class ContactFactsPlugin(
     AIDemoDbContext db,
     ITextEmbeddingGenerationService embeddingClient,
     IHubContext<BotHub> hubContext)
-#pragma warning restore SKEXP0001
 {
     [KernelFunction]
     [Description(
@@ -226,11 +224,9 @@ public class ContactFactsPlugin(
     {
         try
         {
-#pragma warning disable SKEXP0001
             var response = await embeddingClient.GenerateEmbeddingAsync(
             fact,
             cancellationToken: cancellationToken);
-#pragma warning restore SKEXP0001
             return new Vector(response);
         }
 #pragma warning disable CA1031

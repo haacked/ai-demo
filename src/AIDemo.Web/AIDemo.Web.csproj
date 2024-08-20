@@ -11,6 +11,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <UseRidGraph>true</UseRidGraph>
     <PackageId>AIDemo.Web</PackageId>
+    <NoWarn>SKEXP0001, SKEXP0010, CA1822, CA2007, CA1062</NoWarn>
   </PropertyGroup>
 
   <Target Name="RunWebpack" AfterTargets="AfterBuild">
