@@ -80,7 +80,19 @@ public class ContactsPageModel(
         return RedirectToPage();
     }
 
-    public async Task<IActionResult> OnPostDeleteAsync()
+    public async Task<IActionResult> OnPostDeleteAsync(int id)
+    {
+        var contact = await db.Contacts.FindAsync(id);
+        if (contact is not null)
+        {
+            db.Contacts.Remove(contact);
+            await db.SaveChangesAsync();
+        }
+        Filter = null;
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostTruncateAsync()
     {
         await db.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Contacts\" CASCADE");
         return RedirectToPage();

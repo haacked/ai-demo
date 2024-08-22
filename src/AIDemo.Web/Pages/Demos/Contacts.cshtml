@@ -42,6 +42,8 @@
                 <th class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
                     Facts
                 </th>
+                <th class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                    Actions
             </tr>
         </thead>
         <tbody class="bg-white dark:bg-slate-800">
@@ -79,14 +81,22 @@
                 <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
                     <div class="flex">
                         @foreach (var fact in contact.Facts) {
-                        <div class="max-w-sm rounded overflow-hidden shadow-lg">
-                            <div class="px-6 py-4">
-                                <p class="text-gray-700 text-sm">
-                                    @fact.Content
-                                </p>
+                            <div class="max-w-sm rounded overflow-hidden shadow-lg">
+                                <div class="px-6 py-4">
+                                    <p class="text-gray-700 text-sm">
+                                        @fact.Content
+                                    </p>
+                                </div>
                             </div>
-                        </div>
                         }
+                    </div>
+                </td>
+                <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                    <div class="flex">
+                        <form method="post">
+                            <input type="hidden" name="id" value="@contact.Id"/>
+                            <button>❌</button>
+                        </form>
                     </div>
                 </td>
             </tr>
@@ -155,6 +165,6 @@
     <form method="post">
         <button type="submit" class="btn btn-primary">Request Contacts</button>
         <button asp-page-handler="import" type="submit" class="btn btn-primary">Import</button>
-        <button asp-page-handler="delete" type="submit" class="btn btn-danger">Truncate</button>
+        <button asp-page-handler="truncate" type="submit" class="btn btn-danger">Truncate</button>
     </form>
 </section>
