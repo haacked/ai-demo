@@ -28,15 +28,22 @@ public class ContactsPageModel(
 
     public int TotalImportedContactsWithFacts { get; private set; }
 
-
     public string? NextPageToken { get; private set; }
+
+    [BindProperty(SupportsGet = true)]
+    public string? Filter { get; set; }
 
     public async Task OnGetAsync(bool showAll = false)
     {
         var contacts = await db
             .Contacts
             .Include(c => c.Facts)
-            .Where(c => showAll || c.Addresses.Count > 0)
+            .Where(c => Filter != null || showAll || c.Addresses.Count > 0)
+#pragma warning disable CA1307
+            .Where(c => Filter == null
+                || c.Names.Any(n => n.GivenName!.Contains(Filter))
+                || c.Names.Any(n => n.FamilyName!.Contains(Filter)))
+#pragma warning restore CA1307
             .OrderByDescending(c => c.Facts.Count)
             .AsNoTracking()
             .ToListAsync();
