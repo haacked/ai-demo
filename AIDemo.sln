@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDemo.Hubs", "src\AIDemo.H
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDemo.SemanticKernel", "src\AIDemo.SemanticKernel\AIDemo.SemanticKernel.csproj", "{CEDC78FB-5DB8-4F64-9196-9517F4C6DF23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDemo.Blazor", "src\AIDemo.Blazor\AIDemo.Blazor.csproj", "{071512D9-E2D9-4080-9CA8-E333B63062F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,10 @@ Global
 		{CEDC78FB-5DB8-4F64-9196-9517F4C6DF23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEDC78FB-5DB8-4F64-9196-9517F4C6DF23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEDC78FB-5DB8-4F64-9196-9517F4C6DF23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{071512D9-E2D9-4080-9CA8-E333B63062F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{071512D9-E2D9-4080-9CA8-E333B63062F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{071512D9-E2D9-4080-9CA8-E333B63062F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{071512D9-E2D9-4080-9CA8-E333B63062F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{367AFC48-B548-40A9-9DEC-B56979EC7082} = {7FCDD3F2-5976-443D-B5C2-AC71C062C0FB}

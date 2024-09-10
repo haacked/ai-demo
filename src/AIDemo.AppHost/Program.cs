@@ -22,6 +22,11 @@ builder.AddProject<AIDemo_Web>("webfrontend")
     .WithReference(postgresdb)
     .WithReference(cache);
 
+builder.AddProject<AIDemo_Blazor>("blazor-web")
+    .WithExternalHttpEndpoints()
+    .WithReference(postgresdb)
+    .WithReference(cache);
+
 if (!builder.ExecutionContext.IsPublishMode)
 {
     // This is only for development.

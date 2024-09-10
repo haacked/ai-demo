@@ -43,5 +43,10 @@
         which ASP.NET Core doesn't have.
         -->
         <NoWarn>CA2007;$(NoWarn)</NoWarn>
+
+        <!--
+        CA5394: Do not use insecure randomness
+        -->
+        <NoWarn>CA5394;$(NoWarn)</NoWarn>
     </PropertyGroup>
 </Project>
