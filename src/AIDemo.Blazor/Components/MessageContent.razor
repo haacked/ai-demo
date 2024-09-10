@@ -1,0 +1,41 @@
+@using AIDemo.Blazor.Library
+@using Haack.AIDemoWeb.Library.Clients
+<span class="text-md relative">
+    @{ var startIndex = 0; }
+    @for (int i = 0; i < Message.Annotations?.Count; i++) {
+        var annotation = Message.Annotations[i];
+        var annotationIndex = i + 1;
+        <span>@Message.Text[startIndex..annotation.StartIndex]</span>
+        <a class="cursor-pointer" @onclick="() => ToggleAnnotation(annotationIndex)">[@annotationIndex]</a>
+        @if (_shownAnnotations.Contains(annotationIndex)) {
+            <div class="absolute">
+                <div class="p-4 ml-2 text-xs w-64 rounded-md bg-gray-800 text-gray-50">
+                    <sup class="text-xs">@annotationIndex</sup>@(annotation.TextToReplace ?? annotation.InputFileId)
+                </div>
+            </div>
+        }
+
+        startIndex = annotation.EndIndex;
+    }
+    <span>
+        @if (Message is { Text.Length: > 0 } && startIndex < Message.Text.Length) {
+            @Message.Text[startIndex..]
+        }
+    </span>
+</span>
+
+@code{
+    readonly List<int> _shownAnnotations = new();
+
+    [Parameter]
+    public BlazorMessage Message { get; set; } = null!;
+
+    void ToggleAnnotation(int annotationIndex)
+    {
+        if (_shownAnnotations.Contains(annotationIndex)) {
+            _shownAnnotations.Remove(annotationIndex);
+        } else {
+            _shownAnnotations.Add(annotationIndex);
+        }
+    }
+}
