@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace Haack.AIDemoWeb.Library;
+namespace AIDemo.Library.Clients;
 
 public static class StringExtensions
 {

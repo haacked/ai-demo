@@ -1,6 +1,6 @@
 using OpenAI.Assistants;
 
-namespace Haack.AIDemoWeb.Library.Clients;
+namespace AIDemo.Library.Clients;
 
 public record BlazorMessage(
     string Text,

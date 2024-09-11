@@ -17,12 +17,7 @@ var cache = builder
     .WithDataVolume()
     .WithPersistence(TimeSpan.FromSeconds(10));
 
-builder.AddProject<AIDemo_Web>("webfrontend")
-    .WithExternalHttpEndpoints()
-    .WithReference(postgresdb)
-    .WithReference(cache);
-
-builder.AddProject<AIDemo_Blazor>("blazor-web")
+builder.AddProject<AIDemo_Blazor>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithReference(postgresdb)
     .WithReference(cache);

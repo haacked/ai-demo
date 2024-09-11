@@ -1,6 +1,6 @@
 using AIDemo.Hubs;
 using AIDemo.Web.Messages;
-using Haack.AIDemoWeb.Library;
+using AIDemo.Library;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using OpenAI;

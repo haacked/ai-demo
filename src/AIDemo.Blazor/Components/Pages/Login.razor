@@ -1,0 +1,55 @@
+@page "/login"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager Navigation
+@inject IAuthenticationSchemeProvider SchemeProvider
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
+    <h1 class="text-lg font-semibold">Authentication</h1>
+    <p class="lead text-left">Sign in using one of these external providers:</p>
+
+    @foreach (var scheme in schemes.Where(p => p.DisplayName?.Length > 0).OrderBy(p => p.DisplayName)) {
+        <button class="btn btn-lg btn-success m-1" @onclick="() => Challenge(scheme.Name)">
+            Sign in using @scheme.DisplayName
+            @if (IsAuthenticatedForScheme(scheme)) {
+                <span class="text-success">✔</span>
+            }
+        </button>
+    }
+</section>
+
+@code {
+    IEnumerable<AuthenticationScheme> schemes = Enumerable.Empty<AuthenticationScheme>();
+    AuthenticationState authState = null!;
+    string? returnUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("returnUrl", out var param))
+        {
+            returnUrl = param.FirstOrDefault();
+        }
+
+        schemes = await SchemeProvider.GetAllSchemesAsync();
+        authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+
+    bool IsAuthenticatedForScheme(AuthenticationScheme scheme)
+    {
+        var user = authState.User;
+
+        // Return true if the user is authenticated for this scheme.
+        return user.Identity?.IsAuthenticated is true
+               && user.Identities.Any(i => i.AuthenticationType == scheme.Name);
+    }
+
+    private void Challenge(string provider)
+    {
+        var returnUrlParam = string.IsNullOrEmpty(returnUrl) ? string.Empty : $"?returnUrl={returnUrl}";
+        Navigation.NavigateTo($"authentication/{provider}{returnUrlParam}");
+    }
+}

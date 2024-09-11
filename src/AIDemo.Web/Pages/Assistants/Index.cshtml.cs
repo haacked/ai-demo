@@ -1,4 +1,4 @@
-using Haack.AIDemoWeb.Library;
+using AIDemo.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OpenAI;

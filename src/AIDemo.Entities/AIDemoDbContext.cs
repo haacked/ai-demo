@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Haack.AIDemoWeb.Entities;
+namespace AIDemo.Entities;
 
 public class AIDemoDbContext(DbContextOptions<AIDemoDbContext> options) : DbContext(options)
 {

@@ -1,24 +1,35 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
 
-<main class="page bg-gray-50 min-w-0 flex flex-col h-screen w-full">
-
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main role="main" class="pb-3">
-        @Body
-    </main>
-
-    <footer class="m-4 border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - Phil Haack.
+<CascadingAuthenticationState>
+    <div class="page bg-gray-50 min-w-0 flex flex-col h-screen w-full">
+        <div class="top-row pl-3 bg-gray-800 w-full">
+            <div class="container mx-auto">
+                <a class="text-white" href="">AIDemo</a>
+            </div>
         </div>
-    </footer>
-</main>
+
+        <div class="flex flex-row flex-1">
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+
+            <main role="main" class="flex-1 pb-3">
+                @Body
+            </main>
+        </div>
+
+        <footer class="m-4 border-top footer text-muted">
+            <div class="container">
+                &copy; 2024 - Phil Haack.
+            </div>
+        </footer>
+    </div>
+</CascadingAuthenticationState>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+

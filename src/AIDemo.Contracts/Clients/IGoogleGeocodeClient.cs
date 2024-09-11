@@ -1,6 +1,6 @@
 using Refit;
 
-namespace Haack.AIDemoWeb.Library.Clients;
+namespace AIDemo.Library.Clients;
 
 public interface IGoogleGeocodeClient
 {

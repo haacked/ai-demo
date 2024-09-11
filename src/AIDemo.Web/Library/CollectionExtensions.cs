@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using MassTransit.Internals;
-namespace Haack.AIDemoWeb.Library;
+namespace AIDemo.Library;
 
 public static class CollectionExtensions
 {

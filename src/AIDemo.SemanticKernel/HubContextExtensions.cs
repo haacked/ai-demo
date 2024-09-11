@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.SemanticKernel;
 using AIDemo.Hubs;
 
-namespace Haack.AIDemoWeb.Library;
+namespace AIDemo.Library.Clients;
 
 public static class HubContextExtensions
 {

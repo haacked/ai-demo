@@ -1,12 +1,12 @@
 using System.Security.Claims;
-using Haack.AIDemoWeb.Entities;
+using AIDemo.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using OpenAI;
 using OpenAI.Assistants;
 using Serious;
-using AssistantThread = Haack.AIDemoWeb.Entities.AssistantThread;
+using AssistantThread = AIDemo.Entities.AssistantThread;
 
 namespace AIDemoWeb.Demos.Pages.Assistants;
 

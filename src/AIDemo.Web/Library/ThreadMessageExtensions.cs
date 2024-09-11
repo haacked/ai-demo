@@ -1,7 +1,7 @@
-using Haack.AIDemoWeb.Library.Clients;
+using AIDemo.Library.Clients;
 using OpenAI.Assistants;
 
-namespace Haack.AIDemoWeb.Library;
+namespace AIDemo.Library;
 
 public static class ThreadMessageExtensions
 {

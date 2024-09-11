@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using Haack.AIDemoWeb.Library.Clients;
+using AIDemo.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;

@@ -1,5 +1,5 @@
-using Haack.AIDemoWeb.Entities;
-using Haack.AIDemoWeb.Library;
+using AIDemo.Entities;
+using AIDemo.Library;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -27,7 +27,7 @@ public class ThreadDetailsPageModel(AIDemoDbContext db, OpenAIClient openAIClien
 
     public IReadOnlyList<SelectListItem> Assistants { get; private set; } = Array.Empty<SelectListItem>();
 
-    public Haack.AIDemoWeb.Entities.AssistantThread ThreadEntity { get; private set; } = default!;
+    public AIDemo.Entities.AssistantThread ThreadEntity { get; private set; } = default!;
 
     public AssistantThread Thread { get; private set; } = default!;
 

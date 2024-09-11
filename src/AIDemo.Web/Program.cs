@@ -4,7 +4,7 @@ using Haack.AIDemoWeb.Components; // Rider highlights this line for some reason,
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using AIDemo.Hubs;
-using Haack.AIDemoWeb.Library;
+using AIDemo.Library;
 
 var builder = WebApplication.CreateBuilder(args);
 

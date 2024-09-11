@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using Haack.AIDemoWeb.Startup.Config
+@using Microsoft.Extensions.Options
+@inject IOptions<GitHubOptions> GithubOptions;
+@inject NavigationManager Navigation
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -12,6 +17,7 @@
     <script src="/dist/js/main.js"></script>
     <script src="https://kit.fontawesome.com/ff2f030d73.js" crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="favicon.png"/>
+    <link rel="stylesheet" href="app.css"/>
     <HeadOutlet/>
 </head>
 
@@ -21,3 +27,17 @@
 </body>
 
 </html>
+
+@code {
+    protected override void OnInitialized()
+    {
+        var hostOptions = GithubOptions.Value;
+        // This is just here to make it easier to test the site locally.
+        var currentHost = new Uri(Navigation.Uri).Host;
+
+        if (hostOptions.Host is not null && currentHost != hostOptions.Host)
+        {
+            Navigation.NavigateTo($"https://{hostOptions.Host}/");
+        }
+    }
+}

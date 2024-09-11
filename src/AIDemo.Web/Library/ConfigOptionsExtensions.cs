@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using OpenAI;
 using Serious;
 
-namespace Haack.AIDemoWeb.Library;
+namespace AIDemo.Library;
 
 public static class ConfigOptionsExtensions
 {

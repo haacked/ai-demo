@@ -1,6 +1,6 @@
 using AIDemo.Web.Messages;
 
-namespace Haack.AIDemoWeb.Library;
+namespace AIDemo.Library.Clients;
 
 using System;
 

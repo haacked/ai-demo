@@ -1,7 +1,7 @@
 using Google.Apis.PeopleService.v1.Data;
-using Haack.AIDemoWeb.Entities;
+using AIDemo.Entities;
 using Haack.AIDemoWeb.Eventing.Consumers;
-using Haack.AIDemoWeb.Library;
+using AIDemo.Library;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;

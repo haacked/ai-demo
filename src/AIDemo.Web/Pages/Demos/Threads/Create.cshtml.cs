@@ -1,10 +1,10 @@
-using Haack.AIDemoWeb.Entities;
+using AIDemo.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using OpenAI;
 using Refit;
-using AssistantThread = Haack.AIDemoWeb.Entities.AssistantThread;
+using AssistantThread = AIDemo.Entities.AssistantThread;
 
 #pragma warning disable CA2227, CA1002, CA1819
 

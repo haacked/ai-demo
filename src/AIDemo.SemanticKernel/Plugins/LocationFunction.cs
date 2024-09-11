@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using AIDemo.Web.Messages;
-using Haack.AIDemoWeb.Entities;
-using Haack.AIDemoWeb.Library.Clients;
+using AIDemo.Entities;
+using AIDemo.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;

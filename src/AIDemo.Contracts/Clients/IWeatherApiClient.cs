@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Refit;
 
-namespace Haack.AIDemoWeb.Library.Clients;
+namespace AIDemo.Library.Clients;
 
 public interface IWeatherApiClient
 {

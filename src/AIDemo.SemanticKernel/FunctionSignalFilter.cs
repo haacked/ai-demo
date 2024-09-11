@@ -1,10 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
-using Haack.AIDemoWeb.Library;
+using AIDemo.Library.Clients;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.SemanticKernel;
 using AIDemo.Hubs;
 
-namespace Haack.AIDemoWeb.Plugins;
+namespace AIDemo.SemanticKernel.Plugins;
 
 public class FunctionSignalFilter(IHubContext<BotHub> hubContext)
     : IFunctionInvocationFilter, IAutoFunctionInvocationFilter

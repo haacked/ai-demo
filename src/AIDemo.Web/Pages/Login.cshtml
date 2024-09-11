@@ -1,21 +1,2 @@
 @page
 @model AIDemoWeb.Pages.LoginPageModel
-
-<section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
-    <h1 class="text-lg font-semibold">Authentication</h1>
-    <p class="lead text-left">Sign in using one of these external providers:</p>
-
-    @foreach (var scheme in Model.Schemes.OrderBy(p => p.DisplayName)) {
-        <form asp-page="SignIn" method="post">
-            <input type="hidden" name="Provider" value="@scheme.Name" />
-            <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
-
-            <button class="btn btn-lg btn-success m-1" type="submit">
-                Sign in using @scheme.DisplayName
-                @if (Model.IsAuthenticatedForScheme(scheme)) {
-                    <span class="text-success">✔</span>
-                }
-            </button>
-        </form>
-    }
-</section>

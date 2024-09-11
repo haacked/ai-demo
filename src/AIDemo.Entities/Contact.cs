@@ -4,7 +4,7 @@ using Google.Apis.PeopleService.v1.Data;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
-namespace Haack.AIDemoWeb.Entities;
+namespace AIDemo.Entities;
 
 #pragma warning disable CA1002
 

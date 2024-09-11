@@ -1,4 +1,4 @@
-namespace Haack.AIDemoWeb.Entities;
+namespace AIDemo.Entities;
 
 /// <summary>
 /// A thread with an Open AI assistant. There's no API to list threads, so we want to track them ourselves.

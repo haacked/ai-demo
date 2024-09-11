@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 
-namespace Haack.AIDemoWeb.Library;
+namespace AIDemo.Library;
 
 public static class HttpContextExtensions
 {

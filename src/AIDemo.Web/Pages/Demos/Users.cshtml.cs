@@ -1,4 +1,4 @@
-using Haack.AIDemoWeb.Entities;
+using AIDemo.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
