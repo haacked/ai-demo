@@ -1,8 +1,10 @@
 using AIDemo.Blazor.Components;
+using AIDemo.Hubs;
 using AIDemo.Library.Clients;
 using Haack.AIDemoWeb.Startup;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +40,16 @@ app.MapGet("/authentication/{provider}",
             authenticationSchemes: [provider]);
     });
 
+app.MapGet("/logout", async ctx =>
+{
+    await ctx.SignOutAsync(
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        new AuthenticationProperties
+        {
+            RedirectUri = "/"
+        });
+});
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -53,5 +65,9 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+// The SignalR hubs used in my talks.
+app.MapHub<AssistantHub>("/assistant-hub");
+app.MapHub<BotHub>("/bot-hub");
 
 app.Run();
