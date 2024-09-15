@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AIDemo.Blazor\AIDemo.Blazor.csproj" />
-    <ProjectReference Include="..\AIDemo.Web\AIDemo.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
