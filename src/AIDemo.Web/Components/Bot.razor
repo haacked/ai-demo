@@ -9,11 +9,6 @@
 <PageTitle>Home</PageTitle>
 
 <div class="max-w-sm mx-auto">
-    <div class="flex flex-row justify-between items-center py-2">
-        <p class="text-md text-white bg-blue-500 px-2 py-1 font-semibold animate-pulse">
-            Clippy
-        </p>
-    </div>
     <div class="bg-white border border-gray-200 rounded-lg shadow relative">
         <div class="border-b-2 border-b-gray-200 py-3 px-6 flex flex-row justify-between items-center">
             <div class="flex flex-row items-center space-x-1.5">
@@ -30,7 +25,10 @@
             @foreach (var message in _messages) {
                 <div class="py-2 flex flex-row w-full @(message.IsUser ? "justify-end" : "justify-start")">
                     <div class="@(message.IsUser ? "order-2" : "order-1")">
-                        <Avatar Username="@(message.IsUser ? Username : null)" />
+                        <Avatar
+                            Username="@(message.IsUser ? Username : null)"
+                            AvatarUrl="@(message.IsUser? AvatarUrl : null)"
+                        />
                     </div>
                     <div class="px-2 w-fit py-3 flex flex-col rounded-lg text-white @(message.IsUser ? "order-1 mr-2 bg-blue-500" : "order-2 ml-2 bg-green-500")">
                         <span class="text-xs text-gray-200">
