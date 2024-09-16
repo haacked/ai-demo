@@ -213,33 +213,6 @@
           "System.Text.Encodings.Web": "8.0.0"
         }
       },
-      "TagHelperPack": {
-        "type": "Direct",
-        "requested": "[0.12.0, )",
-        "resolved": "0.12.0",
-        "contentHash": "zd1XbvqTVEfkqwdQ1A/9YpHM+O1yUpRTPakVirxFKTT9mx3HgiuOaZed8MeQRkpjwlrS6VyTzhKiK0wU+LRWXg==",
-        "dependencies": {
-          "HtmlSanitizer": "8.0.723",
-          "Markdig": "0.30.2"
-        }
-      },
-      "AngleSharp": {
-        "type": "Transitive",
-        "resolved": "0.17.1",
-        "contentHash": "5MPI4bbixlwxb0W/smOMeIR+QlxMy5/5jD+WnIAw4pBC+7AhLPe5bS3cLgQMJyvd6q0A48sG+uYOt/ep406GLA==",
-        "dependencies": {
-          "System.Buffers": "4.5.1",
-          "System.Text.Encoding.CodePages": "6.0.0"
-        }
-      },
-      "AngleSharp.Css": {
-        "type": "Transitive",
-        "resolved": "0.17.0",
-        "contentHash": "bg0AcugmX6BFEi/DHG61QrwRU8iuiX4H8LZehdIzYdqOM/dgb3BsCTzNIcc1XADn4+xfQEdVwJYTSwUxroL4vg==",
-        "dependencies": {
-          "AngleSharp": "[0.17.0, 0.18.0)"
-        }
-      },
       "AspNetCore.HealthChecks.Redis": {
         "type": "Transitive",
         "resolved": "8.0.1",
@@ -330,25 +303,10 @@
           "Grpc.Core.Api": "2.52.0"
         }
       },
-      "HtmlSanitizer": {
-        "type": "Transitive",
-        "resolved": "8.0.723",
-        "contentHash": "C4RZX+Mv9OqY+sAM3SD3BdLxvtr9QimIGvLvN5SDjbi7rb6ibeHhGnQA5EyKbkiuQKHO6MBa3h2AZQzjy6z9HA==",
-        "dependencies": {
-          "AngleSharp": "[0.17.1]",
-          "AngleSharp.Css": "[0.17.0]",
-          "System.Collections.Immutable": "7.0.0"
-        }
-      },
       "Humanizer.Core": {
         "type": "Transitive",
         "resolved": "2.14.1",
         "contentHash": "lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw=="
-      },
-      "Markdig": {
-        "type": "Transitive",
-        "resolved": "0.30.2",
-        "contentHash": "rm5rfHGP0BZtcB31CmQeWLLPdpG6xA6xN92x2KcNrl+9MPJONq9u4dfG7VgnTOxdjDnuEkX6GCxMYS+LpoKGOQ=="
       },
       "MassTransit.Abstractions": {
         "type": "Transitive",
@@ -988,11 +946,6 @@
           "Pipelines.Sockets.Unofficial": "2.2.8"
         }
       },
-      "System.Buffers": {
-        "type": "Transitive",
-        "resolved": "4.5.1",
-        "contentHash": "Rw7ijyl1qqRS0YQD/WycNst8hUUMgrMH4FCn1nNm27M4VxchZ1js3fVjQaANHO5f3sN4isvP4a+Met9Y4YomAg=="
-      },
       "System.ClientModel": {
         "type": "Transitive",
         "resolved": "1.1.0-beta.5",
@@ -1009,8 +962,11 @@
       },
       "System.Collections.Immutable": {
         "type": "Transitive",
-        "resolved": "7.0.0",
-        "contentHash": "dQPcs0U1IKnBdRDBkrCTi1FoajSTBzLcVTpjO4MBCMC7f4pDOIPzgBoX8JjG7X6uZRJ8EBxsi8+DR1JuwjnzOQ=="
+        "resolved": "6.0.0",
+        "contentHash": "l4zZJ1WU2hqpQQHXz1rvC3etVZN+2DLmQMO79FhOTZHMn8tDRr+WU287sbomD0BETlmKDn0ygUgVy9k5xkkJdA==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        }
       },
       "System.Composition": {
         "type": "Transitive",
