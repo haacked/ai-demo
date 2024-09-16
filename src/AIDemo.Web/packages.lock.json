@@ -176,21 +176,21 @@
       },
       "Refit": {
         "type": "Direct",
-        "requested": "[7.1.2, )",
-        "resolved": "7.1.2",
-        "contentHash": "ZB1ZgciDq/lNz3OAPfYah4rCVYeI4LMxEksYUff8p4Bth9uf/8WQCXuzMckRJjh3NLysuwdCNkgxnezCm1SqTw==",
+        "requested": "[7.2.0, )",
+        "resolved": "7.2.0",
+        "contentHash": "h1/B6fWqutDgjI+kaxxM+OJ0bHMoaswul9eylXHsEiRQQFNtU3bkLEjd50Hn62VPt00lFzxnp03zP5D848yPdg==",
         "dependencies": {
           "System.Net.Http.Json": "8.0.0"
         }
       },
       "Refit.HttpClientFactory": {
         "type": "Direct",
-        "requested": "[7.1.2, )",
-        "resolved": "7.1.2",
-        "contentHash": "i5NtxonKcDQ3ob0fhFAZNj18GuBfefDYNZgEMiRhzt5nhWCy3Rn4koTTst8NOViTr/GaP3O0fZxomkZNShBP+A==",
+        "requested": "[7.2.0, )",
+        "resolved": "7.2.0",
+        "contentHash": "BMmU2N/3NZ/OVf21FnaCcTuGA0XTpJidkk2EMeTvLh4TMJR8s7kkU7KLELkRgNRAN0Cw1PX+XVMLL6Nsif1pOA==",
         "dependencies": {
           "Microsoft.Extensions.Http": "8.0.0",
-          "Refit": "7.1.2"
+          "Refit": "7.2.0"
         }
       },
       "System.Text.Json": {
@@ -1072,7 +1072,7 @@
         "dependencies": {
           "Google.Apis.PeopleService.v1": "[1.68.0.3359, )",
           "Microsoft.EntityFrameworkCore.Abstractions": "[8.0.8, )",
-          "refit": "[7.1.2, )"
+          "refit": "[7.2.0, )"
         }
       },
       "aidemo.entities": {
