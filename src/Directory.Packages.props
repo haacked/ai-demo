@@ -10,7 +10,7 @@
     <PackageVersion Include="Aspire.StackExchange.Redis" Version="8.2.0" />
     <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="8.1.0" />
     <PackageVersion Include="Google.Apis.PeopleService.v1" Version="1.68.0.3359" />
-    <PackageVersion Include="MassTransit" Version="8.2.4" />
+    <PackageVersion Include="MassTransit" Version="8.2.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.7" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.7" />
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.7" />

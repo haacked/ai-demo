@@ -65,8 +65,8 @@
       },
       "MassTransit.Abstractions": {
         "type": "Transitive",
-        "resolved": "8.2.4",
-        "contentHash": "EibCSJbzoYLldB2qtRmSOf1umpEFE+2UCtlyZgaHBSOnmAYpwVyt6A277FpMXIccaDxl0xUvbDuNF49o8KyN9Q=="
+        "resolved": "8.2.5",
+        "contentHash": "TcAV7ZEdXTrw6D74g55mlEYLBBQvsifNrdfwt0UCps7mZVBoXoS3fvMHCQguRgj+6k1Q1qEV9kZa0aUOT7GcPQ=="
       },
       "Microsoft.AspNetCore.Connections.Abstractions": {
         "type": "Transitive",
@@ -437,7 +437,7 @@
         "dependencies": {
           "AIDemo.Contracts": "[1.0.0, )",
           "AIDemo.Entities": "[1.0.0, )",
-          "MassTransit": "[8.2.4, )",
+          "MassTransit": "[8.2.5, )",
           "Microsoft.AspNetCore.SignalR.Client": "[8.0.7, )"
         }
       },
@@ -453,11 +453,11 @@
       },
       "MassTransit": {
         "type": "CentralTransitive",
-        "requested": "[8.2.4, )",
-        "resolved": "8.2.4",
-        "contentHash": "ENKDefFeDLAUz1xMgx4/4BWENUiO8ckkhyBPs3anbyS7+KKnone10zTwH2pG6BjuiwwGj+r9SCu+wt460KL5wQ==",
+        "requested": "[8.2.5, )",
+        "resolved": "8.2.5",
+        "contentHash": "b/gNaT6IxX+BZnLCLTzjqia5iQJxpmIGOjPiLnD6SLBRX9tyIsYVNKPAqQ6txNe2ztOOaW4ntef84VxSvA0IEA==",
         "dependencies": {
-          "MassTransit.Abstractions": "8.2.4",
+          "MassTransit.Abstractions": "8.2.5",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0",
           "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.0",
           "Microsoft.Extensions.Hosting.Abstractions": "8.0.0",
