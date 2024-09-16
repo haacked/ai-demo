@@ -21,7 +21,6 @@
     "@types/webpack-env": "^1.18.5",
     "@typescript-eslint/eslint-plugin": "^8.0.1",
     "@typescript-eslint/parser": "^8.0.1",
-    "aspnet-client-validation": "^0.10.2",
     "assert": "^2.1.0",
     "autoprefixer": "^10.4.20",
     "babel-loader": "^9.1.3",
