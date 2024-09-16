@@ -5,7 +5,6 @@ using AIDemo.Hubs;
 using AIDemo.Library.Clients;
 using AIDemo.SemanticKernel.Plugins;
 using AIDemo.Web.Startup;
-using Azure.AI.OpenAI;
 using Haack.AIDemoWeb.SemanticKernel.Plugins;
 using Haack.AIDemoWeb.Startup.Config;
 using MassTransit;
@@ -30,8 +29,7 @@ public static class ServiceExtensions
         builder.Services.AddOpenAIChatCompletion(
             options.Model,
             options.ApiKey.Require())
-        // Ugh, I think it's dumb I have to pass an OpenAIClient here. I hope they fix that up soon.
-        .AddOpenAITextEmbeddingGeneration(modelId: options.EmbeddingModel, openAIClient: new OpenAIClient(options.ApiKey));
+        .AddOpenAITextEmbeddingGeneration(modelId: options.EmbeddingModel);
 
         builder.Services
             .AddTransient<ContactFactsPlugin>()

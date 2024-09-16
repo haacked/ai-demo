@@ -32,7 +32,6 @@
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" />
         <PackageReference Include="OctoKit" />
-        <PackageReference Include="OpenAI" />
         <PackageReference Include="Pgvector.EntityFrameworkCore" />
         <PackageReference Include="refit" />
         <PackageReference Include="Refit.HttpClientFactory" />
