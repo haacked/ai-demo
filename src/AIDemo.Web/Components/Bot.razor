@@ -35,7 +35,9 @@
                             @(message.IsUser ? Username : "Clippy") &nbsp;-&nbsp;
                             @message.Created.ToLocalTime()
                         </span>
-                        <MessageContent Message="@message" />
+                        <span class="text-md relative">
+                            @message.Text
+                        </span>
                     </div>
                 </div>
             }
