@@ -3,22 +3,18 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
-    <AuthorizeView>
-        <Authorized>
-            <div class="mt-2">
-                <Bot Username="@Name"
-                     AvatarUrl="@AvatarUrl"
-                     UserIdentifier="@UserIdentifier"/>
-            </div>
-        </Authorized>
-        <NotAuthorized>
-            <h1 class="text-lg font-semibold leading-tight">Welcome</h1>
-            <p class="mt-2">This site demonstrates using Open AI in multiple ways.</p>
-            But first, you need to <a href="/login">login</a>.
-        </NotAuthorized>
-    </AuthorizeView>
-</section>
+<AuthorizeView>
+    <Authorized>
+        <Bot Username="@Name"
+             AvatarUrl="@AvatarUrl"
+             UserIdentifier="@UserIdentifier"/>
+    </Authorized>
+    <NotAuthorized>
+        <h1 class="text-lg font-semibold leading-tight">Welcome</h1>
+        <p class="mt-2">This site demonstrates using Open AI in multiple ways.</p>
+        But first, you need to <a href="/login">login</a>.
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     string? Name { get; set; }

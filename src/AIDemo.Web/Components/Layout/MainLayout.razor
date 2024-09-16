@@ -4,16 +4,23 @@
 <CascadingAuthenticationState>
     <div class="page bg-gray-50 min-w-0 flex flex-col h-screen w-full">
         <div class="top-row pl-3 bg-gray-800 w-full">
-            <div class="container mx-auto">
-                <a class="text-white" href="">AIDemo</a>
+            <div class="container mx-auto flex justify-between items-center">
+                <a class="text-white font-bold text-lg" href="">Haack AI Demo</a>
+                <AuthorizeView>
+                    <Authorized>
+                        <a class="text-white" href="/logout">Logout</a>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a class="text-white" href="/login">Login</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+
             </div>
         </div>
 
-        <div class="flex flex-row flex-1">
-            <main role="main" class="flex-1 pb-3">
-                @Body
-            </main>
-        </div>
+        <main role="main" class="flex flex-col flex-1 pb-3">
+            @Body
+        </main>
 
         <footer class="m-4 border-top footer text-muted">
             <div class="container">
