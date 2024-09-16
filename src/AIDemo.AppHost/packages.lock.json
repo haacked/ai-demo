@@ -40,20 +40,50 @@
       },
       "Aspire.Hosting.PostgreSQL": {
         "type": "Direct",
-        "requested": "[8.1.0, )",
-        "resolved": "8.1.0",
-        "contentHash": "jJrIqax+BQ5TH0GwKdfc93veCDgIpCvslMdT1q27PdySJASd9d+kssHNedM9mNM+6+gHz9vmMmKUW/z+tVRa8Q==",
+        "requested": "[8.2.0, )",
+        "resolved": "8.2.0",
+        "contentHash": "2Y+A4+4CcJG00eFMoqbvvEb21Y6r2taNDiJzxzE2NBjrTukixXohVEPg7xUe0HBStm4RqsD908uwpiqY0UddlQ==",
         "dependencies": {
-          "Aspire.Hosting": "8.1.0"
+          "Aspire.Hosting": "8.2.0",
+          "Google.Protobuf": "3.27.3",
+          "Grpc.AspNetCore": "2.65.0",
+          "Grpc.Net.ClientFactory": "2.65.0",
+          "Grpc.Tools": "2.65.0",
+          "KubernetesClient": "14.0.9",
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Configuration.Binder": "8.0.2",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Hosting": "8.0.0",
+          "Microsoft.Extensions.Hosting.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Http": "8.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Options": "8.0.2",
+          "Microsoft.Extensions.Primitives": "8.0.0",
+          "Polly.Core": "8.4.1"
         }
       },
       "Aspire.Hosting.Redis": {
         "type": "Direct",
-        "requested": "[8.1.0, )",
-        "resolved": "8.1.0",
-        "contentHash": "eqHWC5u1oLfkZ9pG009t9I/JtAmk9rUkTAv1rgwFIFug7CWqbc9E7YHJGCzVJvpLcNgXtlNAmoVHMBOQH1/jqQ==",
+        "requested": "[8.2.0, )",
+        "resolved": "8.2.0",
+        "contentHash": "r7bfyhg4rUuo1vTvuYJxfNewSVAaVY0wpOPN0kclZ0xUufrmj25Hr2XOb6BHz+JBW0piAogejMUqdPW3CputWA==",
         "dependencies": {
-          "Aspire.Hosting": "8.1.0"
+          "Aspire.Hosting": "8.2.0",
+          "Google.Protobuf": "3.27.3",
+          "Grpc.AspNetCore": "2.65.0",
+          "Grpc.Net.ClientFactory": "2.65.0",
+          "Grpc.Tools": "2.65.0",
+          "KubernetesClient": "14.0.9",
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Configuration.Binder": "8.0.2",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Hosting": "8.0.0",
+          "Microsoft.Extensions.Hosting.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Http": "8.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Options": "8.0.2",
+          "Microsoft.Extensions.Primitives": "8.0.0",
+          "Polly.Core": "8.4.1"
         }
       },
       "Aspire.Hosting": {
