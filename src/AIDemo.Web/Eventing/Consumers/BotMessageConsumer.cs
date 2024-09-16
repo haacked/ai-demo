@@ -87,7 +87,7 @@ public class BotMessageConsumer(
 
         async Task SendThought(string thought, string? data = null)
             => await hubContext.Clients.Client(connectionId).SendAsync(
-                nameof(AssistantHub.BroadcastThought),
+                nameof(BotHub.BroadcastThought),
                 thought,
                 data,
                 context.CancellationToken);

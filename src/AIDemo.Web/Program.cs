@@ -67,7 +67,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 // The SignalR hubs used in my talks.
-app.MapHub<AssistantHub>("/assistant-hub");
 app.MapHub<BotHub>("/bot-hub");
 
 app.Run();
