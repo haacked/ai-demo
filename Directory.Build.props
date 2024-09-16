@@ -6,8 +6,6 @@
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
         <RootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</RootDir>
         <CIBuild Condition=" '$(NBGV_CloudBuildNumber)' != '' or '$(GITHUB_SHA)' != '' ">true</CIBuild>
-        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-        <RestoreLockedMode>false</RestoreLockedMode>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <DefaultTargetFramework>net7.0</DefaultTargetFramework>
