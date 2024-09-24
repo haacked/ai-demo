@@ -1,4 +1,5 @@
 using AIDemo.Blazor.Components;
+using AIDemo.Blazor.Library;
 using AIDemo.Hubs;
 using AIDemo.Library.Clients;
 using Haack.AIDemoWeb.Startup;
@@ -26,6 +27,8 @@ builder
 builder.Services.AddSignalR();
 
 builder.Services
+    .AddScoped<TokenProvider>()
+    .AddHttpContextAccessor()
     .AddRazorComponents()
     .AddInteractiveServerComponents();
 
