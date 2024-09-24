@@ -1,0 +1,34 @@
+@page "/"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<AuthorizeView>
+    <Authorized>
+        <Bot Username="@Name"
+             AvatarUrl="@AvatarUrl"
+             UserIdentifier="@UserIdentifier"/>
+    </Authorized>
+    <NotAuthorized>
+        <section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
+            <h1 class="text-lg font-semibold leading-tight">Welcome</h1>
+            <p class="mt-2">This site demonstrates using Open AI in multiple ways.</p>
+            But first, you need to <a href="/login">login</a>.
+        </section>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    string? Name { get; set; }
+    string? UserIdentifier { get; set; }
+    Uri? AvatarUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        Name = user.Identity?.Name ?? "unknown";
+        UserIdentifier = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        AvatarUrl = new Uri(user.Claims.FirstOrDefault(c => c.Type == "image")?.Value ?? "https://github.com/ghost.png");
+    }
+}

@@ -1,4 +1,4 @@
-using Haack.AIDemoWeb.Entities;
+using AIDemo.Entities;
 
 namespace AIDemo.Web.Startup;
 

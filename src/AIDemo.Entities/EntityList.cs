@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Haack.AIDemoWeb.Entities;
+namespace AIDemo.Entities;
 
 /// <summary>
 /// A collection of EF Core entities with an <see cref="IsLoaded"/> property that lets us know if the collection

@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using AIDemo.Web.Messages;
-using Haack.AIDemoWeb.Entities;
-using Haack.AIDemoWeb.Library;
+using AIDemo.Entities;
+using AIDemo.Library.Clients;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using NetTopologySuite.Geometries;

@@ -1,4 +1,4 @@
-namespace Haack.AIDemoWeb.Library.Clients;
+namespace AIDemo.Library.Clients;
 
 public record GoogleGeoCodingResponse(IReadOnlyList<GoogleGeoCodeResult> Results, string Status);
 

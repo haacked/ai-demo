@@ -1,10 +1,12 @@
+using AIDemo.Blazor.Components;
+using AIDemo.Blazor.Library;
+using AIDemo.Hubs;
+using AIDemo.Library.Clients;
 using Haack.AIDemoWeb.Startup;
 using Haack.AIDemoWeb.Startup.Config;
-using Haack.AIDemoWeb.Components; // Rider highlights this line for some reason, but it's legit. It compiles.
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using AIDemo.Hubs;
-using Haack.AIDemoWeb.Library;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,32 +25,23 @@ builder
     .AddRedisClient("message-cache");
 
 builder.Services.AddSignalR();
-builder.Services.AddRazorComponents()
+
+builder.Services
+    .AddScoped<TokenProvider>()
+    .AddHttpContextAccessor()
+    .AddRazorComponents()
     .AddInteractiveServerComponents();
-builder.Services.AddRazorPages()
-    .AddRazorRuntimeCompilation();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseAntiforgery();
-
-app.MapRazorPages().RequireAuthorization();
-app.MapRazorComponents<App>() // Rider highlights this line for some reason, but it's legit. It compiles.
-    .AddInteractiveServerRenderMode();
+app.MapGet("/authentication/{provider}",
+    (string provider, HttpContext context) =>
+    {
+        var returnUrl = context.Request.Query["returnUrl"].FirstOrDefault() ?? "/";
+        return Results.Challenge(
+            properties: new AuthenticationProperties { RedirectUri = returnUrl },
+            authenticationSchemes: [provider]);
+    });
 
 app.MapGet("/logout", async ctx =>
 {
@@ -60,8 +53,23 @@ app.MapGet("/logout", async ctx =>
         });
 });
 
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+app.UseAntiforgery();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
 // The SignalR hubs used in my talks.
-app.MapHub<AssistantHub>("/assistant-hub");
 app.MapHub<BotHub>("/bot-hub");
 
 app.Run();

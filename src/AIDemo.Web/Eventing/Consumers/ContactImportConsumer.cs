@@ -1,7 +1,7 @@
 using AIDemo.Web.Messages;
 using Google.Apis.PeopleService.v1.Data;
-using Haack.AIDemoWeb.Entities;
-using Haack.AIDemoWeb.Library;
+using AIDemo.Entities;
+using AIDemo.Library.Clients;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;

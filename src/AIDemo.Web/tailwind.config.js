@@ -1,6 +1,5 @@
 module.exports = {
     content: [
-        './Pages/**/*.{html,cshtml}',
         './Components/**/*.razor',
         './assets/**/*.{ts,js}',
         './node_modules/flowbite/**/*.js',

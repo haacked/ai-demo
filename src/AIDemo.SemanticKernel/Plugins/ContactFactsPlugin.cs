@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using AIDemo.Hubs;
 using AIDemo.Web.Messages;
-using Haack.AIDemoWeb.Entities;
-using Haack.AIDemoWeb.Library;
+using AIDemo.Entities;
+using AIDemo.Library.Clients;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
@@ -10,7 +10,7 @@ using Microsoft.SemanticKernel.Embeddings;
 using Pgvector;
 using Pgvector.EntityFrameworkCore;
 
-namespace Haack.AIDemoWeb.Plugins;
+namespace AIDemo.SemanticKernel.Plugins;
 
 public class ContactFactsPlugin(
     AIDemoDbContext db,

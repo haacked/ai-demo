@@ -1,62 +1,63 @@
 @using AIDemo.Web.Messages
-@using Haack.AIDemoWeb.Library
-@using Haack.AIDemoWeb.Library.Clients
+@using AIDemo.Library.Clients
 @using Microsoft.AspNetCore.SignalR.Client
 @using AIDemo.Hubs
+@rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
 
-<div class="max-w-sm mx-auto">
-    <div class="flex flex-row justify-between items-center py-2">
-        <p class="text-md text-white bg-blue-500 px-2 py-1 font-semibold animate-pulse">
-            Clippy
-        </p>
+<PageTitle>Home</PageTitle>
+
+<div class="bg-white border border-gray-200 rounded-lg shadow relative w-96 max-w-96 min-w-96 mx-auto mt-2 h-full">
+    <div class="border-b-2 border-b-gray-200 py-3 px-6 flex flex-row justify-between items-center">
+        <div class="flex flex-row items-center space-x-1.5">
+            <Avatar Username="@Username" AvatarUrl="@AvatarUrl" />
+            <div class="flex flex-col">
+                <p class="text-xs text-gray-600">@Username</p>
+                <p class="text-xs text-gray-400">@_messages.Count.ToQuantity("message")</p>
+            </div>
+        </div>
+        <div class="space-x-1">
+        </div>
     </div>
-    <div class="bg-white border border-gray-200 rounded-lg shadow relative">
-        <div class="border-b-2 border-b-gray-200 py-3 px-6 flex flex-row justify-between items-center">
-            <div class="flex flex-row items-center space-x-1.5">
-                <Avatar Username="@Username" AvatarUrl="@AvatarUrl" />
-                <div class="flex flex-col">
-                    <p class="text-xs text-gray-600">@Username</p>
-                    <p class="text-xs text-gray-400">@_messages.Count.ToQuantity("message")</p>
+    <div id="message-list" class="max-h-[calc(100vh-15rem)] h-full px-6 py-1 overflow-y-auto">
+        @foreach (var message in _messages) {
+            <div class="py-2 flex flex-row w-full @(message.IsUser ? "justify-end" : "justify-start")">
+                <div class="@(message.IsUser ? "order-2" : "order-1")">
+                    <Avatar
+                        Username="@(message.IsUser ? Username : null)"
+                        AvatarUrl="@(message.IsUser? AvatarUrl : null)"
+                    />
+                </div>
+                <div class="px-2 w-fit py-3 flex flex-col rounded-lg text-white @(message.IsUser ? "order-1 mr-2 bg-blue-500" : "order-2 ml-2 bg-green-500")">
+                    <span class="text-xs text-gray-200">
+                        @(message.IsUser ? Username : "Clippy") &nbsp;-&nbsp;
+                        @message.Created.ToLocalTime()
+                    </span>
+                    <span class="text-md relative">
+                        @message.Text
+                    </span>
                 </div>
             </div>
-            <div class="space-x-1">
+        }
+    </div>
+    <div class="px-6 py-3 -mb-3 bg-white w-100 overflow-hidden rounded-bl-xl rounded-br-xla">
+        <form @onsubmit="SubmitForm" class="flex flex-row items-center space-x-5">
+            <div class="relative w-full">
+                <input
+                    type="text"
+                    @bind="@_newMessage"
+                    name="message"
+                    class="w-full block p-1.5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
             </div>
-        </div>
-        <div id="message-list" class="max-h-96 h-96 px-6 py-1 overflow-auto">
-            @foreach (var message in _messages) {
-                <div class="py-2 flex flex-row w-full @(message.IsUser ? "justify-end" : "justify-start")">
-                    <div class="@(message.IsUser ? "order-2" : "order-1")">
-                        <Avatar Username="@(message.IsUser ? Username : null)" />
-                    </div>
-                    <div class="px-2 w-fit py-3 flex flex-col rounded-lg text-white @(message.IsUser ? "order-1 mr-2 bg-blue-500" : "order-2 ml-2 bg-green-500")">
-                        <span class="text-xs text-gray-200">
-                            @(message.IsUser ? Username : "Clippy") &nbsp;-&nbsp;
-                            @message.Created.ToLocalTime()
-                        </span>
-                        <MessageContent Message="@message" />
-                    </div>
-                </div>
-            }
-        </div>
-        <div class="px-6 py-3 bg-white w-100 overflow-hidden rounded-bl-xl rounded-br-xla">
-            <form @onsubmit="SubmitForm" class="flex flex-row items-center space-x-5">
-                <div class="relative w-full">
-                    <input
-                        type="text"
-                        @bind="@_newMessage"
-                        name="message"
-                        class="w-full block p-1.5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500"/>
-                </div>
-                <button
-                    class="px-3 py-2 text-xs font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-blue-300 disabled:opacity-50">
-                    Send
-                </button>
-            </form>
-        </div>
+            <button
+                class="px-3 py-2 text-xs font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-blue-300 disabled:opacity-50">
+                Send
+            </button>
+        </form>
     </div>
 </div>
+
 <script>
     ScrollLastMessageIntoView = () => {
         const messages = document.getElementById("message-list");

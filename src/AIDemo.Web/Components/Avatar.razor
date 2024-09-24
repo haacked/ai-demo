@@ -1,5 +1,8 @@
 <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full">
-    @if (AvatarUrl is not null && Username is not "The Bot") {
+    @if (Username is null) {
+        <img src="https://github.com/user-attachments/assets/2940647b-440e-4ca1-b645-c3a3bdba9dcc" alt="avatar" />
+    }
+    else if (AvatarUrl is not null) {
         <img src="@AvatarUrl" alt="avatar" />
     } else {
         <svg

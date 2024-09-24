@@ -1,9 +1,9 @@
 using System.ComponentModel;
 using AIDemo.Web.Messages;
-using Haack.AIDemoWeb.Library.Clients;
+using AIDemo.Library.Clients;
 using Microsoft.SemanticKernel;
 
-namespace Haack.AIDemoWeb.Plugins;
+namespace AIDemo.SemanticKernel.Plugins;
 
 public class UnitConverterPlugin
 {

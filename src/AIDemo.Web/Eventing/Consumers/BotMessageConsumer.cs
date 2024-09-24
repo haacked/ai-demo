@@ -1,5 +1,5 @@
 using AIDemo.Web.Messages;
-using Haack.AIDemoWeb.Library;
+using AIDemo.Library.Clients;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.SemanticKernel;
@@ -87,7 +87,7 @@ public class BotMessageConsumer(
 
         async Task SendThought(string thought, string? data = null)
             => await hubContext.Clients.Client(connectionId).SendAsync(
-                nameof(AssistantHub.BroadcastThought),
+                nameof(BotHub.BroadcastThought),
                 thought,
                 data,
                 context.CancellationToken);

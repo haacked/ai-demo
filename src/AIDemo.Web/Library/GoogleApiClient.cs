@@ -2,12 +2,12 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.PeopleService.v1;
 using Google.Apis.PeopleService.v1.Data;
 using Google.Apis.Services;
-using Haack.AIDemoWeb.Library.Clients;
+using AIDemo.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
 using Serious;
 
-namespace Haack.AIDemoWeb.Library;
+namespace AIDemo.Library.Clients;
 
 public class GoogleApiClient(IGoogleGeocodeClient geocodeClient, IOptions<GoogleOptions> geocodeOptions)
 {

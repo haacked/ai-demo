@@ -3,7 +3,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Serious;
 using StackExchange.Redis;
 
-namespace Haack.AIDemoWeb.Library;
+namespace AIDemo.Library.Clients;
 
 public class ChatHistoryCache(
     IConnectionMultiplexer connectionMultiplexer,

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
-namespace Haack.AIDemoWeb.Entities;
+namespace AIDemo.Entities;
 
 /// <summary>
 /// A user in the system.

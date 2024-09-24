@@ -1,0 +1,273 @@
+@page "/contacts"
+@rendermode InteractiveServer
+
+@using AIDemo.Blazor.Library
+@using AIDemo.Entities
+@using AIDemo.Library.Clients
+@using Google.Apis.PeopleService.v1.Data
+@using Haack.AIDemoWeb.Eventing.Consumers
+@using MassTransit
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@inject AIDemoDbContext Db
+@inject GoogleApiClient GoogleApiClient
+@inject IPublishEndpoint PublishEndpoint;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject TokenProvider TokenProvider
+
+<section class="m-4 p-4 rounded-xl bg-white border border-gray-300">
+    <div class="flex items-center">
+        <h1 class="text-lg font-semibold leading-tight">Contacts</h1>
+        <ul class="flex space-x-4 text-sm text-gray-500 dark:text-gray-400 ml-4">
+            <li class="ml-2">
+                <span class="font-medium">Total:</span> @totalImportedContacts
+            </li>
+            <li class="ml-2">
+                <span class="font-medium">With Facts:</span> @totalImportedContactsWithFacts
+            </li>
+            <li class="ml-2">
+                <span class="font-medium">With Addresses:</span> @totalImportedContactsWithAddresses
+            </li>
+            <li class="ml-2">
+                <span class="font-medium">With Locations:</span> @totalImportedContactsWithAddressLocations
+            </li>
+        </ul>
+        <form class="flex flex-grow items-center ml-4" @onsubmit="FilterContactsAsync">
+            <label class="mr-2 block">Filter</label>
+            <input @bind="@filter"
+                   class="flex-grow block p-1.5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
+        </form>
+    </div>
+
+    <button class="btn btn-primary" onclick="@ImportContactsAsync">Import</button>
+    <button class="btn btn-danger" onclick="@TruncateContactsAsync">Truncate</button>
+
+    <table class="border-collapse table-auto w-full text-sm mt-2">
+        <thead>
+        <tr>
+            <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                Name
+            </th>
+            <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                Birthday
+            </th>
+            <th class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                Address
+            </th>
+            <th class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+                Facts
+            </th>
+            <th class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">
+            Actions
+            </th>
+        </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-slate-800">
+        <Virtualize Items="@contacts" Context="contact">
+            <tr>
+                <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                    @foreach (var name in contact.Names)
+                    {
+                        @name.UnstructuredName
+                    }
+                </td>
+                <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                    @if (contact.Birthday is { } birthday)
+                    {
+                        <span>@birthday</span>
+                    }
+                </td>
+                <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                    <div class="flex">
+                        @foreach (var address in contact.Addresses)
+                        {
+                            <div class="max-w-sm rounded overflow-hidden shadow-lg">
+                                <div class="px-6 py-4">
+                                    <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">@address.Type</span>
+                                    <p class="text-gray-700 text-sm">
+                                        @address.FormattedValue
+                                    </p>
+                                    <p>
+                                        @if (address.Location is { } location)
+                                        {
+                                            <span class="text-xs italic">@location.Y, @location.X</span>
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </td>
+                <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                    <div class="flex">
+                        @foreach (var fact in contact.Facts)
+                        {
+                            <div class="max-w-sm rounded overflow-hidden shadow-lg">
+                                <div class="px-6 py-4">
+                                    <p class="text-gray-700 text-sm">
+                                        @fact.Content
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </td>
+                <td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">
+                    <div class="flex">
+                        <button onclick="@(() => DeleteContactAsync(contact.Id))">❌</button>
+                    </div>
+                </td>
+            </tr>
+        </Virtualize>
+        </tbody>
+    </table>
+
+    <h2 class="text-lg font-semibold">API Contacts</h2>
+
+    @if (apiContacts.Any()) {
+        <p class="text-sm text-gray-500 dark:text-gray-400">Showing @apiContacts.Count API contacts</p>
+        <details>
+            @foreach (var contact in apiContacts) {
+                <div class="p-2">
+                    <h2>
+                        @if (contact.Photos is not null) {
+                            foreach (var photo in contact.Photos) {
+                                <img src="@photo.Url" alt="Contact photo" class="w-12 h-12 rounded-full" />
+                            }
+                        }
+
+                        @if (contact.Names is not null) {
+                            foreach (var name in contact.Names) {
+                                <span class="text-lg font-semibold">@name.DisplayName</span>
+                            }
+                        }
+                        else
+                        {
+                            <span>Contact has no name</span>
+                        }
+
+                        @if (contact.Nicknames is not null) {
+                            <span> AKA </span>
+                            foreach (var name in contact.Nicknames) {
+                                <span class="text-lg font-semibold">(@name.Value)</span>
+                            }
+                        }
+
+                    </h2>
+                    <div>
+                        @if (contact is { Addresses: { } addresses }) {
+                            foreach (var address in addresses) {
+                                <div>
+                                    <strong class="text-xs text-gray-300 dark:text-gray-100">@address.Type</strong>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">@address.FormattedValue</span>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        </details>
+
+        if (nextPageToken is not null) {
+            <button class="btn btn-primary" onclick="@(() => LoadApiContactsAsync(nextPageToken))">Next Page</button>
+
+        }
+    } else {
+        <div class="m-4 p-4">
+            No API contacts.
+        </div>
+    }
+
+    <button class="btn btn-primary" onclick="@(() => LoadApiContactsAsync(null))">Request Contacts</button>
+</section>
+
+@code {
+    int totalImportedContacts;
+    int totalImportedContactsWithAddresses;
+    int totalImportedContactsWithFacts;
+    int totalImportedContactsWithAddressLocations;
+
+    List<Contact> contacts = new();
+    List<Person> apiContacts = new();
+
+    string? nextPageToken;
+    string? filter;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadContactsAsync();
+
+        totalImportedContacts = contacts.Count;
+        totalImportedContactsWithAddresses = contacts.Count(c => c.Addresses.Count != 0);
+        totalImportedContactsWithFacts = contacts.Count(c => c.Facts.Count != 0);
+        totalImportedContactsWithAddressLocations = contacts.Count(c => c.Addresses.Any(a => a.Location is not null));
+    }
+
+    async Task LoadContactsAsync()
+    {
+        contacts = await Db
+            .Contacts
+            .Include(c => c.Facts)
+            .Where(c => filter == null
+                        || c.Names.Any(n => n.GivenName!.Contains(filter))
+                        || c.Names.Any(n => n.FamilyName!.Contains(filter)))
+            .OrderByDescending(c => c.Facts.Count)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    async Task FilterContactsAsync()
+    {
+        await LoadContactsAsync();
+        StateHasChanged();
+    }
+
+    async Task LoadApiContactsAsync(string? next)
+    {
+        var accessToken = await TokenProvider.GetAccessTokenAsync("Google");
+
+        if (accessToken is null)
+        {
+            return;
+        }
+        var connectionsResponse = await GoogleApiClient.GetContactsAsync(accessToken, next);
+        nextPageToken = connectionsResponse.NextPageToken;
+        apiContacts = connectionsResponse.Connections.ToList();
+        StateHasChanged();
+    }
+
+    async Task DeleteContactAsync(int id)
+    {
+        var contact = await Db.Contacts.FindAsync(id);
+        if (contact is not null)
+        {
+            Db.Contacts.Remove(contact);
+            await Db.SaveChangesAsync();
+        }
+        filter = null;
+        totalImportedContacts--;
+        contacts = await Db.Contacts.ToListAsync();
+        StateHasChanged();
+    }
+
+    async Task ImportContactsAsync()
+    {
+        var accessToken = await TokenProvider.GetAccessTokenAsync("Google");
+
+        if (accessToken is null)
+        {
+            return;
+        }
+
+        // Starts a new import process
+        await PublishEndpoint.Publish(new ContactImportMessage(accessToken));
+    }
+
+    async Task TruncateContactsAsync()
+    {
+        await Db.Database.ExecuteSqlRawAsync("TRUNCATE TABLE \"Contacts\" CASCADE");
+        filter = null;
+        await LoadContactsAsync();
+        StateHasChanged();
+    }
+}

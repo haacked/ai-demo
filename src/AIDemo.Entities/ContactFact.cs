@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Pgvector;
 
-namespace Haack.AIDemoWeb.Entities;
+namespace AIDemo.Entities;
 
 /// <summary>
 /// A fact about a <see cref="Contact"/>

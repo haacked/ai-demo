@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Haack.AIDemoWeb.Library.Clients;
+namespace AIDemo.Library.Clients;
 
 public class LoggingHttpMessageHandler : DelegatingHandler
 {

@@ -1,10 +1,10 @@
 using AIDemo.Web.Messages;
-using Haack.AIDemoWeb.Library.Clients;
+using AIDemo.Library.Clients;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.Extensions.Options;
 using Serious;
 
-namespace Haack.AIDemoWeb.Library;
+namespace AIDemo.Library.Clients;
 
 public class GeocodeClient(IGoogleGeocodeClient geocodeClient, IOptions<GoogleOptions> geocodeOptions)
 {
