@@ -1,6 +1,6 @@
 # Haacked Woundrous AI Web DEMO
 
-This is a demo of using Open AI in an ASP.NET Core application.
+This is a demo of using Open AI in a Blazor Web application.
 
 ## Setup
 
@@ -37,23 +37,7 @@ GitHub_Host={Your ngrok host name}
 
 ## Running
 
-To run the app, you'll need to run the following command:
-
-```bash
-script/all -D
-overmind connect
-```
-
-The -D runs it daemonized. `overmind connect` lets you connect to all the running services in Overmind tabs.
-
-If you want to run it from the IDE, you'll need to run the following command to exclude starting the web server:
-
-```bash
-script/all -D -e web
-overmind connect
-```
-
-Then run the web server from the IDE.
+This app is built on .NET Aspire. To run the app, select `AIdemo.AppHost` and hit play (`F5`).
 
 ## Notes
 
