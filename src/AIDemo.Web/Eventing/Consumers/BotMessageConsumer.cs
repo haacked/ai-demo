@@ -63,25 +63,32 @@ public class BotMessageConsumer(
 
         var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 
-        // Get the response from the AI
-        var result = await chatCompletionService.GetChatMessageContentAsync(
-            history,
-            executionSettings: openAiPromptExecutionSettings,
-            kernel: kernel);
-
-        // Add the message from the agent to the chat history
-        history.AddMessage(result.Role, result.Content ?? string.Empty);
-
-        await SendThought(
-            "I got a response. It should show up in chat",
-            $"{result.Role}: {result.Content}");
-
-        if (result.Content is not (null or []))
+        try
         {
-            await SendResponseAsync(result.Content, ChatMessageRole.Assistant);
-        }
+            // Get the response from the AI
+            var result = await chatCompletionService.GetChatMessageContentAsync(
+                history,
+                executionSettings: openAiPromptExecutionSettings,
+                kernel: kernel);
 
-        await cache.SaveChatHistoryAsync(history);
+            // Add the message from the agent to the chat history
+            history.AddMessage(result.Role, result.Content ?? string.Empty);
+
+            await SendThought(
+                "I got a response. It should show up in chat",
+                $"{result.Role}: {result.Content}");
+
+            if (result.Content is not (null or []))
+            {
+                await SendResponseAsync(result.Content, ChatMessageRole.Assistant);
+            }
+
+            await cache.SaveChatHistoryAsync(history);
+        }
+        catch (HttpOperationException e)
+        {
+            await SendResponseAsync(e.ToString(), ChatMessageRole.Assistant);
+        }
 
         return;
 
