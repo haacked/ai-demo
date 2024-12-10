@@ -20,7 +20,9 @@ var cache = builder
 builder.AddProject<AIDemo_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithReference(postgresdb)
-    .WithReference(cache);
+    .WaitFor(postgres)
+    .WithReference(cache)
+    .WaitFor(cache);
 
 if (!builder.ExecutionContext.IsPublishMode)
 {
