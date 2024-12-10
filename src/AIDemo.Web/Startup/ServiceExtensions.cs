@@ -75,6 +75,7 @@ public static class ServiceExtensions
                     {
                         o.UseVector();
                         o.UseNetTopologySuite();
+                        o.MigrationsAssembly("AIDemo.Web");
                     })
             );
         builder.Services.AddDbContextFactory<AIDemoDbContext>();
