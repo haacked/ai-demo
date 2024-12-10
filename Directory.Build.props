@@ -8,7 +8,8 @@
         <CIBuild Condition=" '$(NBGV_CloudBuildNumber)' != '' or '$(GITHUB_SHA)' != '' ">true</CIBuild>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DefaultTargetFramework>net7.0</DefaultTargetFramework>
+        <DefaultTargetFramework>net9.0</DefaultTargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <RollForward>Major</RollForward>
         <RepoBuildPath>$(RootDir)build\</RepoBuildPath>
         <RepoBinPath>$(RepoBuildPath)bin\</RepoBinPath>
@@ -46,5 +47,15 @@
         CA5394: Do not use insecure randomness
         -->
         <NoWarn>CA5394;$(NoWarn)</NoWarn>
+
+        <!--
+        If I want them to be internal, I'll make them internal.
+        -->
+        <NoWarn>CA1515;$(NoWarn)</NoWarn>
+
+        <!--
+        I'm fine using some experimental features.
+        -->
+        <NoWarn>SKEXP0010;$(NoWarn)</NoWarn>
     </PropertyGroup>
 </Project>

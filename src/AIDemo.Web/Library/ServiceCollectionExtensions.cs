@@ -3,7 +3,7 @@ using AIDemoWeb.Library;
 
 namespace AIDemoWeb;
 
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Registers all types that implement <typeparamref name="T"/> in the specified assemblies.

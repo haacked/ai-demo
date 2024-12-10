@@ -23,5 +23,10 @@
         I like nested classes for tests.
         -->
         <NoWarn>CA1034;$(NoWarn)</NoWarn>
+
+        <!--
+        If I want them to be internal, I'll make them internal.
+        -->
+        <NoWarn>CA1515;$(NoWarn)</NoWarn>
     </PropertyGroup>
 </Project>
