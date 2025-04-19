@@ -3,11 +3,8 @@
 #/ Description: Runs all formatters on the codebase.
 #/ Options:
 #/   -c, --check - Run in check mode. Will return a non-zero exit code if anything needs reformatting.
-{ set +x; } 2>/dev/null
-source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
-root_dir=$(cd $source_dir && cd ../ && pwd)
-cd $root_dir
-source script/helpers/_utils.sh
+source ./script/helpers/_utils.sh
+set_source_and_root_dir
 
 SOLUTION_FILE="AIDemo.sln"
 PROJECT_DIR="./src/AIDemo.Web"

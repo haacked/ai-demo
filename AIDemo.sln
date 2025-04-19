@@ -10,10 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_scripts", "_scripts", "{7F
 		script\clean = script\clean
 		script\ef = script\ef
 		script\fmt = script\fmt
-		script\helpers\_utils.sh = script\helpers\_utils.sh
 		script\server = script\server
 		script\user-secrets = script\user-secrets
 		script\watch = script\watch
+		script\test = script\test
+		script\outdated = script\outdated
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "helpers", "helpers", "{367AFC48-B548-40A9-9DEC-B56979EC7082}"

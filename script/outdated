@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#/ Usage: script/outdated
+#/ Description: Lists the outdated packages
+
+source ./script/helpers/_utils.sh
+set_source_and_root_dir
+
+dotnet list package --outdated

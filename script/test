@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
+#/ Usage: script/test
+#/ Description: Runs the unit tests
 source ./script/helpers/_utils.sh
 set_source_and_root_dir
 
-dotnet user-secrets --project src/AIDemo.Web/AIDemo.Web.csproj "$@"
+dotnet test
