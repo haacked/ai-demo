@@ -16,19 +16,14 @@ public class OpenAIOptions : IConfigOptions
     public string? OrganizationId { get; init; }
 
     /// <summary>
-    /// The model to use. Defaults to "gpt-3.5-turbo".
+    /// The model to use. Defaults to "gpt-4o".
     /// </summary>
-    public string Model { get; init; } = "gpt-3.5-turbo";
-
-    /// <summary>
-    /// The model used for text retrieval within an assistant.
-    /// </summary>
-    public string RetrievalModel { get; init; } = "gpt-4-1106-preview";
+    public string Model { get; init; } = "gpt-4o";
 
     /// <summary>
     /// The model to use for embeddings.
     /// </summary>
-    public string EmbeddingModel { get; init; } = "text-embedding-ada-002";
+    public string EmbeddingModel { get; init; } = "text-embedding-3-large";
 
     /// <summary>
     /// The config section name. Leave null to use part of the name of this type before the "Options" suffix
