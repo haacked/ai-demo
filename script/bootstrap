@@ -36,25 +36,9 @@ else
 fi
 
 # JQ is used for JSON processing
-echo "Checking for JQ - used by this script for JSON processing…"
-if ! type jq >/dev/null 2>&1; then
-  if $install; then
-    echo "🚧Installing jq…"
-    brew install jq
-  else
-    fatal "✅jq is required to run this script. Please install it and try again."
-  fi
-else
-  echo "✅jq installed."
-fi
-
-
-echo "Checking for docker…"
-if ! type docker >/dev/null 2>&1; then
-  fatal "🚨Docker is required. Please install it and try again."
-else
-  echo "✅Docker installed."
-fi
+install_if_missing jq "JQ is used for JSON processing"
+install_if_missing docker
+install_if_missing ngrok
 
 dotnet_sdk_channel=$(cat global.json | jq -r '.sdk.channel')
 
@@ -82,18 +66,6 @@ else
   else
     echo "✅Found suitable .NET SDK version $matching_version."
   fi
-fi
-
-echo "Checking for ngrok…"
-if ! type ngrok >/dev/null 2>&1; then
-  if $install; then
-    echo "🚧Installing ngrok…"
-    brew install ngrok
-  else
-    fatal "🚨ngrok is required to run project."
-  fi
-else
-  echo "✅ngrok installed."
 fi
 
 # Now set up configuration
