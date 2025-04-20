@@ -35,37 +35,17 @@ else
   echo "✅Brew installed."
 fi
 
-# JQ is used for JSON processing
-install_if_missing jq "JQ is used for JSON processing"
-install_if_missing docker
-install_if_missing ngrok
+# Install Homebrew dependencies
+brew_install_if_missing docker
+brew_install_if_missing ngrok
 
-dotnet_sdk_channel=$(cat global.json | jq -r '.sdk.channel')
-
-echo "Checking for .NET SDK $dotnet_sdk_channel…"
-
-has_dotnet=false
-
-install_dotnet() {
-  fatal "🚨.NET SDK $dotnet_sdk_channel is required. Please install it and try again."
-
-  # TODO: Auto-install .NET
-  # It's not trivial though. The path in which it's located matters, etc.
-}
-
-escaped_channel=$(echo $dotnet_sdk_channel | sed 's/\./\\./g')
-sdk_regex="^$escaped_channel\.[0-9]+$"
-
-# Just in case the user hasn't installed .NET
-if ! type dotnet >/dev/null; then
-  install_dotnet
+# Install Bun (requires special tap)
+if ! type bun >/dev/null 2>&1; then
+  echo "Installing Bun..."
+  brew tap oven-sh/bun
+  brew install bun
 else
-  matching_version=$(dotnet --list-sdks | cut -d ' ' -f 1 | grep -E $sdk_regex)
-  if [ -z "$matching_version" ]; then
-    install_dotnet
-  else
-    echo "✅Found suitable .NET SDK version $matching_version."
-  fi
+  echo "✅Bun installed."
 fi
 
 # Now set up configuration
@@ -80,11 +60,9 @@ else
   ngrok config add-authtoken $ngrok_auth_token
 fi
 
-echo "About to install the .NET tools and workloads. This may take a while."
-
-echo "dotnet tool restore"
-sudo dotnet tool restore
-echo "dotnet workload update"
-sudo dotnet workload update
-echo "dotnet workload install aspire"
-sudo dotnet workload install aspire
+# Check for .NET installation
+if ! type dotnet >/dev/null; then
+  fatal "🚨.NET SDK is required. Please install the latest version and try again."
+else
+  echo "✅Found .NET SDK."
+fi

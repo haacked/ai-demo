@@ -14,7 +14,7 @@ set_source_and_root_dir() {
     cd "$root_dir"
 }
 
-install_if_missing() {
+brew_install_if_missing() {
     if ! type "$1" >/dev/null 2>&1; then
         echo "Installing $1"
         if [ -n "$2" ]; then
