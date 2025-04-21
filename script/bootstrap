@@ -35,65 +35,17 @@ else
   echo "✅Brew installed."
 fi
 
-# JQ is used for JSON processing
-echo "Checking for JQ - used by this script for JSON processing…"
-if ! type jq >/dev/null 2>&1; then
-  if $install; then
-    echo "🚧Installing jq…"
-    brew install jq
-  else
-    fatal "✅jq is required to run this script. Please install it and try again."
-  fi
+# Install Homebrew dependencies
+brew_install_if_missing docker
+brew_install_if_missing ngrok
+
+# Install Bun (requires special tap)
+if ! type bun >/dev/null 2>&1; then
+  echo "Installing Bun..."
+  brew tap oven-sh/bun
+  brew install bun
 else
-  echo "✅jq installed."
-fi
-
-
-echo "Checking for docker…"
-if ! type docker >/dev/null 2>&1; then
-  fatal "🚨Docker is required. Please install it and try again."
-else
-  echo "✅Docker installed."
-fi
-
-dotnet_sdk_channel=$(cat global.json | jq -r '.sdk.channel')
-
-echo "Checking for .NET SDK $dotnet_sdk_channel…"
-
-has_dotnet=false
-
-install_dotnet() {
-  fatal "🚨.NET SDK $dotnet_sdk_channel is required. Please install it and try again."
-
-  # TODO: Auto-install .NET
-  # It's not trivial though. The path in which it's located matters, etc.
-}
-
-escaped_channel=$(echo $dotnet_sdk_channel | sed 's/\./\\./g')
-sdk_regex="^$escaped_channel\.[0-9]+$"
-
-# Just in case the user hasn't installed .NET
-if ! type dotnet >/dev/null; then
-  install_dotnet
-else
-  matching_version=$(dotnet --list-sdks | cut -d ' ' -f 1 | grep -E $sdk_regex)
-  if [ -z "$matching_version" ]; then
-    install_dotnet
-  else
-    echo "✅Found suitable .NET SDK version $matching_version."
-  fi
-fi
-
-echo "Checking for ngrok…"
-if ! type ngrok >/dev/null 2>&1; then
-  if $install; then
-    echo "🚧Installing ngrok…"
-    brew install ngrok
-  else
-    fatal "🚨ngrok is required to run project."
-  fi
-else
-  echo "✅ngrok installed."
+  echo "✅Bun installed."
 fi
 
 # Now set up configuration
@@ -108,11 +60,84 @@ else
   ngrok config add-authtoken $ngrok_auth_token
 fi
 
-echo "About to install the .NET tools and workloads. This may take a while."
+# Check for .NET installation
+if ! type dotnet >/dev/null; then
+  fatal "🚨.NET SDK is required. Please install the latest version and try again."
+else
+  echo "✅Found .NET SDK."
+fi
 
-echo "dotnet tool restore"
-sudo dotnet tool restore
-echo "dotnet workload update"
-sudo dotnet workload update
-echo "dotnet workload install aspire"
-sudo dotnet workload install aspire
+# Check for required Bluesky environment variables
+if [ -z "$BLUESKY_PASSWORD" ]; then
+  echo "⚠️BLUESKY_APP_KEY is not set."
+  echo "Go to https://bsky.app/settings/app-passwords and create an app password."
+  read -s -r -p "Enter your Bluesky app password: " BLUESKY_APP_KEY
+  echo
+  export BLUESKY_PASSWORD
+fi
+
+if [ -z "$BLUESKY_USERNAME" ]; then
+  echo "⚠️BLUESKY_USERNAME is not set."
+  read -r -p "Enter your Bluesky handle (e.g., haacked.com): " BLUESKY_USERNAME
+  # Remove @ symbol if present
+  BLUESKY_USERNAME="${BLUESKY_USERNAME#@}"
+  export BLUESKY_USERNAME
+fi
+
+# Offer to write Bluesky environment variables to shell config
+if [ -n "$BLUESKY_USERNAME" ] && [ -n "$BLUESKY_PASSWORD" ]; then
+  read -r -p "Would you like to save these Bluesky credentials to your shell configuration? (y/n): " save_credentials
+  if [[ $save_credentials =~ ^[Yy]$ ]]; then
+    # Detect shell and set appropriate config file
+    case "$SHELL" in
+      */zsh)
+        config_file="$HOME/.zshrc"
+        ;;
+      */bash)
+        if [ "$(uname)" = "Darwin" ]; then
+          config_file="$HOME/.bash_profile"
+        else
+          config_file="$HOME/.bashrc"
+        fi
+        ;;
+      */fish)
+        config_file="$HOME/.config/fish/config.fish"
+        mkdir -p "$(dirname "$config_file")"
+        ;;
+      *)
+        echo "⚠️Unsupported shell: $SHELL"
+        echo "Please manually add these variables to your shell configuration:"
+        echo "export BLUESKY_USERNAME=\"$BLUESKY_USERNAME\""
+        echo "export BLUESKY_PASSWORD=\"$BLUESKY_PASSWORD\""
+        exit 0
+        ;;
+    esac
+
+    # Check if variables already exist in config file
+    if [[ "$SHELL" == *"/fish" ]]; then
+      if grep -q "set -x BLUESKY_USERNAME" "$config_file" 2>/dev/null; then
+        echo "✅Bluesky credentials already exist in $config_file"
+        exit 0
+      fi
+    else
+      if grep -q "export BLUESKY_USERNAME" "$config_file" 2>/dev/null; then
+        echo "✅Bluesky credentials already exist in $config_file"
+        exit 0
+      fi
+    fi
+
+    # Write variables to config file
+    echo "# Bluesky MCP Server Environment Variables" >> "$config_file"
+    if [[ "$SHELL" == *"/fish" ]]; then
+      echo "set -x BLUESKY_USERNAME \"$BLUESKY_USERNAME\"" >> "$config_file"
+      echo "set -x BLUESKY_PASSWORD \"$BLUESKY_PASSWORD\"" >> "$config_file"
+    else
+      echo "export BLUESKY_USERNAME=\"$BLUESKY_USERNAME\"" >> "$config_file"
+      echo "export BLUESKY_PASSWORD=\"$BLUESKY_PASSWORD\"" >> "$config_file"
+    fi
+
+    echo "✅Bluesky credentials saved to $config_file"
+    echo "Run 'source $config_file' to load them in your current session."
+  fi
+fi
+

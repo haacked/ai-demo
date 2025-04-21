@@ -58,7 +58,12 @@ public class BotMessageConsumer(
         // Enable auto function calling
         OpenAIPromptExecutionSettings openAiPromptExecutionSettings = new()
         {
-            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(options: new()
+            {
+#pragma warning disable SKEXP0001
+                RetainArgumentTypes = true
+#pragma warning restore SKEXP0001
+            })
         };
 
         var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();

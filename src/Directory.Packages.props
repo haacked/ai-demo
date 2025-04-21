@@ -19,6 +19,7 @@
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.4.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.2.0" />
     <PackageVersion Include="Microsoft.SemanticKernel" Version="1.47.0" />
+    <PackageVersion Include="ModelContextProtocol" Version="0.1.0-preview.10" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="9.0.4" />
     <PackageVersion Include="OctoKit" Version="14.0.0" />
