@@ -24,17 +24,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup .NET 8
+      - name: Setup .NET 9
         uses: actions/setup-dotnet@v3.0.3
         with:
           dotnet-version: |
-            8.0.x
-
-      - name: dotnet workload update
-        run: dotnet workload update
-
-      - name: dotnet workload install aspire
-        run: dotnet workload install aspire
+            9.0.x
 
       - name: Restore NuGet Packages
         run: dotnet restore AIDemo.sln --locked-mode
@@ -66,10 +60,10 @@ jobs:
     - name: Checkout main branch
       uses: actions/checkout@v3.1.0
 
-    - name: Setup Node.js 16
+    - name: Setup Node.js 20
       uses: actions/setup-node@v3
       with:
-        node-version: '16.x'
+        node-version: '20.15.0'
 
     - name: AIDemo.Web - npm install
       working-directory: src/AIDemo.Web
@@ -87,17 +81,11 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Setup .NET 8
+    - name: Setup .NET 9
       uses: actions/setup-dotnet@v3.0.3
       with:
         dotnet-version: |
-          8.0.x
-
-    - name: dotnet workload update
-      run: dotnet workload update
-
-    - name: dotnet workload install aspire
-      run: dotnet workload install aspire
+          9.0.x
 
     - name: Restore NuGet Packages
       run: dotnet restore ${{ env.APP_SOLUTION }} --locked-mode
