@@ -60,9 +60,7 @@ public class BotMessageConsumer(
         {
             FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(options: new()
             {
-#pragma warning disable SKEXP0001
                 RetainArgumentTypes = true
-#pragma warning restore SKEXP0001
             })
         };
 

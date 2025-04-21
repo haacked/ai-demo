@@ -45,10 +45,9 @@ public static class ServiceExtensions
         builder.Services.AddTransient<Kernel>(serviceProvider =>
         {
             var kernel = new Kernel(serviceProvider);
-#pragma warning disable SKEXP0001
             kernel.Plugins.AddFromFunctions("GitHub", gitHubClientTools.Select(aiFunction => aiFunction.AsKernelFunction()));
             kernel.Plugins.AddFromFunctions("BlueSky", blueSkyClientTools.Select(aiFunction => aiFunction.AsKernelFunction()));
-#pragma warning restore SKEXP0001
+
             var filter = new FunctionSignalFilter(serviceProvider.GetRequiredService<IHubContext<BotHub>>());
             kernel.FunctionInvocationFilters.Add(filter);
             kernel.AutoFunctionInvocationFilters.Add(filter);
