@@ -6,8 +6,6 @@ using Haack.AIDemoWeb.Startup;
 using Haack.AIDemoWeb.Startup.Config;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using ModelContextProtocol.Client;
-using ModelContextProtocol.Protocol.Transport;
 
 var builder = WebApplication.CreateBuilder(args);
 
