@@ -19,8 +19,7 @@ builder
     .AddMassTransitConfig()
     .Configure<GitHubOptions>()
     .Configure<GoogleOptions>()
-    .Configure<WeatherOptions>()
-    .AddRedisClient("message-cache");
+    .Configure<WeatherOptions>();
 
 builder.Services.AddSignalR();
 

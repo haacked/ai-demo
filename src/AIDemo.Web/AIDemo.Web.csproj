@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
@@ -16,7 +16,6 @@
 
     <ItemGroup>
         <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
-        <PackageReference Include="Aspire.StackExchange.Redis" />
         <PackageReference Include="Google.Apis.PeopleService.v1" />
         <PackageReference Include="MassTransit" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
@@ -30,6 +29,7 @@
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" />
         <PackageReference Include="OctoKit" />
+        <PackageReference Include="OpenAI" />
         <PackageReference Include="Pgvector.EntityFrameworkCore" />
         <PackageReference Include="refit" />
         <PackageReference Include="Refit.HttpClientFactory" />
@@ -70,11 +70,6 @@
         <ProjectReference Include="..\AIDemo.Hubs\AIDemo.Hubs.csproj" />
         <ProjectReference Include="..\AIDemo.Contracts\AIDemo.Contracts.csproj" />
         <ProjectReference Include="..\AIDemo.ServiceDefaults\AIDemo.ServiceDefaults.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\bootstrap\bootstrap.min.css" />
-      <_ContentIncludedByDefault Remove="wwwroot\bootstrap\bootstrap.min.css.map" />
     </ItemGroup>
 
     <ItemGroup>

@@ -12,17 +12,10 @@ var postgres = builder
 
 var postgresdb = postgres.AddDatabase("postgresdb");
 
-var cache = builder
-    .AddRedis("message-cache")
-    .WithDataVolume()
-    .WithPersistence(TimeSpan.FromSeconds(10));
-
 builder.AddProject<AIDemo_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithReference(postgresdb)
-    .WaitFor(postgres)
-    .WithReference(cache)
-    .WaitFor(cache);
+    .WaitFor(postgres);
 
 if (!builder.ExecutionContext.IsPublishMode)
 {
