@@ -25,10 +25,10 @@ public class ContactPlugin(AIDemoDbContext db)
         [Description("The distance in kilometers from the coordinate. If the distance is not specified, use 610 km for the distance. If the user specifies miles, convert to kilometers using the `unit_converter` function first.")]
         Measurement<DistanceUnit> distance,
         [Description("If specified, only look up the location for these contacts.")]
-        IReadOnlyList<string>? contactNames,
+        IReadOnlyList<string>? contactNames = null,
         [Description("Describe why you decided to call this function.")]
-        string justification,
-        CancellationToken cancellationToken)
+        string justification = "none",
+        CancellationToken cancellationToken = default)
     {
         // Create a geometry from arguments.Coordinate.
         var point = new Point(coordinate.Longitude, coordinate.Latitude)
