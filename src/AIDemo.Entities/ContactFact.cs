@@ -25,7 +25,7 @@ public class ContactFact
     /// The output dimensions for text-embedding-ada-002 is 1536.
     /// </remarks>
 #pragma warning disable CA1002
-    [Column(TypeName = "vector(1536 )")]
+    [Column(TypeName = "vector(3072)")]
     public required Vector Embeddings { get; init; }
 #pragma warning restore CA1002
 
